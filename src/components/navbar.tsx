@@ -115,13 +115,13 @@ constructor(props: any) {
                                     <div className="flex-shrink-0 flex items-center">
                                         <img
                                             className="block lg:hidden h-8 w-auto"
-                                            src="https://tailwindui.com/img/logos/workflow-mark-indigo-500.svg"
-                                            alt="Workflow"
+                                            src="../assets/allballcall-500.svg"
+                                            alt="AllBallCall"
                                         />
                                         <img
                                             className="hidden lg:block h-8 w-auto"
-                                            src="https://tailwindui.com/img/logos/workflow-logo-indigo-500-mark-white-text.svg"
-                                            alt="Workflow"
+                                            src="src\assets\allballcall-logo-500-white-text.svg"
+                                            alt="AllBallCall"
                                         />
                                     </div>
                                     <div className="hidden md:ml-6 md:flex md:items-center md:space-x-4">
