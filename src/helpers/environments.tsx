@@ -1,5 +1,5 @@
-let APIURL:string;
+let dbCall:string;
 
-APIURL = '';
+dbCall = 'https://allballcall-server-alm.herokuapp.com';
 
-export default APIURL;
+export default dbCall;

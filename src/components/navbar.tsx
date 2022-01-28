@@ -1,6 +1,5 @@
 import React, { Component, Fragment } from "react";
 // import PropTypes from 'prop-types';
-/* This example requires Tailwind CSS v2.0+ */
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { BellIcon, MenuIcon, XIcon } from "@heroicons/react/outline";
 import { PlusSmIcon } from "@heroicons/react/solid";
@@ -82,6 +81,14 @@ constructor(props: any) {
         name: "Logout",
         href: "/logout",
     },
+    {
+        name: "Login",
+        href: "/login",
+    },
+    {
+        name: "Sign Up",
+        href: "/signup"
+    }
     ],
     navBar: {
         classNames: function(...classes: string[]) {
@@ -115,12 +122,12 @@ constructor(props: any) {
                                     <div className="flex-shrink-0 flex items-center">
                                         <img
                                             className="block lg:hidden h-8 w-auto"
-                                            src="../assets/allballcall-500.svg"
+                                            src="https://raw.githubusercontent.com/Alex-Lee-Myers/AllBallCallClient/e0ca73fe63253d3f3fd953d992d4dbecb1a69874/src/assets/allballcall-500.svg"
                                             alt="AllBallCall"
                                         />
                                         <img
                                             className="hidden lg:block h-8 w-auto"
-                                            src="src\assets\allballcall-logo-500-white-text.svg"
+                                            src="https://raw.githubusercontent.com/Alex-Lee-Myers/AllBallCallClient/e0ca73fe63253d3f3fd953d992d4dbecb1a69874/src/assets/allballcall-logo-500-white-text.svg"
                                             alt="AllBallCall"
                                         />
                                     </div>
@@ -169,6 +176,7 @@ constructor(props: any) {
                                                 <img className="h-8 w-8 rounded-full" src={this.state.user.imageUrl} alt={this.state.user.name} />
                                             </Menu.Button>
                                         </div>
+                                        {/* A dropdown list from Headless UI based in React with Typescript. It will show userNavigation items. If the user is  */}
                                         <Transition
                                             as={Fragment}
                                             enter="transition ease-out duration-200"
@@ -238,23 +246,23 @@ constructor(props: any) {
                                 </button>
                             </div>
                             <div className="mt-3 px-2 space-y-1 sm:px-3">
-                            {this.state.userNavigation.map((userNavigation: userNavigationProps) => (
-                                <Disclosure.Button
-                                    key={userNavigation.name}
-                                    as="a"
-                                    href={userNavigation.href}
-                                    className="block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-700"
-                                >
-                                    {userNavigation.name}
-                                </Disclosure.Button>
+                                {this.state.userNavigation.map((userNavigation: userNavigationProps) => (
+                                    <Disclosure.Button
+                                        key={userNavigation.name}
+                                        as="a"
+                                        href={userNavigation.href}
+                                        className="block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-700"
+                                    >
+                                        {userNavigation.name}
+                                    </Disclosure.Button>
                                 ))}
                             </div>
                         </div>
-                        </Disclosure.Panel>
-                    </div>
-                )}
-            </Disclosure>
-            )
-        }
+                    </Disclosure.Panel>
+                </div>
+            )}
+        </Disclosure>
+        )
     }
+}
 
