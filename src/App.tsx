@@ -3,9 +3,9 @@ import React from 'react';
 // import the css
 import './App.css';
 // import the components
-import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
-import Home from './components/home';
-import Navbar from './components/Navbar';
+// import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
+// import Home from './components/home';
+import Navbar from './components/navbar';
 
 
 
@@ -20,7 +20,7 @@ function App() {
           isLoggedIn={isLoggedIn} */}
         </Navbar>
 
-        <Routes>
+        {/* <Routes>
 
         <Route path="/" element={<Home
 
@@ -28,7 +28,7 @@ function App() {
           />} 
         />
 
-        </Routes>
+        </Routes> */}
       </div>
     );
   }
