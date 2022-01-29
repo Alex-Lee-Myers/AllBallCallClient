@@ -1,157 +1,129 @@
 import React, { useEffect, useState } from 'react';
 // import the css
 import './App.css';
-import { Login } from '../src/components/Login';
-// import { Register } from '../src/components/Register';
-// import the components
-// import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
-// import Home from './components/home';
-import Home from '../src/components/Home';
-import Navbar from '../src/components/Navbar';
+import { dbCall } from './helpers/Environments';
 
-export type ABCProps = {
-  isAdmin: boolean,
-  dbCall: string;
-  clearToken: () => void,
-  emailAddress: string,
-  errorMessage: string,
-  fetchDb: () => Promise<void>,
-  handleChange (event: React.ChangeEvent<HTMLInputElement>): void,
-  handleSubmit (event: React.FormEvent<HTMLFormElement>): void,
-  isLoggedIn: boolean,
-  mountyPython: boolean,
-  passwordhash: string,
-  responseStatus: number,
-  sessionToken: string | null,
-  setSessionToken: (sessionToken: string | null) => void,
-  updateToken: (newToken: string) => void,
-  username: string | null,
-  uuid: string | null,
+// import packages
+import { BrowserRouter as Route, Routes } from 'react-router-dom';
+// import the components
+
+import Home from '../src/components/Home';
+import Login from '../src/components/Login';
+import Navbar from '../src/components/Navbar';
+import Register from '../src/components/Register';
+
+export interface ABCtoken {
+  isUserLoggedIn: boolean;
+  clearToken: () => void;
+  sessionToken: string | null;
+  setSessionToken: (token: string | null) => void;
+  updateToken: (mintToken: string) => void;
 }
 
-export const App: React.FunctionComponent<{
-  isAdmin: boolean,
-  dbCall: string,
-  clearToken: () => void,
-  emailAddress: string,
-  errorMessage: string,
-  fetchDb: () => Promise<void>,
-  handleChange (event: React.ChangeEvent<HTMLInputElement>): void,
-  handleSubmit (event: React.FormEvent<HTMLFormElement>): void,
-  isLoggedIn: boolean,
-  mountyPython: boolean,
-  passwordhash: string,
-  responseStatus: number,
-  sessionToken: string | null,
-  setSessionToken: (sessionToken: string | null) => void,
-  updateToken: (newToken: string) => void,
-  username: string | null,
-  uuid: string | null,
-}> = (props: ABCProps) => {
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
-  const [mountyPython, setMountyPython] = useState<boolean>(false);
+export interface ABCuserInfo {
+  isAdmin: boolean;
+  emailAddress: string;
+  username: string;
+}
+
+export interface ABCcalls {
+  dbCall: string;
+  errorMessage: string;
+  fetchDb: () => Promise<void>;
+  responseStatus: number;
+}
+
+
+// Did not use React.FunctionComponent as per (https://github.com/typescript-cheatsheets/react/blob/main/README.md#basic-cheatsheet-table-of-contents) this methology is deprecated.
+
+const App = (props: ABCtoken & ABCuserInfo & ABCcalls) => { 
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
+  const [emailAddress, setEmailAddress] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [responseStatus, setResponseStatus] = useState<number>(0);
+  const [isUserLoggedIn, setIsUserLoggedIn] = useState<boolean>(false);
   const [sessionToken, setSessionToken] = useState<string | null>('');
-  const [uuid, setUuid] = useState<string | null>('');
-  const [username, setUsername] = useState<string | null>('');
-  const [emailAddress, setEmailAddress] = useState<string>('');
-  const [passwordhash, setPasswordhash] = useState<string>('');
-  const [isAdmin, setIsAdmin] = useState<boolean>(false);
-  const [dbCall, setDbCall] = useState<string>('');
+  const [username, setUsername] = useState<string>('');
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const target = event.target;
-    const value = target.value;
-    switch (target.name) {
-      case 'emailAddress':
-        setEmailAddress(value);
-        break;
-      case 'passwordhash':
-        setPasswordhash(value);
-        break;
-      default:
-        break;
+  const fetchDb = async (): Promise<void> => {
+    if (localStorage.getItem('Authorization') === null) {
+      props.setSessionToken(null);
+    }
+    else {
+      props.setSessionToken(localStorage.getItem('Authorization'));
+    }
+    const response = await fetch(`${props.dbCall}/api/users/me`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${sessionToken}`
+      }
+    });
+    const responseJson = await response.json();
+    setResponseStatus(response.status);
+    if (response.status === 200) {
+      setIsUserLoggedIn(true);
+      setIsAdmin(responseJson.isAdmin);
+      setEmailAddress(responseJson.emailAddress);
+      setUsername(responseJson.username);
+    }
+    else {
+      setIsUserLoggedIn(false);
+      setIsAdmin(false);
+      setEmailAddress('');
+      setUsername('');
     }
   }
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setErrorMessage('');
-    setResponseStatus(0);
-    setSessionToken('');
-    setUuid('');
-    setUsername('');
-    setIsAdmin(false);
-    setDbCall('');
-    setIsLoggedIn(false);
-    setMountyPython(false);
-    props.clearToken();
-    props.fetchDb()
-
-      .then(() => {
-        const user = props.username;
-        const uuid = props.uuid;
-        const isAdmin = props.isAdmin;
-
-        if (user && uuid) {
-
-          setIsLoggedIn(true);
-          setUsername(user);
-          setUuid(uuid);
-          setIsAdmin(isAdmin);
-          setSessionToken(props.sessionToken);
-          setDbCall(props.dbCall);
-          setMountyPython(true);
-        } else {  // if the user is not logged in
-          setErrorMessage('Invalid username or password');
-          setResponseStatus(401);
-
-        }
-
-      })
-      .catch((error) => {
-        setErrorMessage(error.message);
-        setResponseStatus(500);
-      });
+  const updateToken = (mintToken: string): void => {
+    localStorage.setItem('Authorization', mintToken);
+    props.setSessionToken(mintToken);
   }
+
+  const clearToken = (): void => {
+    localStorage.removeItem('sessionToken');
+    props.setSessionToken(null);
+    props.updateToken('');
+    setIsUserLoggedIn(false);
+  };
 
   useEffect(() => {
-    fetchDb()
-  }, [sessionToken]);
-
-
-
-
-
+    fetchDb();
+  });
+  
     return (
-      <div className="App">
+      <>
         <Navbar>
-          {/* clearSessionToken={clearSessionToken}
-          setSessionToken={setSessionToken}
-          sessionToken={sessionToken}
-          isLoggedIn={isLoggedIn} */}
+          clearToken={clearToken}
+          emailAddress={emailAddress}
+          sessionToken={props.sessionToken}
+          setSessionToken={props.setSessionToken}
+          isUserLoggedIn={isUserLoggedIn}
+          username={username}
         </Navbar>
 
-          <Login>
-            isAdmin={isAdmin}
-            dbCall={dbCall}
-            fetchDb={fetchDb}
-            emailAddress={emailAddress}
-            errorMessage={errorMessage}
-            isLoggedIn={isLoggedIn}
-            mountyPython={mountyPython}
-            passwordhash={passwordhash}
-            responseStatus={responseStatus}
-            sessionToken={sessionToken}
-            setSessionToken={setSessionToken}
-            updateToken={updateToken}
-            username={username}
-            handleChange={handleChange}
-            handleSubmit={handleSubmit}
+        <Routes>
+          <Route path="/" element={<Home
+              isUserLoggedIn={isUserLoggedIn}
+              isAdmin={isAdmin}
+              emailAddress={emailAddress}
+              username={username}
+            />} />
+          
+          <Route path="/login" element={<Login
+              updateToken={updateToken}
+              sessionToken={props.sessionToken}
+              setSessionToken={props.setSessionToken}
+            />} />
 
-          </Login>
-      </div>
+          <Route path="/register" element={<Register
+              updateToken={updateToken}
+              sessionToken={props.sessionToken}
+              setSessionToken={props.setSessionToken}
+            />} />
+        </Routes>
+      </>
     );
-  }
+}
+
 

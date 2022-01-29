@@ -1,4 +1,5 @@
-import { ABCProps } from '../App';
+//import interfaces from App.tsx
+import { ABCtoken, ABCuserInfo, ABCcalls } from '../App'
 import dbCall from '../helpers/Environments';
 import { useNavigate, Link } from 'react-router-dom';
 import React from 'react';
@@ -15,31 +16,14 @@ export type LoginState = {
     isLoggedIn: boolean,
     passwordhash: string,
     responseStatus: number,
-    sessionToken: ABCProps['sessionToken'],
-    setSessionToken: ABCProps['setSessionToken'],
-    updateToken: ABCProps['updateToken']
+    sessionToken: ABCtoken['sessionToken'],
+    setSessionToken: ABCtoken['setSessionToken'],
+    updateToken: ABCtoken['updateToken']
     username: string,
     }
 
 // User is able to login with either email or username, plus password being correct.
-export const Login: React.FunctionComponent<{
-    isAdmin: boolean;
-    dbCall: string;
-    fetchDb: () => Promise<void>;
-    emailAddress: string;
-    errorMessage: string;
-    isLoggedIn: boolean;
-    mountyPython: boolean;
-    passwordhash: string;
-    responseStatus: number;
-    sessionToken: ABCProps['sessionToken'],
-    setSessionToken: ABCProps['setSessionToken'];
-    updateToken: ABCProps['updateToken'];
-    username: string;
-    handleChange (event: React.ChangeEvent<HTMLInputElement>): void;
-    handleSubmit (event: React.FormEvent<HTMLFormElement>): void;
-
-    }> = (props: LoginState) => {
+const Login = (props: LoginState) => {
     const navigate = useNavigate();
     const [emailAddress, setEmailAddress] = React.useState<string>('');
     const [passwordhash, setPasswordhash] = React.useState<string>('');
@@ -49,6 +33,7 @@ export const Login: React.FunctionComponent<{
     const [mountyPython, setMountyPython] = React.useState<boolean>(false);
     const [errorMessage, setErrorMessage] = React.useState<string>('');
     const [responseStatus, setResponseStatus] = React.useState<number>(0);
+
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const target = event.target;
@@ -67,9 +52,9 @@ export const Login: React.FunctionComponent<{
             default:
                 break;
         }
-    }
-    
-    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    };
+
+    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         // postgresql database call
         const response = await fetch(`${dbCall}/login`, {
@@ -169,12 +154,14 @@ export const Login: React.FunctionComponent<{
             </div>
         </div>
         <div className="hidden lg:block relative w-0 flex-1">
-          <img
-            className="absolute inset-0 h-full w-full object-cover"
-            src="https://github.com/Alex-Lee-Myers/AllBallCallClient/blob/main/src/assets/loginSplash.jpg"
-            alt=""
-          />
+            <img
+                className="absolute inset-0 h-full w-full object-cover"
+                src="https://github.com/Alex-Lee-Myers/AllBallCallClient/blob/main/src/assets/loginSplash.jpg"
+                alt=""
+            />
         </div>
     </div>
     )
 }
+
+export default Login;

@@ -1,9 +1,9 @@
-import { ABCProps } from '../App';
+import 
 import dbCall from '../helpers/Environments';
 import { useNavigate, Link } from 'react-router-dom';
 import React from 'react';
 
-export type LoginState = {
+export type RegisterState = {
     isAdmin: boolean;
     dbCall: string;
     emailAddress: string,
@@ -19,8 +19,8 @@ export type LoginState = {
     username: string,
     }
 
-// User is able to login with either email or username, plus password being correct.
-export const Login: React.FunctionComponent<{
+// User is able to register with either email or username, plus password being correct.
+const Register = (props: RegisterState) => {
     isAdmin: boolean;
     dbCall: string;
     fetchDb: () => Promise<void>;
@@ -37,7 +37,7 @@ export const Login: React.FunctionComponent<{
     handleChange (event: React.ChangeEvent<HTMLInputElement>): void;
     handleSubmit (event: React.FormEvent<HTMLFormElement>): void;
 
-    }> = (props: LoginState) => {
+    }> = (props: RegisterState) => {
     const navigate = useNavigate();
     const [emailAddress, setEmailAddress] = React.useState<string>('');
     const [passwordhash, setPasswordhash] = React.useState<string>('');
@@ -70,7 +70,7 @@ export const Login: React.FunctionComponent<{
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         // postgresql database call
-        const response = await fetch(`${dbCall}/login`, {
+        const response = await fetch(`${dbCall}/register`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -101,7 +101,7 @@ export const Login: React.FunctionComponent<{
     //     navigate('/register');
     // }
 
-// return a login form. two fields. username/email and password.
+// return a register form. two fields. username/email and password.
 
     return (
         <div className="min-h-full flex">
@@ -169,3 +169,5 @@ export const Login: React.FunctionComponent<{
     </div>
     )
 }
+
+export default Register;
