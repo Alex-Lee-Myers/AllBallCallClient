@@ -178,6 +178,7 @@ constructor(props: any) {
                                         </div>
                                         {/* A dropdown list from Headless UI based in React with Typescript. It will show userNavigation items. If the user is  */}
                                         <Transition
+                                        // as = the ability to open a dropdown list in lines 191-192
                                             as={Fragment}
                                             enter="transition ease-out duration-200"
                                             enterFrom="transform opacity-0 scale-95"
@@ -189,19 +190,15 @@ constructor(props: any) {
                                             <Menu.Items className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
                                                 {this.state.userNavigation.map((userNavigation: userNavigationProps) => (
                                                     <Menu.Item
-                                                        key={userNavigation.name}>
-                                                            {({active}) => (this.state.navBar.classNames(
-                                                                <a
-                                                                    href={userNavigation.href}
-                                                                    className={this.state.navBar.classNames(
-                                                                        active ? 'bg-gray-100' : '', 
-                                                                        'block px-4 py-2 text-sm text-gray-700'
-                                                                    )}
-                                                                >
-                                                                    {userNavigation.name}
-                                                                    </a>
-                                                            ))}
-                                                </Menu.Item>
+                                                        key={userNavigation.name} 
+                                                        >
+                                                        <a
+                                                            href={userNavigation.href}
+                                                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                                        >
+                                                            {userNavigation.name}
+                                                        </a>
+                                                    </Menu.Item>
                                                 ))}
                                             </Menu.Items>
                                         </Transition>

@@ -1,4 +1,4 @@
-import 
+import {ABCtoken } from '../App';
 import dbCall from '../helpers/Environments';
 import { useNavigate, Link } from 'react-router-dom';
 import React from 'react';
@@ -13,31 +13,14 @@ export type RegisterState = {
     isLoggedIn: boolean,
     passwordhash: string,
     responseStatus: number,
-    sessionToken: ABCProps['sessionToken'],
-    setSessionToken: ABCProps['setSessionToken'],
-    updateToken: ABCProps['updateToken']
+    sessionToken: ABCtoken['sessionToken'],
+    setSessionToken: ABCtoken['setSessionToken'],
+    updateToken: ABCtoken['updateToken']
     username: string,
     }
 
 // User is able to register with either email or username, plus password being correct.
 const Register = (props: RegisterState) => {
-    isAdmin: boolean;
-    dbCall: string;
-    fetchDb: () => Promise<void>;
-    emailAddress: string;
-    errorMessage: string;
-    isLoggedIn: boolean;
-    mountyPython: boolean;
-    passwordhash: string;
-    responseStatus: number;
-    sessionToken: ABCProps['sessionToken'],
-    setSessionToken: ABCProps['setSessionToken'];
-    updateToken: ABCProps['updateToken'];
-    username: string;
-    handleChange (event: React.ChangeEvent<HTMLInputElement>): void;
-    handleSubmit (event: React.FormEvent<HTMLFormElement>): void;
-
-    }> = (props: RegisterState) => {
     const navigate = useNavigate();
     const [emailAddress, setEmailAddress] = React.useState<string>('');
     const [passwordhash, setPasswordhash] = React.useState<string>('');
@@ -47,6 +30,7 @@ const Register = (props: RegisterState) => {
     const [mountyPython, setMountyPython] = React.useState<boolean>(false);
     const [errorMessage, setErrorMessage] = React.useState<string>('');
     const [responseStatus, setResponseStatus] = React.useState<number>(0);
+
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const target = event.target;

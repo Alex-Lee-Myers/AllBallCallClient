@@ -1,12 +1,11 @@
 //import interfaces from App.tsx
-import { ABCtoken, ABCuserInfo, ABCcalls } from '../App'
+import { ABCtoken} from '../App'
 import dbCall from '../helpers/Environments';
 import { useNavigate, Link } from 'react-router-dom';
 import React from 'react';
 
 export type LoginState = {
     isAdmin: boolean;
-    dbCall: string;
     emailAddress: string,
     errorMessage: string,
     fetchDb: () => Promise<void>;
@@ -18,78 +17,115 @@ export type LoginState = {
     responseStatus: number,
     sessionToken: ABCtoken['sessionToken'],
     setSessionToken: ABCtoken['setSessionToken'],
-    updateToken: ABCtoken['updateToken']
+    updateToken: ABCtoken['updateToken'],
     username: string,
     }
 
 // User is able to login with either email or username, plus password being correct.
-const Login = (props: LoginState) => {
-    const navigate = useNavigate();
-    const [emailAddress, setEmailAddress] = React.useState<string>('');
-    const [passwordhash, setPasswordhash] = React.useState<string>('');
-    const [username, setUsername] = React.useState<string>('');
-    const [sessionToken, setSessionToken] = React.useState<string | null>('');
-    const [isLoggedIn, setIsLoggedIn] = React.useState<boolean>(false);
-    const [mountyPython, setMountyPython] = React.useState<boolean>(false);
-    const [errorMessage, setErrorMessage] = React.useState<string>('');
-    const [responseStatus, setResponseStatus] = React.useState<number>(0);
+class Login extends React.Component<{
+    sessionToken: ABCtoken['sessionToken']
+    updateToken: ABCtoken['updateToken']
+    setSessionToken: ABCtoken['setSessionToken']
+}, LoginState> {
+    constructor(props: LoginState) {
+        super(props);
 
+        this.state = {
+            isAdmin: false,
+            emailAddress: '',
+            errorMessage: '',
+            fetchDb: () => Promise.resolve(),
+            mountyPython: false,
+            isLoggedIn: false,
+            passwordhash: '',
+            responseStatus: 0,
+            sessionToken: '',
+            setSessionToken: () => {},
+            updateToken: () => {},
+            username: '',
+            handleChange: this.handleChange,
+            handleSubmit: this.handleSubmit,
+        }
+        this.handleChange = this.handleChange.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
+    }
 
-    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    navigate = useNavigate();
+
+    handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const target = event.target;
         const value = target.value;
         
         switch (target.name) {
             case 'emailAddress':
-                setEmailAddress(value);
+                this.setState({emailAddress: value});
                 break;
             case 'passwordhash':
-                setPasswordhash(value);
+                this.setState({passwordhash: value});
                 break;
             case 'username':
-                setUsername(value);
+                this.setState({username: value});
                 break;
             default:
                 break;
         }
     };
 
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         // postgresql database call
-        const response = await fetch(`${dbCall}/login`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                emailAddress,
-                passwordhash,
-                username
-            })
-        });
-        const responseData = await response.json();
-        setResponseStatus(response.status);
-        if (response.status === 200) {
-            setSessionToken(responseData.sessionToken);
-            setErrorMessage('');
-            setMountyPython(true);
-            setIsLoggedIn(true);
-            setUsername(responseData.username);
-            setEmailAddress(responseData.emailAddress);
-            navigate('/');
-        } else {
-            setErrorMessage(responseData.errorMessage);
-        }
-    }
+        const fetchDb = async (): Promise<void> => {
+            const response = await fetch(`${dbCall}/users/login`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    username: this.state.username,
+                    email: this.state.emailAddress,
+                    passwordhash: this.state.passwordhash,
+                })
+            });
+            const responseJson = await response.json();
+            this.setState({responseStatus: response.status});
+            if (response.status === 200) {
+                this.setState({
+                    isLoggedIn: true,
+                    sessionToken: responseJson.sessionToken,
+                    updateToken: responseJson.updateToken,
+                });
+                this.props.setSessionToken(responseJson.sessionToken);
+                this.props.updateToken(responseJson.updateToken);
+            } else {
+                this.setState({errorMessage: responseJson.error});
+            }
+        };
+    };
 
-    // if they click the registration button, they are taken to the registration page
-    // const handleRegister = () => {
-    //     navigate('/register');
-    // }
+    // componentDidMount = () => {
+    //     this.setState({ 
+    //         setSessionToken: this.props.setSessionToken,
+    //         updateToken: this.props.updateToken,
+    //         sessionToken: this.props.sessionToken,
+    //     });
+    // };
 
-// return a login form. two fields. username/email and password.
+    // componentDidUpdate = () => {
+    //     if (this.state.isLoggedIn === true && this.state.responseStatus === 200 && this.state.sessionToken !== '' && this.state.isAdmin !== true) {
+    //         this.props.sessionToken ? this.navigate('/') : this.navigate('/login');
+    //     }
 
+    //     if (this.state.isLoggedIn === true && this.state.responseStatus === 200 && this.state.sessionToken !== '' && this.state.isAdmin === true) {
+    //         this.props.sessionToken ? this.navigate('/admin') : this.navigate('/login');
+    //     }
+    // };
+
+    // componentDidCatch = (error: Error, errorInfo: React.ErrorInfo) => {
+    //     console.error("Login componentDidCatch: ", error, errorInfo);
+    // };
+
+
+    render(): React.ReactNode {
     return (
         <div className="min-h-full flex">
             <div className="flex-1 flex flex-col justify-center py-12 px-4 sm:px-6 lg:flex-none lg:px-20 xl:px-24">
@@ -108,7 +144,7 @@ const Login = (props: LoginState) => {
                         </p>
                     </div>
 
-            <form className="space-y-6" onSubmit={handleSubmit}>
+            <form className="space-y-6" onSubmit={this.handleSubmit}>
                 <div>
                     <label htmlFor="username" className="block text-sm font-medium leading-5 text-gray-700">
                         Username or Email Address
@@ -118,8 +154,9 @@ const Login = (props: LoginState) => {
                             id="username"
                             name="username"
                             type="text"
-                            value={[username, emailAddress]}
-                            onChange={handleChange}
+                            // value is username OR emailAddress
+                            value={this.state.username || this.state.emailAddress}
+                            onChange={this.handleChange}
                             required
                             className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                         />
@@ -162,6 +199,7 @@ const Login = (props: LoginState) => {
         </div>
     </div>
     )
+}
 }
 
 export default Login;

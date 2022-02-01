@@ -1,18 +1,17 @@
 import React, { useEffect, useState } from 'react';
 // import the css
 import './App.css';
-import { dbCall } from './helpers/Environments';
+import dbCall from './helpers/Environments';
 
 // import packages
-import { BrowserRouter as Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 // import the components
-
-import Home from '../src/components/Home';
+// import Home from '../src/components/Home';
 import Login from '../src/components/Login';
 import Navbar from '../src/components/Navbar';
-import Register from '../src/components/Register';
+// import Register from '../src/components/Register';
 
-export interface ABCtoken {
+export type ABCtoken = {
   isUserLoggedIn: boolean;
   clearToken: () => void;
   sessionToken: string | null;
@@ -20,40 +19,58 @@ export interface ABCtoken {
   updateToken: (mintToken: string) => void;
 }
 
-export interface ABCuserInfo {
+export type ABCuserInfo = {
   isAdmin: boolean;
   emailAddress: string;
   username: string;
+  id: string;
 }
 
-export interface ABCcalls {
-  dbCall: string;
+export type ABCcalls = {
   errorMessage: string;
   fetchDb: () => Promise<void>;
+  fetchVideos: () => Promise<void>;
   responseStatus: number;
 }
 
 
 // Did not use React.FunctionComponent as per (https://github.com/typescript-cheatsheets/react/blob/main/README.md#basic-cheatsheet-table-of-contents) this methology is deprecated.
 
-const App = (props: ABCtoken & ABCuserInfo & ABCcalls) => { 
+const App: React.FunctionComponent = () => {
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [emailAddress, setEmailAddress] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string>('');
+  const [id, setId] = useState<string>('');
+  const [mountyPython, setMountyPython] = useState<boolean>(false);
   const [responseStatus, setResponseStatus] = useState<number>(0);
   const [isUserLoggedIn, setIsUserLoggedIn] = useState<boolean>(false);
   const [sessionToken, setSessionToken] = useState<string | null>('');
   const [username, setUsername] = useState<string>('');
 
+  //! fetching all videos, regardless of validation. 
+  //! sort by newest first.
+  const fetchVideos = async () => {
+    const response = await fetch(`${dbCall}/videos/content/all`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    const data = await response.json();
+    setResponseStatus(response.status);
+    setErrorMessage(data.errorMessage);
+    setMountyPython(true);
+  }
+
   const fetchDb = async (): Promise<void> => {
     if (localStorage.getItem('Authorization') === null) {
-      props.setSessionToken(null);
+      setSessionToken(null);
     }
     else {
-      props.setSessionToken(localStorage.getItem('Authorization'));
+      setSessionToken(localStorage.getItem('Authorization'));
     }
-    const response = await fetch(`${props.dbCall}/api/users/me`, {
-      method: 'GET',
+    const response = await fetch(`${dbCall}/users/validate`, {
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${sessionToken}`
@@ -64,8 +81,9 @@ const App = (props: ABCtoken & ABCuserInfo & ABCcalls) => {
     if (response.status === 200) {
       setIsUserLoggedIn(true);
       setIsAdmin(responseJson.isAdmin);
-      setEmailAddress(responseJson.emailAddress);
+      setEmailAddress(responseJson.email);
       setUsername(responseJson.username);
+      setId(responseJson.id);
     }
     else {
       setIsUserLoggedIn(false);
@@ -77,53 +95,47 @@ const App = (props: ABCtoken & ABCuserInfo & ABCcalls) => {
 
   const updateToken = (mintToken: string): void => {
     localStorage.setItem('Authorization', mintToken);
-    props.setSessionToken(mintToken);
+    setSessionToken(mintToken);
   }
 
   const clearToken = (): void => {
     localStorage.removeItem('sessionToken');
-    props.setSessionToken(null);
-    props.updateToken('');
+    setSessionToken(null);
+    updateToken('');
     setIsUserLoggedIn(false);
   };
 
   useEffect(() => {
     fetchDb();
+    fetchVideos();
   });
   
-    return (
-      <>
+  return (
+    <>
+      <Router>
         <Navbar>
           clearToken={clearToken}
           emailAddress={emailAddress}
-          sessionToken={props.sessionToken}
-          setSessionToken={props.setSessionToken}
+          sessionToken={sessionToken}
+          setSessionToken={setSessionToken}
           isUserLoggedIn={isUserLoggedIn}
           username={username}
         </Navbar>
 
-        <Routes>
-          <Route path="/" element={<Home
-              isUserLoggedIn={isUserLoggedIn}
+        
+          <Routes>
+            {/* <Route path="/" element={<Home
               isAdmin={isAdmin}
-              emailAddress={emailAddress}
-              username={username}
-            />} />
-          
-          <Route path="/login" element={<Login
+            />} /> */}
+            <Route path="/login" element={<Login
+              sessionToken={sessionToken}
+              setSessionToken={setSessionToken}
               updateToken={updateToken}
-              sessionToken={props.sessionToken}
-              setSessionToken={props.setSessionToken}
             />} />
-
-          <Route path="/register" element={<Register
-              updateToken={updateToken}
-              sessionToken={props.sessionToken}
-              setSessionToken={props.setSessionToken}
-            />} />
-        </Routes>
-      </>
-    );
+          </Routes>
+      </Router>
+    </>
+  );
 }
 
-
+export default App;
