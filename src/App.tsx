@@ -11,6 +11,7 @@ import Login from '../src/components/Login';
 import Navbar from '../src/components/Navbar';
 // import Register from '../src/components/Register';
 
+
 export type ABCtoken = {
   isUserLoggedIn: boolean;
   clearToken: () => void;
@@ -24,6 +25,7 @@ export type ABCuserInfo = {
   emailAddress: string;
   username: string;
   id: string;
+  passwordhash: string,
 }
 
 export type ABCcalls = {
@@ -31,12 +33,13 @@ export type ABCcalls = {
   fetchDb: () => Promise<void>;
   fetchVideos: () => Promise<void>;
   responseStatus: number;
+  mountyPython: boolean,
 }
 
 
 // Did not use React.FunctionComponent as per (https://github.com/typescript-cheatsheets/react/blob/main/README.md#basic-cheatsheet-table-of-contents) this methology is deprecated.
 
-const App: React.FunctionComponent = () => {
+const App = () => {
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [emailAddress, setEmailAddress] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string>('');
@@ -46,6 +49,7 @@ const App: React.FunctionComponent = () => {
   const [isUserLoggedIn, setIsUserLoggedIn] = useState<boolean>(false);
   const [sessionToken, setSessionToken] = useState<string | null>('');
   const [username, setUsername] = useState<string>('');
+  
 
   //! fetching all videos, regardless of validation. 
   //! sort by newest first.
@@ -128,9 +132,8 @@ const App: React.FunctionComponent = () => {
               isAdmin={isAdmin}
             />} /> */}
             <Route path="/login" element={<Login
-              sessionToken={sessionToken}
-              setSessionToken={setSessionToken}
-              updateToken={updateToken}
+              
+
             />} />
           </Routes>
       </Router>

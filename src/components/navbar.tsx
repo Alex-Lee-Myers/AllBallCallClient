@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from "react";
+import React, { Fragment } from "react";
 // import PropTypes from 'prop-types';
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { BellIcon, MenuIcon, XIcon } from "@heroicons/react/outline";
@@ -29,7 +29,7 @@ interface navbarProps {
     classNames: Function;
 }
 
-export default class Navbar extends Component<
+export default class Navbar extends React.Component<
     {},
     {
         user: userProps;
