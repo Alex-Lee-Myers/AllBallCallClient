@@ -29,6 +29,8 @@ interface navbarProps {
     classNames: Function;
 }
 
+//TODO 0) Add conditionals based on current state. 
+
 export default class Navbar extends React.Component<
     {},
     {
@@ -87,7 +89,7 @@ constructor(props: any) {
     },
     {
         name: "Sign Up",
-        href: "/signup"
+        href: "/register"
     }
     ],
     navBar: {
@@ -102,9 +104,9 @@ constructor(props: any) {
 
     render() {
         return (
-            <Disclosure as="nav" className="bg-gray-800">
+            <Disclosure as="nav" className="bg-gray-800 z-50">
                 {({open}) => (
-                    <div>
+                    <div className="z-50">
                         <div className="max-w-7x1 mx-auto px-4 sm:px-6 lg:px-8">
                             <div className="flex justify-between h-16">
                                 <div className="flex">

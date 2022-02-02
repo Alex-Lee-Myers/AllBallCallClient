@@ -147,6 +147,7 @@ const App = () => {
               isAdmin={isAdmin}
               emailAddress={emailAddress}
               errorMessage={errorMessage}
+              isUserLoggedIn={isUserLoggedIn}
               responseStatus={responseStatus}
               sessionToken={sessionToken}
               setSessionToken={setSessionToken}

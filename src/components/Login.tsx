@@ -24,6 +24,11 @@ type LoginState = {
     updateToken: ABCtoken['updateToken'],
     username: string,
     }
+//TODO 0) Test endpoint.
+//TODO 1) Add verification prompts surrounding the fields.
+//TODO 2) Add a password reset feature.
+//TODO 3) Add a forgot password feature.
+//TODO 4) Add margin between register prompt and login form.
 
 //! Function version
 const Login = (props: LoginState) => {
@@ -59,14 +64,15 @@ const Login = (props: LoginState) => {
     const loginSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         // postgresql database call
-        const response = await fetch(`${dbCall}/login`, {
+        const response = await fetch(`${dbCall}/users/login`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                emailAddress,
-                passwordhash,
+                emailAddress: emailAddress,
+                passwordhash: passwordhash,
+                username: username
             })
         });
         const data = await response.json();
@@ -89,17 +95,17 @@ const Login = (props: LoginState) => {
         <div className="min-h-full flex">
             <div className="h-screen flex-1 flex flex-col justify-center py-12 px-4 sm:px-6 lg:flex-none lg:px-20 xl:px-24">
                 <div className="mx-auto w-full max-w-sm lg:w-96">
-                    <div>
+                    <div className="mb-10">
                         <img
                             className="h-12 w-auto"
                             src={allballcall_500}
                             alt="AllBallCall"
                         />
-                        <h2 className="mt-6 text-3xl font-extrabold text-gray-900">Sign in to your account</h2>
+                        <h2 className="mt-6 text-3xl font-extrabold text-gray-900 text-right">Sign in to your account.</h2>
                         <p className="mt-2 text-sm text-gray-600">
-                            Or{' '}
+                            or{' '}
                             {/* register */}
-                            <Link to="/register" className="font-medium text-indigo-600 hover:text-indigo-500">Register to call your shots.</Link>
+                            <Link to="/register" className="font-medium text-indigo-600 hover:text-indigo-500 ">Register to call your own shots.</Link>
                         </p>
                     </div>
 
