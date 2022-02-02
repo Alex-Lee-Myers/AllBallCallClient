@@ -196,10 +196,10 @@ const Register = (props: RegisterState) => {
   };
 
   return (
-    <div className="z-index-10 flex">
+    <div className="z-index-10 flex pb-4">
       <div className="h-screen flex-1 flex flex-col justify-center py-12 px-4 sm:px-6 lg:flex-none lg:px-20
      xl:px-24 overflow-y-auto ">
-        <div className="z-index-10 mx-auto w-full max-w-sm lg:w-96 sm:mt-40 md:mt-64 lg:mt-96">
+        <div className="z-index-10 mx-auto w-full max-w-sm h-full">
         <div>
             <img
                 className="h-12 w-auto"
