@@ -9,7 +9,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 // import Home from '../src/components/Home';
 import Login from '../src/components/Login';
 import Navbar from '../src/components/Navbar';
-// import Register from '../src/components/Register';
+import Register from '../src/components/Register';
 
 
 export type ABCtoken = {
@@ -35,7 +35,6 @@ export type ABCcalls = {
   responseStatus: number;
   mountyPython: boolean,
 }
-
 
 // Did not use React.FunctionComponent as per (https://github.com/typescript-cheatsheets/react/blob/main/README.md#basic-cheatsheet-table-of-contents) this methology is deprecated.
 
@@ -132,8 +131,27 @@ const App = () => {
               isAdmin={isAdmin}
             />} /> */}
             <Route path="/login" element={<Login
-              
+              id={id}
+              isAdmin={isAdmin}
+              emailAddress={emailAddress}
+              errorMessage={errorMessage}
+              responseStatus={responseStatus}
+              sessionToken={sessionToken}
+              setSessionToken={setSessionToken}
+              updateToken={updateToken}
+              username={username}
+            />} />
 
+            <Route path="/register" element={<Register
+              id={id}
+              isAdmin={isAdmin}
+              emailAddress={emailAddress}
+              errorMessage={errorMessage}
+              responseStatus={responseStatus}
+              sessionToken={sessionToken}
+              setSessionToken={setSessionToken}
+              updateToken={updateToken}
+              username={username}
             />} />
           </Routes>
       </Router>
