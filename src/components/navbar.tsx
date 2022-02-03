@@ -3,7 +3,7 @@ import React, { Fragment } from "react";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { BellIcon, MenuIcon, XIcon } from "@heroicons/react/outline";
 import { PlusSmIcon } from "@heroicons/react/solid";
-// import { Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 interface userProps {
     name: string;
@@ -122,11 +122,15 @@ constructor(props: any) {
                                     </Disclosure.Button>
                                     </div>
                                     <div className="flex-shrink-0 flex items-center">
+                                        
                                         <img
+                                            
                                             className="block lg:hidden h-8 w-auto"
                                             src="https://raw.githubusercontent.com/Alex-Lee-Myers/AllBallCallClient/e0ca73fe63253d3f3fd953d992d4dbecb1a69874/src/assets/allballcall-500.svg"
                                             alt="AllBallCall"
+
                                         />
+                                        
                                         <img
                                             className="hidden lg:block h-8 w-auto"
                                             src="https://raw.githubusercontent.com/Alex-Lee-Myers/AllBallCallClient/e0ca73fe63253d3f3fd953d992d4dbecb1a69874/src/assets/allballcall-logo-500-white-text.svg"

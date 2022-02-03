@@ -3,52 +3,53 @@ import { ABCtoken, ABCuserInfo, ABCcalls } from "../App";
 import dbCall from "../helpers/Environments";
 import { useNavigate, Link } from "react-router-dom";
 import React from "react";
-// import loginSplash.jpg and allballcall-500.svg from src/images
 import registerSplash from "../images/registerSplash.jpg";
 import allballcall_500 from "../images/allballcall-logo-500-black-text.svg";
 
-export type RegisterState = {
+export interface AuthProps {
   id: ABCuserInfo["id"];
+  setId: ABCuserInfo["setId"];
   isAdmin: ABCuserInfo["isAdmin"];
+  setIsAdmin: ABCuserInfo["setIsAdmin"];
   emailAddress: ABCuserInfo["emailAddress"];
+  setEmailAddress: ABCuserInfo["setEmailAddress"];
   errorMessage: ABCcalls["errorMessage"];
-  isUserLoggedIn: ABCtoken["isUserLoggedIn"];
+  setErrorMessage: ABCcalls["setErrorMessage"];
   responseStatus: ABCcalls["responseStatus"];
   setResponseStatus: ABCcalls["setResponseStatus"];
   sessionToken: ABCtoken["sessionToken"];
   setSessionToken: ABCtoken["setSessionToken"];
   updateToken: ABCtoken["updateToken"];
+  isUserLoggedIn: ABCtoken["isUserLoggedIn"];
+  setIsUserLoggedIn: ABCtoken["setIsUserLoggedIn"];
   username: ABCuserInfo["username"];
+  setUsername: ABCuserInfo["setUsername"];
 };
-
 
 //TODO 0) SessionToken / states not being assigned correctly. Fix.
 //TODO 1) Add verification prompts surrounding the fields.
-//TODO 2) Test if Admin endpoint is working. 
+//TODO 2) Test if Admin endpoint is working.
 //TODO 3) Customize scrollbar.
 
 //! Function version
-const Register = (props: RegisterState) => {
+const Register = (props: AuthProps) => {
   //! Navigate for React-Router-Dom V6
   const navigate = useNavigate();
   //! UseState's
   const [id, setId] = React.useState<ABCuserInfo["id"]>("");
-  const [emailAddress, setEmailAddress] = React.useState<string>("");
+  const [emailAddress, setEmailAddress] = React.useState<ABCuserInfo["emailAddress"]>("");
   const [confirmPassword, setConfirmPassword] = React.useState<string>("");
   const [passwordhash, setPasswordhash] = React.useState<string>("");
-  const [username, setUsername] = React.useState<string>("");
+  const [username, setUsername] = React.useState<ABCuserInfo["username"]>("");
   const [accountResetQuestion1, setAccountResetQuestion1] = React.useState<string>("");
   const [accountResetQuestion2, setAccountResetQuestion2] = React.useState<string>("");
   const [accountResetAnswer1, setAccountAnswer1] = React.useState<string>("");
   const [accountResetAnswer2, setAccountAnswer2] = React.useState<string>("");
-  const [sessionToken, setSessionToken] = React.useState<string | null>("");
   const [updateToken, setUpdateToken] = React.useState<ABCtoken["updateToken"]>();
-  const [isLoggedIn, setIsLoggedIn] = React.useState<boolean>(false);
-  const [mountyPython, setMountyPython] = React.useState<boolean>(false);
   const [errorMessage, setErrorMessage] = React.useState<string>("");
   const [responseStatus, setResponseStatus] = React.useState<ABCcalls["responseStatus"]>(0);
-  const [isUserLoggedIn, setIsUserLoggedIn] = React.useState<boolean>(false);
-  const [isAdmin, setIsAdmin] = React.useState<boolean>(false);
+  const [isUserLoggedIn, setIsUserLoggedIn] = React.useState<ABCtoken["isUserLoggedIn"]>(false);
+  const [isAdmin, setIsAdmin] = React.useState<ABCuserInfo["isAdmin"]>(false);
   const [adminPassword, setAdminPassword] = React.useState<string>("");
   const [isAdminFieldVisible, setIsAdminFieldVisible] = React.useState<boolean>(false);
 
@@ -56,7 +57,7 @@ const Register = (props: RegisterState) => {
 
   //? Email Address
   const emailAddressValidation = () => {
-    if (emailAddress.match(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i) === null) {
+    if (props.emailAddress.match(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i) === null) {
       return "Invalid email address!";
     }
     return true;
@@ -80,7 +81,7 @@ const Register = (props: RegisterState) => {
 
   //? Username
   const usernameValidation = () => {
-    if (username.length < 3) {
+    if (props.username.length < 3) {
       return "Username must be at least 3 characters!";
     }
     return true;
@@ -97,7 +98,7 @@ const Register = (props: RegisterState) => {
         return true;
     }
     return false;
-};
+  };
 
   //? Set "isAdminFieldVisible" to true, if they select the "Admin" checkbox. if they unselect it, set it to false.
     const handleAdminCheckbox = () => {
@@ -110,13 +111,13 @@ const Register = (props: RegisterState) => {
 
   const registerChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.id === "emailAddress") {
-      setEmailAddress(event.target.value);
+      props.setEmailAddress(event.target.value);
     } else if (event.target.id === "passwordhash") {
       setPasswordhash(event.target.value);
     } else if (event.target.id === "confirmPassword") {
       setConfirmPassword(event.target.value);
     } else if (event.target.id === "username") {
-      setUsername(event.target.value);
+      props.setUsername(event.target.value);
     } else if (event.target.id === "adminPassword") {
       setAdminPassword(event.target.value);
     } else if (event.target.id === "accountResetQuestion1") {
@@ -132,7 +133,7 @@ const Register = (props: RegisterState) => {
 
   const registerSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    console.log(validateAllFields());
+    console.log("ValidateAllFieldsFunction Result: ", validateAllFields());
     if (validateAllFields() === true) {
       await fetch(`${dbCall}/users/register`, {
         method: "POST",
@@ -141,11 +142,11 @@ const Register = (props: RegisterState) => {
         },
         //TODO If user types in password correctly matching the column "adminPassword", isAdmin will be set to true.
         body: JSON.stringify({ user: {
-            username: username,
-            email: emailAddress,
+            username: props.username,
+            email: props.emailAddress,
             passwordhash: passwordhash,
-            isAdmin: isAdmin,
-            adminPassword: adminPassword,
+            isAdmin: props.isAdmin,
+            // adminPassword: adminPassword,
             accountResetQuestion1: accountResetQuestion1,
             accountResetQuestion2: accountResetQuestion2,
             accountResetAnswer1: accountResetAnswer1,
@@ -154,7 +155,7 @@ const Register = (props: RegisterState) => {
         }),
     })
     .then((res) => {
-        console.log("res.status is ", res.status);
+        console.log("Reg res.status is ", res.status);
         setResponseStatus(res.status);
         return res.json();
     })
@@ -163,24 +164,22 @@ const Register = (props: RegisterState) => {
         if (data.status === 201 && data.user.isAdmin === false) {
           console.log("Successfully registered!");
           console.log("Register data: ", data);
-          // set state for responseStatus
-          setId(data.user.id);
-          setUpdateToken(data.sessionToken);
-          setEmailAddress(data.user.email);
-          setUsername(data.user.username);
-          setIsAdmin(false);
-          setIsLoggedIn(true);
-          setIsUserLoggedIn(true);
-          setErrorMessage("");
+          props.setId(data.user.id);
+          props.updateToken(data.sessionToken);
+          props.setEmailAddress(data.user.email);
+          props.setUsername(data.user.username);
+          props.setIsAdmin(false);
+          props.setIsUserLoggedIn(true);
+          props.setErrorMessage("");
           navigate("/");
         } else if (data.status === 201 && data.user.isAdmin === true) {
           console.log("Successfully registered!");
           console.log("Register data: ", data);
-          setId(data.user.id);
-          setUpdateToken(data.sessionToken);
-          setIsAdmin(true);
-          setIsUserLoggedIn(true);
-          setErrorMessage("");
+          props.setId(data.user.id);
+          props.updateToken(data.sessionToken);
+          props.setIsAdmin(true);
+          props.setIsUserLoggedIn(true);
+          props.setErrorMessage("");
           navigate("/AdminDashboard");
         } else {
           console.log("Error registering user!");
@@ -240,7 +239,7 @@ const Register = (props: RegisterState) => {
                   id="emailAddress"
                   name="emailAddress"
                   type="text"
-                  value={emailAddress}
+                  value={props.emailAddress}
                   onChange={registerChange}
                   required
                   className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
@@ -261,7 +260,8 @@ const Register = (props: RegisterState) => {
                   id="username"
                   name="username"
                   type="text"
-                  value={username}
+                  autoComplete="username"
+                  value={props.username}
                   onChange={registerChange}
                   required
                   className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
@@ -281,6 +281,7 @@ const Register = (props: RegisterState) => {
                   id="passwordhash"
                   name="passwordhash"
                   type="password"
+                  autoComplete="new-password"
                   value={passwordhash}
                   onChange={registerChange}
                   required
@@ -302,6 +303,7 @@ const Register = (props: RegisterState) => {
                   id="confirmPassword"
                   name="confirmPassword"
                   type="password"
+                  autoComplete="new-password"
                   value={confirmPassword}
                   onChange={registerChange}
                   required

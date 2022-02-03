@@ -12,43 +12,48 @@ import Navbar from '../src/components/Navbar';
 import Register from '../src/components/Register';
 
 
-export type ABCtoken = {
+export interface ABCtoken {
   isUserLoggedIn: boolean;
+  setIsUserLoggedIn: (value: boolean) => void;
   clearToken: () => void;
   sessionToken: string | null;
   setSessionToken: (token: string | null) => void;
   updateToken: (mintToken: string) => void;
 }
 
-export type ABCuserInfo = {
+export interface ABCuserInfo {
   isAdmin: boolean;
+  setIsAdmin: (isAdmin: boolean) => void;
   emailAddress: string;
+  setEmailAddress: (email: string) => void;
   username: string;
+  setUsername: (username: string) => void;
   id: string;
-  passwordhash: string,
+  setId: (id: string) => void;
 }
 
-export type ABCcalls = {
+export interface ABCcalls {
   errorMessage: string;
+  setErrorMessage: (message: string) => void;
   fetchDb: () => Promise<void>;
   fetchVideos: () => Promise<void>;
-  setResponseStatus: (responseStatus: number) => void;
   responseStatus: number;
-  mountyPython: boolean,
+  setResponseStatus: (responseStatus: number) => void;
+  // mountyPython: boolean,
 }
 
 // Did not use React.FunctionComponent as per (https://github.com/typescript-cheatsheets/react/blob/main/README.md#basic-cheatsheet-table-of-contents) this methology is deprecated.
 
 const App = () => {
-  const [isAdmin, setIsAdmin] = useState<boolean>(false);
-  const [emailAddress, setEmailAddress] = useState<string>('');
-  const [errorMessage, setErrorMessage] = useState<string>('');
-  const [id, setId] = useState<string>('');
-  const [mountyPython, setMountyPython] = useState<boolean>(false);
-  const [responseStatus, setResponseStatus] = useState<number>(0);
-  const [isUserLoggedIn, setIsUserLoggedIn] = useState<boolean>(false);
-  const [sessionToken, setSessionToken] = useState<string | null>('');
-  const [username, setUsername] = useState<string>('');
+  const [id, setId] = useState<ABCuserInfo['id']>('');
+  const [isAdmin, setIsAdmin] = useState<ABCuserInfo['isAdmin']>(false);
+  const [emailAddress, setEmailAddress] = useState<ABCuserInfo['emailAddress']>('');
+  const [errorMessage, setErrorMessage] = useState<ABCcalls['errorMessage']>('');
+  // const [mountyPython, setMountyPython] = useState<ABCcalls['mountyPython']>(false);
+  const [responseStatus, setResponseStatus] = useState<ABCcalls['responseStatus']>(500);
+  const [sessionToken, setSessionToken] = useState<ABCtoken['sessionToken']>(null);
+  const [isUserLoggedIn, setIsUserLoggedIn] = useState<ABCtoken['isUserLoggedIn']>(false);
+  const [username, setUsername] = useState<ABCuserInfo['username']>('');
   
 
   //! fetching all videos, regardless of validation. 
@@ -63,39 +68,54 @@ const App = () => {
     const data = await response.json();
     setResponseStatus(response.status);
     setErrorMessage(data.errorMessage);
-    setMountyPython(true);
+    // setMountyPython(true);
   }
 
-  const fetchDb = async (): Promise<void> => {
-    if (localStorage.getItem('Authorization') === null) {
-      setSessionToken(null);
-    }
-    else {
-      setSessionToken(localStorage.getItem('Authorization'));
-    }
-    const response = await fetch(`${dbCall}/users/validate`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${sessionToken}`
-      }
-    });
-    const responseJson = await response.json();
-    setResponseStatus(response.status);
-    if (response.status === 200) {
-      setIsUserLoggedIn(true);
-      setIsAdmin(responseJson.isAdmin);
-      setEmailAddress(responseJson.email);
-      setUsername(responseJson.username);
-      setId(responseJson.id);
-    }
-    else {
-      setIsUserLoggedIn(false);
-      setIsAdmin(false);
-      setEmailAddress('');
-      setUsername('');
-    }
-  }
+  // const fetchDb = async (): Promise<void> => {
+  //   if (localStorage.getItem('Authorization') === null) {
+  //     setSessionToken(null);
+  //   }
+  //   else {
+  //     setSessionToken(localStorage.getItem('Authorization'));
+  //   }
+  //   await fetch(`${dbCall}/users/validate`, {
+  //     method: 'POST',
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //       'Authorization': `Bearer ${sessionToken}`
+  //     }
+  //   })
+  //   .then(res => {
+  //     console.log("AppAuth res.status is ", res.status);
+  //     setResponseStatus(res.status);
+  //     return res.json();
+  //   })
+  //   .then(data => {
+  //     console.log("AppAuth data is ", data);
+  //     if (data.status === 200) {
+  //       setIsUserLoggedIn(true);
+  //       setId(data.user.id);
+  //       setIsAdmin(data.user.isAdmin);
+  //       setEmailAddress(data.user.emailAddress);
+  //       setUsername(data.user.username);
+  //     }
+  //     else {
+  //       setIsUserLoggedIn(false);
+  //       setId('');
+  //       setIsAdmin(false);
+  //       setEmailAddress('');
+  //       setUsername('');
+  //     }
+  //   })
+  //   .catch(err => {
+  //     console.log("AppAuth err is ", err);
+  //     setIsUserLoggedIn(false);
+  //     setId('');
+  //     setIsAdmin(false);
+  //     setEmailAddress('');
+  //     setUsername('');
+  //   });
+  // }
 
   const updateToken = (mintToken: string): void => {
     localStorage.setItem('Authorization', mintToken);
@@ -110,13 +130,13 @@ const App = () => {
   };
 
   useEffect(() => {
-    fetchDb();
+    // fetchDb();
     fetchVideos();
   });
   
   return (
     <>
-      <Router>
+      
         <Navbar>
           clearToken={clearToken}
           emailAddress={emailAddress}
@@ -126,10 +146,11 @@ const App = () => {
           username={username}
         </Navbar>
 
-        
           <Routes>
+
             <Route path="/" element={<Home
             />} />
+
             <Route path="/login" element={<Login
               id={id}
               isAdmin={isAdmin}
@@ -144,19 +165,25 @@ const App = () => {
 
             <Route path="/register" element={<Register
               id={id}
+              setId={setId}
               isAdmin={isAdmin}
+              setIsAdmin={setIsAdmin}
               emailAddress={emailAddress}
+              setEmailAddress={setEmailAddress}
               errorMessage={errorMessage}
+              setErrorMessage={setErrorMessage}
               isUserLoggedIn={isUserLoggedIn}
+              setIsUserLoggedIn={setIsUserLoggedIn}
               responseStatus={responseStatus}
               setResponseStatus={setResponseStatus}
               sessionToken={sessionToken}
               setSessionToken={setSessionToken}
               updateToken={updateToken}
               username={username}
+              setUsername={setUsername}
             />} />
+
           </Routes>
-      </Router>
     </>
   );
 }
