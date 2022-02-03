@@ -2,18 +2,19 @@
 import { ABCtoken, ABCuserInfo, ABCcalls } from "../App";
 import dbCall from "../helpers/Environments";
 import { useNavigate, Link } from "react-router-dom";
-import React, { Component } from "react";
+import React from "react";
 // import loginSplash.jpg and allballcall-500.svg from src/images
 import registerSplash from "../images/registerSplash.jpg";
 import allballcall_500 from "../images/allballcall-logo-500-black-text.svg";
 
-type RegisterState = {
+export type RegisterState = {
   id: ABCuserInfo["id"];
   isAdmin: ABCuserInfo["isAdmin"];
   emailAddress: ABCuserInfo["emailAddress"];
   errorMessage: ABCcalls["errorMessage"];
   isUserLoggedIn: ABCtoken["isUserLoggedIn"];
   responseStatus: ABCcalls["responseStatus"];
+  setResponseStatus: ABCcalls["setResponseStatus"];
   sessionToken: ABCtoken["sessionToken"];
   setSessionToken: ABCtoken["setSessionToken"];
   updateToken: ABCtoken["updateToken"];
@@ -24,12 +25,14 @@ type RegisterState = {
 //TODO 0) SessionToken / states not being assigned correctly. Fix.
 //TODO 1) Add verification prompts surrounding the fields.
 //TODO 2) Test if Admin endpoint is working. 
+//TODO 3) Customize scrollbar.
 
 //! Function version
 const Register = (props: RegisterState) => {
   //! Navigate for React-Router-Dom V6
   const navigate = useNavigate();
   //! UseState's
+  const [id, setId] = React.useState<ABCuserInfo["id"]>("");
   const [emailAddress, setEmailAddress] = React.useState<string>("");
   const [confirmPassword, setConfirmPassword] = React.useState<string>("");
   const [passwordhash, setPasswordhash] = React.useState<string>("");
@@ -43,7 +46,7 @@ const Register = (props: RegisterState) => {
   const [isLoggedIn, setIsLoggedIn] = React.useState<boolean>(false);
   const [mountyPython, setMountyPython] = React.useState<boolean>(false);
   const [errorMessage, setErrorMessage] = React.useState<string>("");
-  const [responseStatus, setResponseStatus] = React.useState<number>(0);
+  const [responseStatus, setResponseStatus] = React.useState<ABCcalls["responseStatus"]>(0);
   const [isUserLoggedIn, setIsUserLoggedIn] = React.useState<boolean>(false);
   const [isAdmin, setIsAdmin] = React.useState<boolean>(false);
   const [adminPassword, setAdminPassword] = React.useState<string>("");
@@ -105,23 +108,6 @@ const Register = (props: RegisterState) => {
         }
     };
 
-  //? If the server returns a 200, the user isAdmin will be set to true.
-  //? If the server returns a 401, the user isAdmin will be set to false, and don't let the user register.
-  //? If the server returns a 500, the user isAdmin will be set to false, and don't let the user register.
-  //? Tell them to attempt the Admin password again or leave the Admin password field blank to not register as an Admin.
-
-  //? If the user isAdmin is true, they will be redirected to the Admin Dashboard.
-  //? If the user isAdmin is false, they will be redirected to the User Dashboard.
-    const redirectToDashboard = () => {
-        if (isAdmin === true) {
-        navigate("/admin");
-        } else {
-        navigate("/");
-        }
-    };
-
-  //?
-
   const registerChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.id === "emailAddress") {
       setEmailAddress(event.target.value);
@@ -146,13 +132,14 @@ const Register = (props: RegisterState) => {
 
   const registerSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    // postgresql database call
+    console.log(validateAllFields());
     if (validateAllFields() === true) {
-      const response = await fetch(`${dbCall}/users/register`, {
+      await fetch(`${dbCall}/users/register`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
         },
+        //TODO If user types in password correctly matching the column "adminPassword", isAdmin will be set to true.
         body: JSON.stringify({ user: {
             username: username,
             email: emailAddress,
@@ -165,40 +152,60 @@ const Register = (props: RegisterState) => {
             accountResetAnswer2: accountResetAnswer2
             }
         }),
-      });
-      const data = await response.json();
-      console.log("Register Data:", data);
-      if (response.status === 200) {
-        setSessionToken(data.sessionToken);
-        setUpdateToken(data.updateToken);
-        setIsLoggedIn(true);
-        setIsAdmin(data.isAdmin);
-        setIsUserLoggedIn(true);
-        setErrorMessage("");
-        setResponseStatus(response.status);
-        navigate("/");
-      } else if (response.status === 401) {
-        setIsAdmin(false);
-        setIsUserLoggedIn(false);
-        setErrorMessage("");
-        setResponseStatus(response.status);
-        redirectToDashboard();
-      } else if (response.status === 500) {
-        setIsAdmin(false);
-        setIsUserLoggedIn(false);
-        setErrorMessage("");
-        setResponseStatus(response.status);
-        redirectToDashboard();
-      }
+    })
+    .then((res) => {
+        console.log("res.status is ", res.status);
+        setResponseStatus(res.status);
+        return res.json();
+    })
+    //if response status is 201 and userAdmin is false, set isAdmin to false.
+    .then(data => {
+        if (data.status === 201 && data.user.isAdmin === false) {
+          console.log("Successfully registered!");
+          console.log("Register data: ", data);
+          // set state for responseStatus
+          setId(data.user.id);
+          setUpdateToken(data.sessionToken);
+          setEmailAddress(data.user.email);
+          setUsername(data.user.username);
+          setIsAdmin(false);
+          setIsLoggedIn(true);
+          setIsUserLoggedIn(true);
+          setErrorMessage("");
+          navigate("/");
+        } else if (data.status === 201 && data.user.isAdmin === true) {
+          console.log("Successfully registered!");
+          console.log("Register data: ", data);
+          setId(data.user.id);
+          setUpdateToken(data.sessionToken);
+          setIsAdmin(true);
+          setIsUserLoggedIn(true);
+          setErrorMessage("");
+          navigate("/AdminDashboard");
+        } else {
+          console.log("Error registering user!");
+          console.log("Register data: ", data);
+          console.log("isAdmin", data.user.isAdmin)
+          setErrorMessage(data.message);
+        }
+    })
+    .catch(error => {
+        
+        console.log("Error registering user!");
+        console.log("Register data error message: ", error);
+        setErrorMessage(error.message);
+    });
     } else {
-      setErrorMessage("Please fix the errors in the form.");
+        setErrorMessage("Please fix the errors in the form!");
     }
   };
+
+        
 
   return (
     <div className="z-index-10 flex pb-4">
       <div className="h-screen flex-1 flex flex-col justify-center py-12 px-4 sm:px-6 lg:flex-none lg:px-20
-     xl:px-24 overflow-y-auto ">
+    xl:px-24 overflow-y-auto">
         <div className="z-index-10 mx-auto w-full max-w-sm h-full">
         <div>
             <img

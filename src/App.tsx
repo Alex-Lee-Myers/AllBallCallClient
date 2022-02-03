@@ -6,7 +6,7 @@ import dbCall from './helpers/Environments';
 // import packages
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 // import the components
-// import Home from '../src/components/Home';
+import Home from '../src/components/Home';
 import Login from '../src/components/Login';
 import Navbar from '../src/components/Navbar';
 import Register from '../src/components/Register';
@@ -32,6 +32,7 @@ export type ABCcalls = {
   errorMessage: string;
   fetchDb: () => Promise<void>;
   fetchVideos: () => Promise<void>;
+  setResponseStatus: (responseStatus: number) => void;
   responseStatus: number;
   mountyPython: boolean,
 }
@@ -127,9 +128,8 @@ const App = () => {
 
         
           <Routes>
-            {/* <Route path="/" element={<Home
-              isAdmin={isAdmin}
-            />} /> */}
+            <Route path="/" element={<Home
+            />} />
             <Route path="/login" element={<Login
               id={id}
               isAdmin={isAdmin}
@@ -149,6 +149,7 @@ const App = () => {
               errorMessage={errorMessage}
               isUserLoggedIn={isUserLoggedIn}
               responseStatus={responseStatus}
+              setResponseStatus={setResponseStatus}
               sessionToken={sessionToken}
               setSessionToken={setSessionToken}
               updateToken={updateToken}
