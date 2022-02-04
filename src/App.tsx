@@ -10,6 +10,7 @@ import Home from '../src/components/Home';
 import Login from '../src/components/Login';
 import Navbar from '../src/components/Navbar';
 import Register from '../src/components/Register';
+import VideoPost from './components/VideoPost';
 
 
 export interface ABCtoken {
@@ -148,6 +149,7 @@ const App = () => {
           <Routes>
 
             <Route path="/" element={<Home
+            
             />} />
 
             <Route path="/login" element={<Login
@@ -189,6 +191,12 @@ const App = () => {
               username={username}
               setUsername={setUsername}
             />} />
+
+
+            <Route path="/videos" element={<VideoPost
+              isAdmin={isAdmin}
+              sessionToken={sessionToken}
+              /> } />
 
           </Routes>
     </>
