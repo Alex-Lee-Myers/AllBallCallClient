@@ -68,7 +68,6 @@ const App = () => {
     const data = await response.json();
     setResponseStatus(response.status);
     setErrorMessage(data.errorMessage);
-    // setMountyPython(true);
   }
 
   // const fetchDb = async (): Promise<void> => {
@@ -153,14 +152,22 @@ const App = () => {
 
             <Route path="/login" element={<Login
               id={id}
+              setId={setId}
               isAdmin={isAdmin}
+              setIsAdmin={setIsAdmin}
               emailAddress={emailAddress}
+              setEmailAddress={setEmailAddress}
               errorMessage={errorMessage}
+              setErrorMessage={setErrorMessage}
               responseStatus={responseStatus}
+              setResponseStatus={setResponseStatus}
               sessionToken={sessionToken}
               setSessionToken={setSessionToken}
               updateToken={updateToken}
+              isUserLoggedIn={isUserLoggedIn}
+              setIsUserLoggedIn={setIsUserLoggedIn}
               username={username}
+              setUsername={setUsername}
             />} />
 
             <Route path="/register" element={<Register

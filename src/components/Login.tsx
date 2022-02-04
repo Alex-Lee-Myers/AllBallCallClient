@@ -1,29 +1,32 @@
 //import interfaces from App.tsx
-import { ABCtoken} from '../App'
+import { ABCtoken, ABCuserInfo, ABCcalls } from "../App";
 import dbCall from '../helpers/Environments';
 import { useNavigate, Link } from 'react-router-dom';
-import React, { Component } from 'react';
+import React from 'react';
 // import loginSplash.jpg and allballcall-500.svg from src/images
 import loginSplash from '../images/loginSplash.jpg';
 import allballcall_500 from '../images/allballcall-logo-500-black-text.svg';
 
-type LoginState = {
-    id: string;
-    isAdmin: boolean;
-    emailAddress: string,
-    errorMessage: string,
-    // loginDb: () => Promise<void>;
-    // loginChange (event: React.ChangeEvent<HTMLInputElement>): void;
-    // loginSubmit (event: React.FormEvent<HTMLFormElement>): void;
-    // mountyPython: boolean,
-    // isUserLoggedIn: boolean,
-    // passwordhash: string,
-    responseStatus: number,
-    sessionToken: ABCtoken['sessionToken'],
-    setSessionToken: ABCtoken['setSessionToken'],
-    updateToken: ABCtoken['updateToken'],
-    username: string,
-    }
+export interface AuthProps {
+    id: ABCuserInfo["id"];
+    setId: ABCuserInfo["setId"];
+    isAdmin: ABCuserInfo["isAdmin"];
+    setIsAdmin: ABCuserInfo["setIsAdmin"];
+    emailAddress: ABCuserInfo["emailAddress"];
+    setEmailAddress: ABCuserInfo["setEmailAddress"];
+    errorMessage: ABCcalls["errorMessage"];
+    setErrorMessage: ABCcalls["setErrorMessage"];
+    responseStatus: ABCcalls["responseStatus"];
+    setResponseStatus: ABCcalls["setResponseStatus"];
+    sessionToken: ABCtoken["sessionToken"];
+    setSessionToken: ABCtoken["setSessionToken"];
+    updateToken: ABCtoken["updateToken"];
+    isUserLoggedIn: ABCtoken["isUserLoggedIn"];
+    setIsUserLoggedIn: ABCtoken["setIsUserLoggedIn"];
+    username: ABCuserInfo["username"];
+    setUsername: ABCuserInfo["setUsername"];
+  };
+
 //TODO 0) Test endpoint.
 //TODO 1) Add verification prompts surrounding the fields.
 //TODO 2) Add a password reset feature.
@@ -31,64 +34,64 @@ type LoginState = {
 //TODO 4) Add margin between register prompt and login form.
 
 //! Function version
-const Login = (props: LoginState) => {
+const Login = (props: AuthProps) => {
     const navigate = useNavigate();
-    const [emailAddress, setEmailAddress] = React.useState<string>('');
-    const [passwordhash, setPasswordhash] = React.useState<string>('');
-    const [username, setUsername] = React.useState<string>('');
-    const [sessionToken, setSessionToken] = React.useState<string | null>('');
-    const [isLoggedIn, setIsLoggedIn] = React.useState<boolean>(false);
-    const [mountyPython, setMountyPython] = React.useState<boolean>(false);
-    const [errorMessage, setErrorMessage] = React.useState<string>('');
-    const [responseStatus, setResponseStatus] = React.useState<number>(0);
+    const [passwordhash, setPasswordhash] = React.useState<string>("");
+    const [loginUsernameOrEmail, setLoginUsernameOrEmail] = React.useState<string>("");
     
     const loginChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const target = event.target;
-        const value = target.value;
-
-        switch (target.name) {
-            case 'emailAddress':
-                setEmailAddress(value);
-                break;
-            case 'passwordhash':
-                setPasswordhash(value);
-                break;
-            case 'username':
-                setUsername(value);
-                break;
-            default:
-                break;
+        if (event.target.id === "passwordhash") {
+            setPasswordhash(event.target.value);
+        } else if (event.target.id === "username-or-email") {
+            setLoginUsernameOrEmail(event.target.value);
+        } else {
+            console.log("Login.tsx: loginChange(): unknown event target id: " + event.target.id);
         }
     }
 
     const loginSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         // postgresql database call
-        const response = await fetch(`${dbCall}/users/login`, {
+        await fetch(`${dbCall}/users/login`, {
             method: 'POST',
-            headers: {
+            headers: new Headers({
                 'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                emailAddress: emailAddress,
-                passwordhash: passwordhash,
-                username: username
-            })
-        });
-        const data = await response.json();
-        if (response.status === 200) {
-            props.setSessionToken(data.sessionToken);
-            props.updateToken(data.sessionToken);
-            setSessionToken(data.sessionToken);
-            setErrorMessage('');
-            setMountyPython(true);
-            setIsLoggedIn(true);
-            setUsername(data.username);
-            setEmailAddress(data.emailAddress);
-            navigate('/');
-        } else {
-            setErrorMessage(data.errorMessage);
-        }
+            }),
+            body: JSON.stringify({ user: {
+                username: loginUsernameOrEmail,
+                email: loginUsernameOrEmail,
+                passwordhash: passwordhash
+            }})
+        })
+        .then (response => response.json())
+        .then (data => {
+            if (data.status === 200 && data.isAdmin === false) {
+                console.log("Successfully logged-in!");
+                console.log("Login data: ", data);
+                props.setSessionToken(data.sessionToken);
+                props.updateToken(data.sessionToken);
+                props.setErrorMessage('');
+                props.setIsUserLoggedIn(true);
+                props.setId(data.id);
+                props.setIsAdmin(data.isAdmin);
+                props.setUsername(data.username);
+                props.setEmailAddress(data.emailAddress);
+                navigate('/');
+            } else if (data.status === 200 && data.user.isAdmin === true) {
+                props.setSessionToken(data.sessionToken);
+                props.updateToken(data.sessionToken);
+                props.setErrorMessage('');
+                props.setIsUserLoggedIn(true);
+                props.setId(data.id);
+                props.setIsAdmin(data.isAdmin);
+                props.setUsername(data.username);
+                props.setEmailAddress(data.emailAddress);
+                navigate("/AdminDashboard");
+            }
+            else {
+                props.setErrorMessage(data.errorMessage);
+            }
+        })
     }
 
     return (
@@ -116,11 +119,11 @@ const Login = (props: LoginState) => {
                     </label>
                     <div className="mt-1">
                         <input
-                            id="username"
-                            name="username"
+                            //  user can type in username or email address
+                            id="username-or-email"
+                            name="username-or-email"
                             type="text"
-                            // value is username OR emailAddress
-                            value={username || emailAddress}
+                            value={loginUsernameOrEmail}
                             onChange={loginChange}
                             required
                             className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
@@ -135,10 +138,12 @@ const Login = (props: LoginState) => {
                 </label>
                 <div className="mt-1">
                     <input
-                    id="password"
-                    name="password"
+                    id="passwordhash"
+                    name="passwordhash"
                     type="password"
+                    value={passwordhash}
                     autoComplete="current-password"
+                    onChange={loginChange}
                     required
                     className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                     />

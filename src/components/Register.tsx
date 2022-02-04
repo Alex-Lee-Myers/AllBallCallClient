@@ -36,20 +36,12 @@ const Register = (props: AuthProps) => {
   //! Navigate for React-Router-Dom V6
   const navigate = useNavigate();
   //! UseState's
-  const [id, setId] = React.useState<ABCuserInfo["id"]>("");
-  const [emailAddress, setEmailAddress] = React.useState<ABCuserInfo["emailAddress"]>("");
   const [confirmPassword, setConfirmPassword] = React.useState<string>("");
   const [passwordhash, setPasswordhash] = React.useState<string>("");
-  const [username, setUsername] = React.useState<ABCuserInfo["username"]>("");
   const [accountResetQuestion1, setAccountResetQuestion1] = React.useState<string>("");
   const [accountResetQuestion2, setAccountResetQuestion2] = React.useState<string>("");
   const [accountResetAnswer1, setAccountAnswer1] = React.useState<string>("");
   const [accountResetAnswer2, setAccountAnswer2] = React.useState<string>("");
-  const [updateToken, setUpdateToken] = React.useState<ABCtoken["updateToken"]>();
-  const [errorMessage, setErrorMessage] = React.useState<string>("");
-  const [responseStatus, setResponseStatus] = React.useState<ABCcalls["responseStatus"]>(0);
-  const [isUserLoggedIn, setIsUserLoggedIn] = React.useState<ABCtoken["isUserLoggedIn"]>(false);
-  const [isAdmin, setIsAdmin] = React.useState<ABCuserInfo["isAdmin"]>(false);
   const [adminPassword, setAdminPassword] = React.useState<string>("");
   const [isAdminFieldVisible, setIsAdminFieldVisible] = React.useState<boolean>(false);
 
@@ -156,7 +148,7 @@ const Register = (props: AuthProps) => {
     })
     .then((res) => {
         console.log("Reg res.status is ", res.status);
-        setResponseStatus(res.status);
+        props.setResponseStatus(res.status);
         return res.json();
     })
     //if response status is 201 and userAdmin is false, set isAdmin to false.
@@ -173,8 +165,8 @@ const Register = (props: AuthProps) => {
           props.setErrorMessage("");
           navigate("/");
         } else if (data.status === 201 && data.user.isAdmin === true) {
-          console.log("Successfully registered!");
-          console.log("Register data: ", data);
+          console.log("Admin | Successfully registered!");
+          console.log("Admin | Register data: ", data);
           props.setId(data.user.id);
           props.updateToken(data.sessionToken);
           props.setIsAdmin(true);
@@ -185,17 +177,16 @@ const Register = (props: AuthProps) => {
           console.log("Error registering user!");
           console.log("Register data: ", data);
           console.log("isAdmin", data.user.isAdmin)
-          setErrorMessage(data.message);
+          props.setErrorMessage(data.message);
         }
     })
     .catch(error => {
-        
         console.log("Error registering user!");
         console.log("Register data error message: ", error);
-        setErrorMessage(error.message);
+        props.setErrorMessage(error.message);
     });
     } else {
-        setErrorMessage("Please fix the errors in the form!");
+        props.setErrorMessage("Please fix the errors in the form!");
     }
   };
 
