@@ -25,7 +25,7 @@ export interface AuthProps {
     setIsUserLoggedIn: ABCtoken["setIsUserLoggedIn"];
     username: ABCuserInfo["username"];
     setUsername: ABCuserInfo["setUsername"];
-  };
+};
 
 //TODO 0) Test endpoint.
 //TODO 1) Add verification prompts surrounding the fields.
@@ -65,7 +65,7 @@ const Login = (props: AuthProps) => {
         })
         .then (response => response.json())
         .then (data => {
-            if (data.status === 200 && data.isAdmin === false) {
+            if (data.status === 200 && (data.isAdmin === false || data.isAdmin === null)) {
                 console.log("Successfully logged-in!");
                 console.log("Login data: ", data);
                 props.setSessionToken(data.sessionToken);
@@ -77,7 +77,9 @@ const Login = (props: AuthProps) => {
                 props.setUsername(data.username);
                 props.setEmailAddress(data.emailAddress);
                 navigate('/');
-            } else if (data.status === 200 && data.user.isAdmin === true) {
+            } else if (data.status === 200 && data.isAdmin === true) {
+                console.log("Admin | Successfully logged-in!");
+                console.log("Admin | Login data: ", data);
                 props.setSessionToken(data.sessionToken);
                 props.updateToken(data.sessionToken);
                 props.setErrorMessage('');
@@ -86,7 +88,7 @@ const Login = (props: AuthProps) => {
                 props.setIsAdmin(data.isAdmin);
                 props.setUsername(data.username);
                 props.setEmailAddress(data.emailAddress);
-                navigate("/AdminDashboard");
+                navigate("/register"); //TODO: change to admin page
             }
             else {
                 props.setErrorMessage(data.errorMessage);

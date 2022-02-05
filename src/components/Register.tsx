@@ -1,10 +1,10 @@
-//import interfaces from App.tsx
 import { ABCtoken, ABCuserInfo, ABCcalls } from "../App";
 import dbCall from "../helpers/Environments";
 import { useNavigate, Link } from "react-router-dom";
 import React from "react";
 import registerSplash from "../images/registerSplash.jpg";
 import allballcall_500 from "../images/allballcall-logo-500-black-text.svg";
+
 
 export interface AuthProps {
   id: ABCuserInfo["id"];
@@ -38,15 +38,12 @@ const Register = (props: AuthProps) => {
   //! UseState's
   const [confirmPassword, setConfirmPassword] = React.useState<string>("");
   const [passwordhash, setPasswordhash] = React.useState<string>("");
-  const [accountResetQuestion1, setAccountResetQuestion1] =
-    React.useState<string>("");
-  const [accountResetQuestion2, setAccountResetQuestion2] =
-    React.useState<string>("");
+  const [accountResetQuestion1, setAccountResetQuestion1] = React.useState<string>("");
+  const [accountResetQuestion2, setAccountResetQuestion2] = React.useState<string>("");
   const [accountResetAnswer1, setAccountAnswer1] = React.useState<string>("");
   const [accountResetAnswer2, setAccountAnswer2] = React.useState<string>("");
   const [adminPassword, setAdminPassword] = React.useState<string>("");
-  const [isAdminFieldVisible, setIsAdminFieldVisible] =
-    React.useState<boolean>(false);
+  const [isAdminFieldVisible, setIsAdminFieldVisible] = React.useState<boolean>(false);
 
   //! Validation Fields
 
@@ -55,7 +52,8 @@ const Register = (props: AuthProps) => {
     if (
       props.emailAddress.match(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i) === null
     ) {
-      return "Invalid email address!";
+      console.log("Email Address is invalid");
+      return ["Invalid email address!", false];
     }
     return true;
   };
@@ -63,6 +61,7 @@ const Register = (props: AuthProps) => {
   //? Password
   const passwordValidation = () => {
     if (passwordhash.length < 5) {
+      console.log("Password must be at least 5 characters!");
       return "Password must be at least 5 characters!";
     }
     return true;
@@ -71,6 +70,7 @@ const Register = (props: AuthProps) => {
   //? Password Confirmation
   const passwordConfirmationValidation = () => {
     if (passwordhash !== confirmPassword) {
+      console.log("Passwords do not match!");
       return "Passwords do not match!";
     }
     return true;
@@ -79,9 +79,36 @@ const Register = (props: AuthProps) => {
   //? Username
   const usernameValidation = () => {
     if (props.username.length < 3) {
+      console.log("Username must be at least 3 characters!");
       return "Username must be at least 3 characters!";
     }
     return true;
+  };
+
+  //? Admin Password (if admin)
+  //* If they leave the adminPassword field blank, set isAdmin to false.
+  //* If they type in the password from process.env.ADMIN_PW_VALUE incorrectly, set isAdmin to false, display error message, set errorMessage to "Incorrect admin password. Please leave this field blank if you wish to register as a standard user or try again.", and keep the user on the page.
+  //* If they type in the password from process.env.ADMIN_PW_VALUE correctly, set isAdmin to true.
+
+  const AdminPasswordValidation = () => {
+    if (adminPassword.length === 0) {
+      console.log("Admin password field is empty! Registering as standard user.");
+      props.setIsAdmin(false);
+        return null;
+    }
+    else if (adminPassword !== process.env.REACT_APP_ADMIN_PW_VALUE) {
+      console.log("Incorrect admin password! Try again/blank it out.");
+        props.setIsAdmin(null)
+        props.setErrorMessage(
+          "Incorrect admin password. Please try again or leave this field blank if you wish to register as a standard user."
+        );
+        return false;
+      }
+    else if (adminPassword === process.env.REACT_APP_ADMIN_PW_VALUE) {
+      console.log("Correct admin password!");
+      props.setIsAdmin(true);
+        return true;
+    }
   };
 
   //? Validate all fields
@@ -90,19 +117,33 @@ const Register = (props: AuthProps) => {
       emailAddressValidation() === true &&
       passwordValidation() === true &&
       passwordConfirmationValidation() === true &&
-      usernameValidation() === true
-    ) {
-      return true;
+      usernameValidation() === true &&
+      AdminPasswordValidation() === true)
+    {
+        return [true, "Admin user succesfully registered!", "You are now logged in as an admin!"];
     }
-    return false;
+    else if (
+      emailAddressValidation() === true &&
+      passwordValidation() === true &&
+      passwordConfirmationValidation() === true &&
+      usernameValidation() === true &&
+      AdminPasswordValidation() === null)
+    {
+        return [true, "Standard user succesfully registered!"];
+    }
+    else {
+        return [false, "Registration failed. Please validate all the fields."];
+    }
   };
 
   //? Set "isAdminFieldVisible" to true, if they select the "Admin" checkbox. if they unselect it, set it to false.
   const handleAdminCheckbox = () => {
     if (isAdminFieldVisible === false) {
+      console.log("isAdminFieldVisible: Admin checkbox is checked!");
       setIsAdminFieldVisible(true);
     } else {
       setIsAdminFieldVisible(false);
+      console.log("isAdminFieldVisible: Admin checkbox is unchecked!");
     }
   };
 
@@ -131,7 +172,7 @@ const Register = (props: AuthProps) => {
   const registerSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     console.log("ValidateAllFieldsFunction Result: ", validateAllFields());
-    if (validateAllFields() === true) {
+    if (validateAllFields()[0] === true) {
       await fetch(`${dbCall}/users/register`, {
         method: "POST",
         headers: {
@@ -143,8 +184,7 @@ const Register = (props: AuthProps) => {
             username: props.username,
             email: props.emailAddress,
             passwordhash: passwordhash,
-            isAdmin: props.isAdmin,
-            // adminPassword: adminPassword,
+            isAdmin: AdminPasswordValidation(),
             accountResetQuestion1: accountResetQuestion1,
             accountResetQuestion2: accountResetQuestion2,
             accountResetAnswer1: accountResetAnswer1,
@@ -157,9 +197,9 @@ const Register = (props: AuthProps) => {
           props.setResponseStatus(res.status);
           return res.json();
         })
-        //if response status is 201 and userAdmin is false, set isAdmin to false.
+        //if response status is 201 and userAdmin is false or null, set isAdmin to false.
         .then((data) => {
-          if (data.status === 201 && data.user.isAdmin === false) {
+          if (data.status === 201 && (data.user.isAdmin === false || data.user.isAdmin === null)) {
             console.log("Successfully registered!");
             console.log("Register data: ", data);
             props.setId(data.user.id);
@@ -175,6 +215,8 @@ const Register = (props: AuthProps) => {
             console.log("Admin | Register data: ", data);
             props.setId(data.user.id);
             props.updateToken(data.sessionToken);
+            props.setEmailAddress(data.user.email);
+            props.setUsername(data.user.username);
             props.setIsAdmin(true);
             props.setIsUserLoggedIn(true);
             props.setErrorMessage("");
@@ -424,7 +466,7 @@ const Register = (props: AuthProps) => {
                       id="adminPassword"
                       name="adminPassword"
                       type="password"
-                      required
+                      onChange={registerChange}
                       value={adminPassword}
                       className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                     />

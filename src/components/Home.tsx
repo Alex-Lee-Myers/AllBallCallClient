@@ -10,6 +10,37 @@ interface highlightedVideosProps {
     src: string;
 }
 
+type videoProperties = {
+    id: string;
+    videoTitle: string;
+    videoLink: string;
+    // thumbnailImage: string;
+    // playersHighlighted: playersHighlightedArray[];
+    // teamsFeatured: teamsFeaturedArray[];
+    // tags: tagsArray[];
+    // gameDate: Date;
+    // nbaSeason: string;
+    // isPlayoffs: boolean;
+    // clutch: boolean;
+    // adminHighlighted: boolean;
+    // adminDelete: boolean;
+}
+
+// type playersHighlightedArray = {
+//     id: number;
+//     playerName: string;
+// }
+
+// type teamsFeaturedArray = {
+//     id: number;
+//     teamName: string;
+// };
+
+// type tagsArray = {
+//     id: number;
+//     tagName: string;
+// };
+
 export default class Home extends Component<{}, { highlightedVideos: highlightedVideosProps[] }> {
     constructor(props: any) {
         super(props);
@@ -69,11 +100,13 @@ export default class Home extends Component<{}, { highlightedVideos: highlighted
     }
 
 
+
+
     render() {
         return (
                 <div className="bg-white">
-            <div className="mx-auto py-12 px-4 max-w-7xl sm:px-6 lg:px-8 lg:py-24">
-            <div className="space-y-12">
+            <div className="mx-auto py-4 px-4 max-w-7xl sm:px-6 lg:px-8 lg:py-16">
+            <div className="space-y-8">
                 <div className="space-y-5 sm:space-y-4 md:max-w-xl lg:max-w-3xl xl:max-w-none">
                 <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl">Trending</h2>
                 <p className="text-xl text-gray-500">
@@ -86,7 +119,7 @@ export default class Home extends Component<{}, { highlightedVideos: highlighted
                 className="-mt-7 scroll-px-12 sm:grid sm:grid-cols-2 sm:gap-x-6 sm:gap-y-12 sm:space-y-0 lg:grid-cols-3 lg:gap-x-8"
                 >
                 {this.state.highlightedVideos.map((video: highlightedVideosProps) => (
-                    <li key={video.name} className="pb-5 ">
+                    <li key={video.id} className="pb-5 ">
                     <div className=" space-y-2 space-x-2 shadow-lg rounded-lg  bg-red-400 ">
                         <div className="">
                         <ReactPlayer width={"100%"} url={video.src} id="react-player" className="rounded-lg "  />

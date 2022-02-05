@@ -23,8 +23,8 @@ export interface ABCtoken {
 }
 
 export interface ABCuserInfo {
-  isAdmin: boolean;
-  setIsAdmin: (isAdmin: boolean) => void;
+  isAdmin: boolean | null;
+  setIsAdmin: (isAdmin: boolean | null) => void;
   emailAddress: string;
   setEmailAddress: (email: string) => void;
   username: string;
@@ -48,17 +48,12 @@ export interface ABCcalls {
 const App = () => {
   const [id, setId] = useState<ABCuserInfo["id"]>("");
   const [isAdmin, setIsAdmin] = useState<ABCuserInfo["isAdmin"]>(false);
-  const [emailAddress, setEmailAddress] =
-    useState<ABCuserInfo["emailAddress"]>("");
-  const [errorMessage, setErrorMessage] =
-    useState<ABCcalls["errorMessage"]>("");
+  const [emailAddress, setEmailAddress] = useState<ABCuserInfo["emailAddress"]>("");
+  const [errorMessage, setErrorMessage] = useState<ABCcalls["errorMessage"]>("");
   // const [mountyPython, setMountyPython] = useState<ABCcalls['mountyPython']>(false);
-  const [responseStatus, setResponseStatus] =
-    useState<ABCcalls["responseStatus"]>(500);
-  const [sessionToken, setSessionToken] =
-    useState<ABCtoken["sessionToken"]>(null);
-  const [isUserLoggedIn, setIsUserLoggedIn] =
-    useState<ABCtoken["isUserLoggedIn"]>(false);
+  const [responseStatus, setResponseStatus] = useState<ABCcalls["responseStatus"]>(500);
+  const [sessionToken, setSessionToken] = useState<ABCtoken["sessionToken"]>(null);
+  const [isUserLoggedIn, setIsUserLoggedIn] = useState<ABCtoken["isUserLoggedIn"]>(false);
   const [username, setUsername] = useState<ABCuserInfo["username"]>("");
 
   //! fetching all videos, regardless of validation.
@@ -71,55 +66,56 @@ const App = () => {
       },
     });
     const data = await response.json();
+    console.log(data);
     setResponseStatus(response.status);
     setErrorMessage(data.errorMessage);
   };
 
-  // const fetchDb = async (): Promise<void> => {
-  //   if (localStorage.getItem('Authorization') === null) {
-  //     setSessionToken(null);
-  //   }
-  //   else {
-  //     setSessionToken(localStorage.getItem('Authorization'));
-  //   }
-  //   await fetch(`${dbCall}/users/validate`, {
-  //     method: 'POST',
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //       'Authorization': `Bearer ${sessionToken}`
-  //     }
-  //   })
-  //   .then(res => {
-  //     console.log("AppAuth res.status is ", res.status);
-  //     setResponseStatus(res.status);
-  //     return res.json();
-  //   })
-  //   .then(data => {
-  //     console.log("AppAuth data is ", data);
-  //     if (data.status === 200) {
-  //       setIsUserLoggedIn(true);
-  //       setId(data.user.id);
-  //       setIsAdmin(data.user.isAdmin);
-  //       setEmailAddress(data.user.emailAddress);
-  //       setUsername(data.user.username);
-  //     }
-  //     else {
-  //       setIsUserLoggedIn(false);
-  //       setId('');
-  //       setIsAdmin(false);
-  //       setEmailAddress('');
-  //       setUsername('');
-  //     }
-  //   })
-  //   .catch(err => {
-  //     console.log("AppAuth err is ", err);
-  //     setIsUserLoggedIn(false);
-  //     setId('');
-  //     setIsAdmin(false);
-  //     setEmailAddress('');
-  //     setUsername('');
-  //   });
-  // }
+  const fetchDb = async (): Promise<void> => {
+    if (localStorage.getItem('Authorization') === null) {
+      setSessionToken(null);
+    }
+    else {
+      setSessionToken(localStorage.getItem('Authorization'));
+    }
+    await fetch(`${dbCall}/users/validate`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${sessionToken}`
+      }
+    })
+    .then(res => {
+      console.log("AppAuth res.status is ", res.status);
+      setResponseStatus(res.status);
+      return res.json();
+    })
+    .then(data => {
+      console.log("AppAuth data is ", data);
+      if (data.status === 200) {
+        setIsUserLoggedIn(true);
+        setId(data.user.id);
+        setIsAdmin(data.user.isAdmin);
+        setEmailAddress(data.user.emailAddress);
+        setUsername(data.user.username);
+      }
+      else {
+        setIsUserLoggedIn(false);
+        setId('');
+        setIsAdmin(false);
+        setEmailAddress('');
+        setUsername('');
+      }
+    })
+    .catch(err => {
+      console.log("AppAuth err is ", err);
+      setIsUserLoggedIn(false);
+      setId('');
+      setIsAdmin(false);
+      setEmailAddress('');
+      setUsername('');
+    });
+  }
 
   const updateToken = (mintToken: string): void => {
     localStorage.setItem("Authorization", mintToken);
