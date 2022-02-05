@@ -24,7 +24,7 @@ export interface AuthProps {
   setIsUserLoggedIn: ABCtoken["setIsUserLoggedIn"];
   username: ABCuserInfo["username"];
   setUsername: ABCuserInfo["setUsername"];
-};
+}
 
 //TODO 0) SessionToken / states not being assigned correctly. Fix.
 //TODO 1) Add verification prompts surrounding the fields.
@@ -38,18 +38,23 @@ const Register = (props: AuthProps) => {
   //! UseState's
   const [confirmPassword, setConfirmPassword] = React.useState<string>("");
   const [passwordhash, setPasswordhash] = React.useState<string>("");
-  const [accountResetQuestion1, setAccountResetQuestion1] = React.useState<string>("");
-  const [accountResetQuestion2, setAccountResetQuestion2] = React.useState<string>("");
+  const [accountResetQuestion1, setAccountResetQuestion1] =
+    React.useState<string>("");
+  const [accountResetQuestion2, setAccountResetQuestion2] =
+    React.useState<string>("");
   const [accountResetAnswer1, setAccountAnswer1] = React.useState<string>("");
   const [accountResetAnswer2, setAccountAnswer2] = React.useState<string>("");
   const [adminPassword, setAdminPassword] = React.useState<string>("");
-  const [isAdminFieldVisible, setIsAdminFieldVisible] = React.useState<boolean>(false);
+  const [isAdminFieldVisible, setIsAdminFieldVisible] =
+    React.useState<boolean>(false);
 
   //! Validation Fields
 
   //? Email Address
   const emailAddressValidation = () => {
-    if (props.emailAddress.match(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i) === null) {
+    if (
+      props.emailAddress.match(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i) === null
+    ) {
       return "Invalid email address!";
     }
     return true;
@@ -82,24 +87,24 @@ const Register = (props: AuthProps) => {
   //? Validate all fields
   const validateAllFields = () => {
     if (
-        emailAddressValidation() === true &&
-        passwordValidation() === true &&
-        passwordConfirmationValidation() === true &&
-        usernameValidation() === true
+      emailAddressValidation() === true &&
+      passwordValidation() === true &&
+      passwordConfirmationValidation() === true &&
+      usernameValidation() === true
     ) {
-        return true;
+      return true;
     }
     return false;
   };
 
   //? Set "isAdminFieldVisible" to true, if they select the "Admin" checkbox. if they unselect it, set it to false.
-    const handleAdminCheckbox = () => {
-        if (isAdminFieldVisible === false) {
-            setIsAdminFieldVisible(true);
+  const handleAdminCheckbox = () => {
+    if (isAdminFieldVisible === false) {
+      setIsAdminFieldVisible(true);
     } else {
-        setIsAdminFieldVisible(false);
-        }
-    };
+      setIsAdminFieldVisible(false);
+    }
+  };
 
   const registerChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.id === "emailAddress") {
@@ -130,10 +135,11 @@ const Register = (props: AuthProps) => {
       await fetch(`${dbCall}/users/register`, {
         method: "POST",
         headers: {
-            "Content-Type": "application/json",
+          "Content-Type": "application/json",
         },
         //TODO If user types in password correctly matching the column "adminPassword", isAdmin will be set to true.
-        body: JSON.stringify({ user: {
+        body: JSON.stringify({
+          user: {
             username: props.username,
             email: props.emailAddress,
             passwordhash: passwordhash,
@@ -142,80 +148,80 @@ const Register = (props: AuthProps) => {
             accountResetQuestion1: accountResetQuestion1,
             accountResetQuestion2: accountResetQuestion2,
             accountResetAnswer1: accountResetAnswer1,
-            accountResetAnswer2: accountResetAnswer2
-            }
+            accountResetAnswer2: accountResetAnswer2,
+          },
         }),
-    })
-    .then((res) => {
-        console.log("Reg res.status is ", res.status);
-        props.setResponseStatus(res.status);
-        return res.json();
-    })
-    //if response status is 201 and userAdmin is false, set isAdmin to false.
-    .then(data => {
-        if (data.status === 201 && data.user.isAdmin === false) {
-          console.log("Successfully registered!");
-          console.log("Register data: ", data);
-          props.setId(data.user.id);
-          props.updateToken(data.sessionToken);
-          props.setEmailAddress(data.user.email);
-          props.setUsername(data.user.username);
-          props.setIsAdmin(false);
-          props.setIsUserLoggedIn(true);
-          props.setErrorMessage("");
-          navigate("/");
-        } else if (data.status === 201 && data.user.isAdmin === true) {
-          console.log("Admin | Successfully registered!");
-          console.log("Admin | Register data: ", data);
-          props.setId(data.user.id);
-          props.updateToken(data.sessionToken);
-          props.setIsAdmin(true);
-          props.setIsUserLoggedIn(true);
-          props.setErrorMessage("");
-          navigate("/AdminDashboard");
-        } else {
+      })
+        .then((res) => {
+          console.log("Reg res.status is ", res.status);
+          props.setResponseStatus(res.status);
+          return res.json();
+        })
+        //if response status is 201 and userAdmin is false, set isAdmin to false.
+        .then((data) => {
+          if (data.status === 201 && data.user.isAdmin === false) {
+            console.log("Successfully registered!");
+            console.log("Register data: ", data);
+            props.setId(data.user.id);
+            props.updateToken(data.sessionToken);
+            props.setEmailAddress(data.user.email);
+            props.setUsername(data.user.username);
+            props.setIsAdmin(false);
+            props.setIsUserLoggedIn(true);
+            props.setErrorMessage("");
+            navigate("/");
+          } else if (data.status === 201 && data.user.isAdmin === true) {
+            console.log("Admin | Successfully registered!");
+            console.log("Admin | Register data: ", data);
+            props.setId(data.user.id);
+            props.updateToken(data.sessionToken);
+            props.setIsAdmin(true);
+            props.setIsUserLoggedIn(true);
+            props.setErrorMessage("");
+            navigate("/AdminDashboard");
+          } else {
+            console.log("Error registering user!");
+            console.log("Register data: ", data);
+            console.log("isAdmin", data.user.isAdmin);
+            props.setErrorMessage(data.message);
+          }
+        })
+        .catch((error) => {
           console.log("Error registering user!");
-          console.log("Register data: ", data);
-          console.log("isAdmin", data.user.isAdmin)
-          props.setErrorMessage(data.message);
-        }
-    })
-    .catch(error => {
-        console.log("Error registering user!");
-        console.log("Register data error message: ", error);
-        props.setErrorMessage(error.message);
-    });
+          console.log("Register data error message: ", error);
+          props.setErrorMessage(error.message);
+        });
     } else {
-        props.setErrorMessage("Please fix the errors in the form!");
+      props.setErrorMessage("Please fix the errors in the form!");
     }
   };
 
-        
-
   return (
     <div className="z-index-10 flex pb-4">
-      <div className="h-screen flex-1 flex flex-col justify-center py-12 px-4 sm:px-6 lg:flex-none lg:px-20
-    xl:px-24 overflow-y-auto">
+      <div
+        className="h-screen flex-1 flex flex-col justify-center py-12 px-4 sm:px-6 lg:flex-none lg:px-20
+    xl:px-24 overflow-y-auto"
+      >
         <div className="z-index-10 mx-auto w-full max-w-sm h-full">
-        <div>
+          <div>
             <img
-                className="h-12 w-auto"
-                src={allballcall_500}
-                alt="AllBallCall"
+              className="h-12 w-auto"
+              src={allballcall_500}
+              alt="AllBallCall"
             />
             <h2 className="mt-6 text-3xl font-extrabold text-gray-900 text-right">
-                Register and call your own shots.
+              Register and call your own shots.
             </h2>
             <p className="mt-2 text-sm text-gray-600 mb-10">
               or {/* register */}
-                <Link
-                    to="/login"
-                    className="font-medium text-indigo-600 hover:text-indigo-500"
-                >
-                    Already in our lineup? Sign-in.
-                </Link>
+              <Link
+                to="/login"
+                className="font-medium text-indigo-600 hover:text-indigo-500"
+              >
+                Already in our lineup? Sign-in.
+              </Link>
             </p>
-        </div>
+          </div>
           {/* Username */}
           <form className="space-y-6" onSubmit={registerSubmit}>
             <div>

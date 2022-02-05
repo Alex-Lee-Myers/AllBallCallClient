@@ -1,17 +1,17 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 // import the css
-import './App.css';
-import dbCall from './helpers/Environments';
+import "./App.css";
+import dbCall from "./helpers/Environments";
 
 // import packages
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 // import the components
-import Home from '../src/components/Home';
-import Login from '../src/components/Login';
-import Navbar from '../src/components/Navbar';
-import Register from '../src/components/Register';
-import VideoPost from './components/VideoPost';
-
+import Home from "../src/components/Home";
+import Login from "../src/components/Login";
+import Navbar from "../src/components/Navbar";
+import Register from "../src/components/Register";
+import VideoPost from "../src/components/VideoPost";
 
 export interface ABCtoken {
   isUserLoggedIn: boolean;
@@ -46,30 +46,34 @@ export interface ABCcalls {
 // Did not use React.FunctionComponent as per (https://github.com/typescript-cheatsheets/react/blob/main/README.md#basic-cheatsheet-table-of-contents) this methology is deprecated.
 
 const App = () => {
-  const [id, setId] = useState<ABCuserInfo['id']>('');
-  const [isAdmin, setIsAdmin] = useState<ABCuserInfo['isAdmin']>(false);
-  const [emailAddress, setEmailAddress] = useState<ABCuserInfo['emailAddress']>('');
-  const [errorMessage, setErrorMessage] = useState<ABCcalls['errorMessage']>('');
+  const [id, setId] = useState<ABCuserInfo["id"]>("");
+  const [isAdmin, setIsAdmin] = useState<ABCuserInfo["isAdmin"]>(false);
+  const [emailAddress, setEmailAddress] =
+    useState<ABCuserInfo["emailAddress"]>("");
+  const [errorMessage, setErrorMessage] =
+    useState<ABCcalls["errorMessage"]>("");
   // const [mountyPython, setMountyPython] = useState<ABCcalls['mountyPython']>(false);
-  const [responseStatus, setResponseStatus] = useState<ABCcalls['responseStatus']>(500);
-  const [sessionToken, setSessionToken] = useState<ABCtoken['sessionToken']>(null);
-  const [isUserLoggedIn, setIsUserLoggedIn] = useState<ABCtoken['isUserLoggedIn']>(false);
-  const [username, setUsername] = useState<ABCuserInfo['username']>('');
-  
+  const [responseStatus, setResponseStatus] =
+    useState<ABCcalls["responseStatus"]>(500);
+  const [sessionToken, setSessionToken] =
+    useState<ABCtoken["sessionToken"]>(null);
+  const [isUserLoggedIn, setIsUserLoggedIn] =
+    useState<ABCtoken["isUserLoggedIn"]>(false);
+  const [username, setUsername] = useState<ABCuserInfo["username"]>("");
 
-  //! fetching all videos, regardless of validation. 
+  //! fetching all videos, regardless of validation.
   //! sort by newest first.
   const fetchVideos = async () => {
     const response = await fetch(`${dbCall}/videos/content/all`, {
-      method: 'GET',
+      method: "GET",
       headers: {
-        'Content-Type': 'application/json'
-      }
+        "Content-Type": "application/json",
+      },
     });
     const data = await response.json();
     setResponseStatus(response.status);
     setErrorMessage(data.errorMessage);
-  }
+  };
 
   // const fetchDb = async (): Promise<void> => {
   //   if (localStorage.getItem('Authorization') === null) {
@@ -118,14 +122,14 @@ const App = () => {
   // }
 
   const updateToken = (mintToken: string): void => {
-    localStorage.setItem('Authorization', mintToken);
+    localStorage.setItem("Authorization", mintToken);
     setSessionToken(mintToken);
-  }
+  };
 
   const clearToken = (): void => {
-    localStorage.removeItem('sessionToken');
+    localStorage.removeItem("sessionToken");
     setSessionToken(null);
-    updateToken('');
+    updateToken("");
     setIsUserLoggedIn(false);
   };
 
@@ -133,26 +137,25 @@ const App = () => {
     // fetchDb();
     fetchVideos();
   });
-  
+
   return (
     <>
-      
-        <Navbar>
-          clearToken={clearToken}
-          emailAddress={emailAddress}
-          sessionToken={sessionToken}
-          setSessionToken={setSessionToken}
-          isUserLoggedIn={isUserLoggedIn}
-          username={username}
-        </Navbar>
+      <Navbar>
+        clearToken={clearToken}
+        emailAddress={emailAddress}
+        sessionToken={sessionToken}
+        setSessionToken={setSessionToken}
+        isUserLoggedIn={isUserLoggedIn}
+        username={username}
+      </Navbar>
 
-          <Routes>
+      <Routes>
+        <Route path="/" element={<Home />} />
 
-            <Route path="/" element={<Home
-            
-            />} />
-
-            <Route path="/login" element={<Login
+        <Route
+          path="/login"
+          element={
+            <Login
               id={id}
               setId={setId}
               isAdmin={isAdmin}
@@ -170,9 +173,14 @@ const App = () => {
               setIsUserLoggedIn={setIsUserLoggedIn}
               username={username}
               setUsername={setUsername}
-            />} />
+            />
+          }
+        />
 
-            <Route path="/register" element={<Register
+        <Route
+          path="/register"
+          element={
+            <Register
               id={id}
               setId={setId}
               isAdmin={isAdmin}
@@ -190,17 +198,17 @@ const App = () => {
               updateToken={updateToken}
               username={username}
               setUsername={setUsername}
-            />} />
+            />
+          }
+        />
 
-
-            <Route path="/videos" element={<VideoPost
-              isAdmin={isAdmin}
-              sessionToken={sessionToken}
-              /> } />
-
-          </Routes>
+        <Route
+          path="/videos/content"
+          element={<VideoPost isAdmin={isAdmin} sessionToken={sessionToken} />}
+        />
+      </Routes>
     </>
   );
-}
+};
 
 export default App;
