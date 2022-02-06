@@ -175,3 +175,36 @@ const Login = (props: AuthProps) => {
 }
 
 export default Login;
+//! Navbar Top Links
+//{this.state.navigation.map(
+// 	(navigation: navigationProps) => (
+// 		<a
+// 			key={navigation.id}
+//             href={navigation.href}
+            
+// 			className={this.state.navBar.classNames(
+// 				navigation.current
+// 					? "bg-gray-900 text-white"
+// 					: "text-gray-300 hover:bg-gray-700 hover:text-white",
+// 				"px-3 py-2 rounded-md text-sm font-medium"
+// 			)}
+// 			aria-current={navigation.current ? "page" : undefined}
+// 		>
+// 			{navigation.name}
+// 		</a>
+// 	)
+// )}
+
+//! Navbar Profile Links
+//{this.state.userNavigation.map(
+// 	(userNavigation: userNavigationProps) => (
+// 		<Menu.Item key={userNavigation.pageName}>
+// 			<a
+// 				href={userNavigation.href}
+// 				className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+// 			>
+// 				{userNavigation.pageName}
+// 			</a>
+// 		</Menu.Item>
+// 	)
+// )}
