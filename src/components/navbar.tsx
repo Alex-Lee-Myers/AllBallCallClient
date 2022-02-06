@@ -57,7 +57,7 @@ export default class Navbar extends React.Component<
 		super(props);
 		this.state = {
 			user: {
-                id: "",
+				id: "",
 				username: "",
 				emailAddress: "",
 				imageUrl: "",
@@ -158,8 +158,8 @@ export default class Navbar extends React.Component<
 			},
 		};
 		this.handleUserVisibility = this.handleUserVisibility.bind(this);
-    }
-    
+	}
+
 	// TODO Add conditionals function handleUserVisility() that will display certain links depending on the user's login status.
 	//?  The conditionals will heavily use conditionals based on ABCtoken["isUserLoggedIn"] and ABCuserInfo["isAdmin"]
 	//?  The conditionals will also use conditionals based on ABCuserInfo["username"] and ABCuserInfo["emailAddress"] and ABCuserInfo["imageUrl"]
@@ -421,13 +421,13 @@ export default class Navbar extends React.Component<
 	}
 
 	//! The Navbar component should re-render whenever the ABCuserInfo.id changes. This is because the user's id changes when they log in. The function handleUserVisibility() is called whenever the ABCuserInfo.id changes.
-    // componentDidUpdate(userLoginState: ABCuserInfo["id"] ) {
-    //     if (userLoginState !== this.state.user.id) {
-    //         this.handleUserVisibility();
-    //     }
-    // }
+	// componentDidUpdate(userLoginState: ABCuserInfo["id"] ) {
+	//     if (userLoginState !== this.state.user.id) {
+	//         this.handleUserVisibility();
+	//     }
+	// }
 
-
+	//testing uppercase file change
 	render() {
 		return (
 			<Disclosure as="nav" className="bg-gray-800 z-50">
