@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { ABCtoken, ABCuserInfo } from "../App";
 
-interface userProps {
+interface userState {
     username: ABCuserInfo["username"] | undefined | string;
     emailAddress: ABCuserInfo["emailAddress"] | null | string;
     imageUrl: string | undefined | "";
@@ -17,9 +17,10 @@ interface userProps {
     setIsAdmin: (value: ABCuserInfo["isAdmin"]) => void;
     isUserLoggedIn: ABCtoken["isUserLoggedIn"];
     setIsUserLoggedIn: (value: ABCtoken["isUserLoggedIn"]) => void;
+    id: ABCuserInfo["id"];
 }
 
-interface navigationProps {
+interface navigationState {
     id: number;
     name: string;
     href: string;
@@ -27,7 +28,7 @@ interface navigationProps {
     userVisible: boolean;
 }
 
-interface userNavigationProps {
+interface userNavigationState {
     id: number;
     pageName: string;
     href: string;
@@ -37,55 +38,56 @@ interface userNavigationProps {
 // handles function classNames(...classes) {
     //     return classes.filter(Boolean).join(" ");
     //   }
-interface navbarProps {
+interface navbarState {
     classNames: Function;
 }
 
 //TODO 0) Add conditionals based on current state. 
 
-export default class Navbar extends React.PureComponent<
+export default class Navbar extends React.Component<
 	{},
 	{
-		user: userProps;
-		navigation: navigationProps[];
-		userNavigation: userNavigationProps[];
-		navBar: navbarProps;
+		user: userState;
+		navigation: navigationState[];
+		userNavigation: userNavigationState[];
+		navBar: navbarState;
 	}
 > {
 	constructor(props: any) {
 		super(props);
 		this.state = {
 			user: {
+                id: "",
 				username: "",
 				emailAddress: "",
 				imageUrl: "",
-                userVisible: false,
-                setUserVisible: (value: boolean) => {
-                    this.setState({
-                        user: {
-                            ...this.state.user,
-                            userVisible: value
-                        }
-                    })
-                },
-                isAdmin: false,
-                setIsAdmin: (value: ABCuserInfo["isAdmin"]) => {
-                    this.setState({
-                        user: {
-                            ...this.state.user,
-                            isAdmin: value
-                        }
-                    })
-                },
-                isUserLoggedIn: false,
-                setIsUserLoggedIn: (value: ABCtoken["isUserLoggedIn"]) => {
-                    this.setState({
-                        user: {
-                            ...this.state.user,
-                            isUserLoggedIn: value
-                        }
-                    })
-                }
+				userVisible: false,
+				setUserVisible: (value: boolean) => {
+					this.setState({
+						user: {
+							...this.state.user,
+							userVisible: value,
+						},
+					});
+				},
+				isAdmin: false,
+				setIsAdmin: (value: ABCuserInfo["isAdmin"]) => {
+					this.setState({
+						user: {
+							...this.state.user,
+							isAdmin: value,
+						},
+					});
+				},
+				isUserLoggedIn: false,
+				setIsUserLoggedIn: (value: ABCtoken["isUserLoggedIn"]) => {
+					this.setState({
+						user: {
+							...this.state.user,
+							isUserLoggedIn: value,
+						},
+					});
+				},
 			},
 			navigation: [
 				{
@@ -154,260 +156,276 @@ export default class Navbar extends React.PureComponent<
 					return classes.filter(Boolean).join(" ");
 				},
 			},
-        };
-        this.handleUserVisibility = this.handleUserVisibility.bind(this);
-	}
+		};
+		this.handleUserVisibility = this.handleUserVisibility.bind(this);
+    }
+    
 	// TODO Add conditionals function handleUserVisility() that will display certain links depending on the user's login status.
 	//?  The conditionals will heavily use conditionals based on ABCtoken["isUserLoggedIn"] and ABCuserInfo["isAdmin"]
 	//?  The conditionals will also use conditionals based on ABCuserInfo["username"] and ABCuserInfo["emailAddress"] and ABCuserInfo["imageUrl"]
 	//?  The conditionals will also use conditionals based on ABCtoken["sessionToken"]
 	//! There will be three different ways the Navbar will be rendered:
-	    //? 1) If the User is NOT logged in aka isUserLoggedIn=false and isAdmin=false, the Navbar will NOT render the following:
-            //* 1.1) Streamable
-            //* 1.2) Admin Dashboard
-            //* 1.3) Post Highlight
-            //* 1.4) Settings
-            //* 1.5) Your Park
-        //? 2) If a User is logged in aka isUserLoggedIn=true and isAdmin=false, the Navbar will NOT render the following and set these states to userVisible=false:
-            //* 2.1) Admin Dashboard
-            //* 2.2) Register
-            //* 2.3) Login
-        //? 3) If an Admin is logged in aka isUserLoggedIn=true and isAdmin=true, the Navbar will NOT render the following and set these states to userVisible=false:
-            //* 3.1) Register
-            //* 3.2) Login
+	//? 1) If the User is NOT logged in aka isUserLoggedIn=false and isAdmin=false, the Navbar will NOT render the following:
+	//* 1.1) Streamable
+	//* 1.2) Admin Dashboard
+	//* 1.3) Post Highlight
+	//* 1.4) Settings
+	//* 1.5) Your Park
+	//? 2) If a User is logged in aka isUserLoggedIn=true and isAdmin=false, the Navbar will NOT render the following and set these states to userVisible=false:
+	//* 2.1) Admin Dashboard
+	//* 2.2) Register
+	//* 2.3) Login
+	//? 3) If an Admin is logged in aka isUserLoggedIn=true and isAdmin=true, the Navbar will NOT render the following and set these states to userVisible=false:
+	//* 3.1) Register
+	//* 3.2) Login
 
-    handleUserVisibility() {
-            //! GUEST NAV
-        if (this.state.user.isUserLoggedIn === false && this.state.user.isAdmin === false) {
-            console.log("GuestNav.isUserLoggedIn: ", this.state.user.isUserLoggedIn, "GuestNav.isAdmin: ", this.state.user.isAdmin);
-            this.setState({
-                user: {
-                    ...this.state.user,
-                    userVisible: false
-                },
-                navigation: [
-                    {
-                        id: 1,
-                        name: "Trending",
-                        href: "#",
-                        current: true,
-                        userVisible: true,
-                    },
-                    {
-                        id: 2,
-                        name: "Video Grid",
-                        href: "#",
-                        current: false,
-                        userVisible: true,
-                    },
-                    {
-                        id: 3,
-                        name: "Streamable",
-                        href: "https://streamable.com/",
-                        current: false,
-                        userVisible: false,
-                    },
-                    {
-                        id: 4,
-                        name: "Admin Dashboard",
-                        href: "/adminDashboard",
-                        current: false,
-                        userVisible: false,
-                    },
-                ],
-                userNavigation: [
-                    {
-                        id: 1,
-                        pageName: "Your Park",
-                        href: "#",
-                        userVisible: false,
-                    },
-                    {
-                        id: 2,
-                        pageName: "Settings",
-                        href: "#",
-                        userVisible: false,
-                    },
-                    {
-                        id: 3,
-                        pageName: "Logout",
-                        href: "/logout",
-                        userVisible: false,
-                    },
-                    {
-                        id: 4,
-                        pageName: "Login",
-                        href: "/login",
-                        userVisible: true,
-                    },
-                    {
-                        id: 5,
-                        pageName: "Sign Up",
-                        href: "/register",
-                        userVisible: true,
-                    },
-                ]
-            })
-            //! STANDARD USER
-        } else if (this.state.user.isUserLoggedIn === true && this.state.user.isAdmin === false) {
-            this.setState({
-                user: {
-                    ...this.state.user,
-                    userVisible: true
-                },
-                navigation: [
-                    {
-                        id: 1,
-                        name: "Trending",
-                        href: "#",
-                        current: true,
-                        userVisible: true,
-                    },
-                    {
-                        id: 2,
-                        name: "Video Grid",
-                        href: "#",
-                        current: false,
-                        userVisible: true,
-                    },
-                    {
-                        id: 3,
-                        name: "Streamable",
-                        href: "https://streamable.com/",
-                        current: false,
-                        userVisible: true,
-                    },
-                    {
-                        id: 4,
-                        name: "Admin Dashboard",
-                        href: "/adminDashboard",
-                        current: false,
-                        userVisible: false,
-                    },
-                ],
-                userNavigation: [
-                    {
-                        id: 1,
-                        pageName: "Your Park",
-                        href: "#",
-                        userVisible: true,
-                    },
-                    {
-                        id: 2,
-                        pageName: "Settings",
-                        href: "#",
-                        userVisible: true,
-                    },
-                    {
-                        id: 3,
-                        pageName: "Logout",
-                        href: "/logout",
-                        userVisible: true,
-                    },
-                    {
-                        id: 4,
-                        pageName: "Login",
-                        href: "/login",
-                        userVisible: false,
-                    },
-                    {
-                        id: 5,
-                        pageName: "Sign Up",
-                        href: "/register",
-                        userVisible: false,
-                    },
-                ]
-            })
-            //! ADMIN
-        } else if (this.state.user.isUserLoggedIn === true && this.state.user.isAdmin === true) {
-            this.setState({
-                user: {
-                    ...this.state.user,
-                    userVisible: true
-                },
-                navigation: [
-                    {
-                        id: 1,
-                        name: "Trending",
-                        href: "#",
-                        current: true,
-                        userVisible: true,
-                    },
-                    {
-                        id: 2,
-                        name: "Video Grid",
-                        href: "#",
-                        current: false,
-                        userVisible: true,
-                    },
-                    {
-                        id: 3,
-                        name: "Streamable",
-                        href: "https://streamable.com/",
-                        current: false,
-                        userVisible: true,
-                    },
-                    {
-                        id: 4,
-                        name: "Admin Dashboard",
-                        href: "/adminDashboard",
-                        current: false,
-                        userVisible: true,
-                    },
-                ],
-                userNavigation: [
-                    {
-                        id: 1,
-                        pageName: "Your Park",
-                        href: "#",
-                        userVisible: true,
-                    },
-                    {
-                        id: 2,
-                        pageName: "Settings",
-                        href: "#",
-                        userVisible: true,
-                    },
-                    {
-                        id: 3,
-                        pageName: "Logout",
-                        href: "/logout",
-                        userVisible: true,
-                    },
-                    {
-                        id: 4,
-                        pageName: "Login",
-                        href: "/login",
-                        userVisible: false,
-                    },
-                    {
-                        id: 5,
-                        pageName: "Sign Up",
-                        href: "/register",
-                        userVisible: false,
-                    },
-                ]
-            })
-        }
-    }
+	handleUserVisibility() {
+		//! GUEST NAV
+		if (
+			this.state.user.isUserLoggedIn === false &&
+			this.state.user.isAdmin === false
+		) {
+			console.log(
+				"GuestNav.isUserLoggedIn: ",
+				this.state.user.isUserLoggedIn,
+				"GuestNav.isAdmin: ",
+				this.state.user.isAdmin
+			);
+			this.setState({
+				user: {
+					...this.state.user,
+					userVisible: false,
+				},
+				navigation: [
+					{
+						id: 1,
+						name: "Trending",
+						href: "#",
+						current: true,
+						userVisible: true,
+					},
+					{
+						id: 2,
+						name: "Video Grid",
+						href: "#",
+						current: false,
+						userVisible: true,
+					},
+					{
+						id: 3,
+						name: "Streamable",
+						href: "https://streamable.com/",
+						current: false,
+						userVisible: false,
+					},
+					{
+						id: 4,
+						name: "Admin Dashboard",
+						href: "/adminDashboard",
+						current: false,
+						userVisible: false,
+					},
+				],
+				userNavigation: [
+					{
+						id: 1,
+						pageName: "Your Park",
+						href: "#",
+						userVisible: false,
+					},
+					{
+						id: 2,
+						pageName: "Settings",
+						href: "#",
+						userVisible: false,
+					},
+					{
+						id: 3,
+						pageName: "Logout",
+						href: "/logout",
+						userVisible: false,
+					},
+					{
+						id: 4,
+						pageName: "Login",
+						href: "/login",
+						userVisible: true,
+					},
+					{
+						id: 5,
+						pageName: "Sign Up",
+						href: "/register",
+						userVisible: true,
+					},
+				],
+			});
+			//! STANDARD USER
+		} else if (
+			this.state.user.isUserLoggedIn === true &&
+			this.state.user.isAdmin === false
+		) {
+			console.log(
+				"StandardNav.isUserLoggedIn: ",
+				this.state.user.isUserLoggedIn,
+				"StandardNav.isAdmin: ",
+				this.state.user.isAdmin
+			);
+			this.setState({
+				user: {
+					...this.state.user,
+					userVisible: true,
+				},
+				navigation: [
+					{
+						id: 1,
+						name: "Trending",
+						href: "#",
+						current: true,
+						userVisible: true,
+					},
+					{
+						id: 2,
+						name: "Video Grid",
+						href: "#",
+						current: false,
+						userVisible: true,
+					},
+					{
+						id: 3,
+						name: "Streamable",
+						href: "https://streamable.com/",
+						current: false,
+						userVisible: true,
+					},
+					{
+						id: 4,
+						name: "Admin Dashboard",
+						href: "/adminDashboard",
+						current: false,
+						userVisible: false,
+					},
+				],
+				userNavigation: [
+					{
+						id: 1,
+						pageName: "Your Park",
+						href: "#",
+						userVisible: true,
+					},
+					{
+						id: 2,
+						pageName: "Settings",
+						href: "#",
+						userVisible: true,
+					},
+					{
+						id: 3,
+						pageName: "Logout",
+						href: "/logout",
+						userVisible: true,
+					},
+					{
+						id: 4,
+						pageName: "Login",
+						href: "/login",
+						userVisible: false,
+					},
+					{
+						id: 5,
+						pageName: "Sign Up",
+						href: "/register",
+						userVisible: false,
+					},
+				],
+			});
+			//! ADMIN
+		} else if (
+			this.state.user.isUserLoggedIn === true &&
+			this.state.user.isAdmin === true
+		) {
+			console.log(
+				"StandardNav.isUserLoggedIn: ",
+				this.state.user.isUserLoggedIn,
+				"StandardNav.isAdmin: ",
+				this.state.user.isAdmin
+			);
+			this.setState({
+				user: {
+					...this.state.user,
+					userVisible: true,
+				},
+				navigation: [
+					{
+						id: 1,
+						name: "Trending",
+						href: "#",
+						current: true,
+						userVisible: true,
+					},
+					{
+						id: 2,
+						name: "Video Grid",
+						href: "#",
+						current: false,
+						userVisible: true,
+					},
+					{
+						id: 3,
+						name: "Streamable",
+						href: "https://streamable.com/",
+						current: false,
+						userVisible: true,
+					},
+					{
+						id: 4,
+						name: "Admin Dashboard",
+						href: "/adminDashboard",
+						current: false,
+						userVisible: true,
+					},
+				],
+				userNavigation: [
+					{
+						id: 1,
+						pageName: "Your Park",
+						href: "#",
+						userVisible: true,
+					},
+					{
+						id: 2,
+						pageName: "Settings",
+						href: "#",
+						userVisible: true,
+					},
+					{
+						id: 3,
+						pageName: "Logout",
+						href: "/logout",
+						userVisible: true,
+					},
+					{
+						id: 4,
+						pageName: "Login",
+						href: "/login",
+						userVisible: false,
+					},
+					{
+						id: 5,
+						pageName: "Sign Up",
+						href: "/register",
+						userVisible: false,
+					},
+				],
+			});
+		}
+	}
 
-    componentDidMount() {
-        this.handleUserVisibility()
-    }
-
-    shouldComponentUpdate(nextProps: any, nextState: any) {
-        if (this.state.user.isUserLoggedIn !== nextState.user.isUserLoggedIn) {
-            this.handleUserVisibility()
-        }
-        return true
-    }
-
-    componentDidUpdate(prevProps: any, prevState: any) {
-        if (this.state.user.isUserLoggedIn !== prevState.user.isUserLoggedIn) {
-            this.handleUserVisibility()
-        }
-    }
-
+	//! The Navbar component should re-render whenever the ABCuserInfo.id changes. This is because the user's id changes when they log in. The function handleUserVisibility() is called whenever the ABCuserInfo.id changes.
+    // componentDidUpdate(userLoginState: ABCuserInfo["id"] ) {
+    //     if (userLoginState !== this.state.user.id) {
+    //         this.handleUserVisibility();
+    //     }
+    // }
 
 
 	render() {
@@ -524,19 +542,19 @@ export default class Navbar extends React.PureComponent<
 													{/* 
                                                     Do not show items in the navigation bar set to userVisible is false
                                                     */}
-                                                    {this.state.userNavigation.map((item) => {
-                                                        if (item.userVisible) {
-                                                            return (
-                                                                <Link
-                                                                    key={item.id}
-                                                                    to={item.href}
-                                                                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                                                                >
-                                                                    {item.pageName}
-                                                                </Link>
-                                                            );
-                                                        }
-                                                    })}
+													{this.state.userNavigation.map((item) => {
+														if (item.userVisible) {
+															return (
+																<Link
+																	key={item.id}
+																	to={item.href}
+																	className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+																>
+																	{item.pageName}
+																</Link>
+															);
+														}
+													})}
 												</Menu.Items>
 											</Transition>
 										</Menu>
@@ -547,7 +565,7 @@ export default class Navbar extends React.PureComponent<
 
 						<Disclosure.Panel className="md:hidden">
 							<div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-								{this.state.navigation.map((navigation: navigationProps) => (
+								{this.state.navigation.map((navigation: navigationState) => (
 									<Disclosure.Button
 										key={navigation.name}
 										as="a"
@@ -591,7 +609,7 @@ export default class Navbar extends React.PureComponent<
 								</div>
 								<div className="mt-3 px-2 space-y-1 sm:px-3">
 									{this.state.userNavigation.map(
-										(userNavigation: userNavigationProps) => (
+										(userNavigation: userNavigationState) => (
 											<Disclosure.Button
 												key={userNavigation.pageName}
 												as="a"

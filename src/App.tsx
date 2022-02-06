@@ -50,7 +50,6 @@ const App = () => {
   const [isAdmin, setIsAdmin] = useState<ABCuserInfo["isAdmin"]>(false);
   const [emailAddress, setEmailAddress] = useState<ABCuserInfo["emailAddress"]>("");
   const [errorMessage, setErrorMessage] = useState<ABCcalls["errorMessage"]>("");
-  // const [mountyPython, setMountyPython] = useState<ABCcalls['mountyPython']>(false);
   const [responseStatus, setResponseStatus] = useState<ABCcalls["responseStatus"]>(500);
   const [sessionToken, setSessionToken] = useState<ABCtoken["sessionToken"]>(null);
   const [isUserLoggedIn, setIsUserLoggedIn] = useState<ABCtoken["isUserLoggedIn"]>(false);
@@ -130,13 +129,13 @@ const App = () => {
   };
 
   useEffect(() => {
-    // fetchDb();
-    fetchVideos();
-  });
+      fetchVideos();
+  }, [isUserLoggedIn]);
 
   return (
     <>
       <Navbar>
+        id={id}
         clearToken={clearToken}
         emailAddress={emailAddress}
         sessionToken={sessionToken}
