@@ -6,6 +6,7 @@ import { PlusSmIcon } from "@heroicons/react/solid";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { ABCtoken, ABCuserInfo } from "../App";
+import tempProfilePic from "../images/temp_prof_pic.jpg";
 
 interface AuthProps {
 	id: ABCuserInfo["id"];
@@ -534,7 +535,7 @@ export default class Navbar extends React.Component<
 													<span className="sr-only">Open user menu</span>
 													<img
 														className="h-8 w-8 rounded-full"
-														src={this.state.user.imageUrl}
+														src={tempProfilePic} //! Change to this.state.user.imageUrl when added
 														alt={this.state.user.username}
 													/>
 												</Menu.Button>
