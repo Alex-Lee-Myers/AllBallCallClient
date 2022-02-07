@@ -600,7 +600,7 @@ export default class Navbar extends React.Component<
 									<div className="flex-shrink-0">
 										<img
 											className="h-10 w-10 rounded-full"
-											src={this.state.user.username}
+											src={tempProfilePic} //? Need to change to this.state.user.imageUrl when added
 											alt={this.state.user.username}
 										/>
 									</div>
