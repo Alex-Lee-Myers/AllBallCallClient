@@ -239,262 +239,274 @@ const Register = (props: AuthProps) => {
   };
 
   return (
-    <div className="z-index-10 flex pb-4">
-      <div
-        className="h-screen flex-1 flex flex-col justify-center py-12 px-4 sm:px-6 lg:flex-none lg:px-20
+		<div className="z-index-10 flex pb-4 h-5/6">
+			<div
+				className="h-screen flex-1 flex flex-col justify-center py-12 px-4 sm:px-6 lg:flex-none lg:px-20
     xl:px-24 overflow-y-auto"
-      >
-        <div className="z-index-10 mx-auto w-full max-w-sm h-full">
-          <div>
-            <img
-              className="h-12 w-auto"
-              src={allballcall_500}
-              alt="AllBallCall"
-            />
-            <h2 className="mt-6 text-3xl font-extrabold text-gray-900 text-right">
-              Register and call your own shots.
-            </h2>
-            <p className="mt-2 text-sm text-gray-600 mb-10">
-              or {/* register */}
-              <Link
-                to="/login"
-                className="font-medium text-indigo-600 hover:text-indigo-500"
-              >
-                Already in our lineup? Sign-in.
-              </Link>
-            </p>
-          </div>
-          {/* Username */}
-          <form className="space-y-6" onSubmit={registerSubmit}>
-            <div>
-              <label
-                htmlFor="emailAddress"
-                className="block text-sm font-medium leading-5 text-gray-700"
-              >
-                Email Address
-              </label>
-              <div className="mt-1">
-                <input
-                  id="emailAddress"
-                  name="emailAddress"
-                  type="text"
-                  value={props.emailAddress}
-                  onChange={registerChange}
-                  required
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                />
-              </div>
-            </div>
+			>
+				<div className="z-index-10 mx-auto w-full max-w-sm h-full">
+					<div>
+						<img
+							className="h-12 w-auto"
+							src={allballcall_500}
+							alt="AllBallCall"
+						/>
+						<h2 className="mt-6 text-3xl font-extrabold text-gray-900 text-right">
+							Register and call your own shots.
+						</h2>
+						<p className="mt-2 text-sm text-gray-600 mb-10">
+							or {/* register */}
+							<Link
+								to="/login"
+								className="font-medium text-indigo-600 hover:text-indigo-500"
+							>
+								Already in our lineup? Sign-in.
+							</Link>
+						</p>
+					</div>
+					{/* Username */}
+					<form className="space-y-6" onSubmit={registerSubmit}>
+						<div>
+							<label
+								htmlFor="emailAddress"
+								className="block text-sm font-medium leading-5 text-gray-700"
+							>
+								Email Address
+							</label>
+							<div className="mt-1">
+								<input
+									id="emailAddress"
+									name="emailAddress"
+									type="text"
+									placeholder="charles@barkley.com"
+									value={props.emailAddress}
+									onChange={registerChange}
+									required
+									className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+								/>
+							</div>
+						</div>
 
-            {/*! Username */}
-            <div>
-              <label
-                htmlFor="username"
-                className="block text-sm font-medium leading-5 text-gray-700"
-              >
-                Username
-              </label>
-              <div className="mt-1">
-                <input
-                  id="username"
-                  name="username"
-                  type="text"
-                  autoComplete="username"
-                  value={props.username}
-                  onChange={registerChange}
-                  required
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                />
-              </div>
-            </div>
+						{/*! Username */}
+						<div>
+							<label
+								htmlFor="username"
+								className="block text-sm font-medium leading-5 text-gray-700"
+							>
+								Username
+							</label>
+							<div
+								className="mt-1"
+								data-tooltip-target="username-tooltip"
+								data-tooltip-placement="bottom"
+							>
+								<input
+									id="username"
+									name="username"
+									type="text"
+									autoComplete="username"
+									value={props.username}
+									onChange={registerChange}
+									required
+									className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+								/>
+								<div
+									id="username-tooltip"
+									role="tooltip"
+									className="inline-block absolute invisible z-10 py-2 px-3 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700"
+								>
+									Test<div className="tooltip-arrow" data-popper-arrow></div>
+								</div>
+							</div>
+						</div>
 
-            <div className="space-y-1">
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Password
-              </label>
-              <div className="mt-1">
-                <input
-                  id="passwordhash"
-                  name="passwordhash"
-                  type="password"
-                  autoComplete="new-password"
-                  value={passwordhash}
-                  onChange={registerChange}
-                  required
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                />
-              </div>
-            </div>
+						<div className="space-y-1">
+							<label
+								htmlFor="password"
+								className="block text-sm font-medium text-gray-700"
+							>
+								Password
+							</label>
+							<div className="mt-1">
+								<input
+									id="passwordhash"
+									name="passwordhash"
+									type="password"
+									autoComplete="new-password"
+									value={passwordhash}
+									onChange={registerChange}
+									required
+									className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+								/>
+							</div>
+						</div>
 
-            {/* ConfirmPassword */}
-            <div className="space-y-1">
-              <label
-                htmlFor="confirmPassword"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Confirm Password
-              </label>
-              <div className="mt-1">
-                <input
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  type="password"
-                  autoComplete="new-password"
-                  value={confirmPassword}
-                  onChange={registerChange}
-                  required
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                />
-              </div>
-            </div>
+						{/* ConfirmPassword */}
+						<div className="space-y-1">
+							<label
+								htmlFor="confirmPassword"
+								className="block text-sm font-medium text-gray-700"
+							>
+								Confirm Password
+							</label>
+							<div className="mt-1">
+								<input
+									id="confirmPassword"
+									name="confirmPassword"
+									type="password"
+									autoComplete="new-password"
+									value={confirmPassword}
+									onChange={registerChange}
+									required
+									className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+								/>
+							</div>
+						</div>
 
-            {/* Account Reset Question 1 */}
-            <div className="space-y-1">
-              <label
-                htmlFor="accountResetQuestion1"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Account Reset Question 1
-              </label>
-              <div className="mt-1">
-                <input
-                  id="accountResetQuestion1"
-                  name="accountResetQuestion1"
-                  type="text"
-                  value={accountResetQuestion1}
-                  onChange={registerChange}
-                  required
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                />
-              </div>
-            </div>
+						{/* Account Reset Question 1 */}
+						<div className="space-y-1">
+							<label
+								htmlFor="accountResetQuestion1"
+								className="block text-sm font-medium text-gray-700"
+							>
+								Account Reset Question 1
+							</label>
+							<div className="mt-1">
+								<input
+									id="accountResetQuestion1"
+									name="accountResetQuestion1"
+									type="text"
+									value={accountResetQuestion1}
+									onChange={registerChange}
+									required
+									className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+								/>
+							</div>
+						</div>
 
-            {/* Account Reset Answer 1 */}
-            <div className="space-y-1">
-              <label
-                htmlFor="accountResetAnswer1"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Account Reset Answer 1
-              </label>
-              <div className="mt-1">
-                <input
-                  id="accountResetAnswer1"
-                  name="accountResetAnswer1"
-                  type="text"
-                  value={accountResetAnswer1}
-                  onChange={registerChange}
-                  required
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                />
-              </div>
-            </div>
+						{/* Account Reset Answer 1 */}
+						<div className="space-y-1">
+							<label
+								htmlFor="accountResetAnswer1"
+								className="block text-sm font-medium text-gray-700"
+							>
+								Account Reset Answer 1
+							</label>
+							<div className="mt-1">
+								<input
+									id="accountResetAnswer1"
+									name="accountResetAnswer1"
+									type="text"
+									value={accountResetAnswer1}
+									onChange={registerChange}
+									required
+									className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+								/>
+							</div>
+						</div>
 
-            {/* Account Reset Question 1 */}
-            <div className="space-y-1">
-              <label
-                htmlFor="accountResetQuestion2"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Account Reset Question 2
-              </label>
-              <div className="mt-1">
-                <input
-                  id="accountResetQuestion2"
-                  name="accountResetQuestion2"
-                  type="text"
-                  value={accountResetQuestion2}
-                  onChange={registerChange}
-                  required
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                />
-              </div>
-            </div>
+						{/* Account Reset Question 1 */}
+						<div className="space-y-1">
+							<label
+								htmlFor="accountResetQuestion2"
+								className="block text-sm font-medium text-gray-700"
+							>
+								Account Reset Question 2
+							</label>
+							<div className="mt-1">
+								<input
+									id="accountResetQuestion2"
+									name="accountResetQuestion2"
+									type="text"
+									value={accountResetQuestion2}
+									onChange={registerChange}
+									required
+									className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+								/>
+							</div>
+						</div>
 
-            {/* Account Reset Answer 2 */}
-            <div className="space-y-1">
-              <label
-                htmlFor="accountResetAnswer2"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Account Reset Answer 2
-              </label>
-              <div className="mt-1">
-                <input
-                  id="accountResetAnswer2"
-                  name="accountResetAnswer2"
-                  type="text"
-                  value={accountResetAnswer2}
-                  onChange={registerChange}
-                  required
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                />
-              </div>
-            </div>
+						{/* Account Reset Answer 2 */}
+						<div className="space-y-1">
+							<label
+								htmlFor="accountResetAnswer2"
+								className="block text-sm font-medium text-gray-700"
+							>
+								Account Reset Answer 2
+							</label>
+							<div className="mt-1">
+								<input
+									id="accountResetAnswer2"
+									name="accountResetAnswer2"
+									type="text"
+									value={accountResetAnswer2}
+									onChange={registerChange}
+									required
+									className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+								/>
+							</div>
+						</div>
 
-            {/* Admin Radio Button. If turned on, set isAdminFieldVisible to true with isAdminFieldVisibleTrue function, and show admin password field. */}
-            <div className="space-y-1">
-              <div className="flex items-center">
-                <input
-                  id="isAdminFieldVisible"
-                  name="isAdminFieldVisible"
-                  type="checkbox"
-                  checked={isAdminFieldVisible}
-                  onChange={handleAdminCheckbox}
-                  className="form-checkbox h-4 w-4 text-indigo-600 transition duration-150 ease-in-out"
-                />
-                <label
-                  htmlFor="isAdminFieldVisible"
-                  className="ml-2 block text-sm leading-5 text-gray-700"
-                >
-                  Admin?
-                </label>
-              </div>
-              {isAdminFieldVisible && (
-                <div className="mt-1">
-                  <label
-                    htmlFor="adminPassword"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    Admin Authorization Code
-                  </label>
-                  <div className="mt-1">
-                    <input
-                      id="adminPassword"
-                      name="adminPassword"
-                      type="password"
-                      onChange={registerChange}
-                      value={adminPassword}
-                      className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                    />
-                  </div>
-                </div>
-              )}
-            </div>
-            <div>
-              <button
-                type="submit"
-                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-              >
-                Register
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
-      <div className="hidden lg:block relative w-0 flex-1">
-        <img
-          className="absolute inset-0 h-screen w-full object-cover"
-          // import registerSplash.jpg
-          src={registerSplash}
-          alt=""
-        />
-      </div>
-    </div>
-  );
+						{/* Admin Radio Button. If turned on, set isAdminFieldVisible to true with isAdminFieldVisibleTrue function, and show admin password field. */}
+						<div className="space-y-1">
+							<div className="flex items-center">
+								<input
+									id="isAdminFieldVisible"
+									name="isAdminFieldVisible"
+									type="checkbox"
+									checked={isAdminFieldVisible}
+									onChange={handleAdminCheckbox}
+									className="form-checkbox h-4 w-4 text-indigo-600 transition duration-150 ease-in-out"
+								/>
+								<label
+									htmlFor="isAdminFieldVisible"
+									className="ml-2 block text-sm leading-5 text-gray-700"
+								>
+									Admin?
+								</label>
+							</div>
+							{isAdminFieldVisible && (
+								<div className="mt-1">
+									<label
+										htmlFor="adminPassword"
+										className="block text-sm font-medium text-gray-700"
+									>
+										Admin Authorization Code
+									</label>
+									<div className="mt-1">
+										<input
+											id="adminPassword"
+											name="adminPassword"
+											type="password"
+											onChange={registerChange}
+											value={adminPassword}
+											className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+										/>
+									</div>
+								</div>
+							)}
+						</div>
+						<div>
+							<button
+								type="submit"
+								className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+							>
+								Register
+							</button>
+						</div>
+					</form>
+				</div>
+			</div>
+			<div className="hidden lg:block relative w-0 flex-1">
+				<img
+					className="absolute inset-0 h-screen w-full object-cover"
+					// import registerSplash.jpg
+					src={registerSplash}
+					alt=""
+				/>
+			</div>
+		</div>
+	);
 };
 
 export default Register;
