@@ -53,9 +53,10 @@ interface navbarState {
 }
 
 //TODO 0) Fix the navbar to be responsive to userLogin.
-	//* I believe I need to work out how to pass through AuthProps to the Navbar.
+	//* I believe I need to work out how to pass through AuthProps to the Navbar. Contstructor can't have props: any.
 
 export default class Navbar extends React.Component<
+	//  (AuthProps) | undefined,
 	{},
 	{
 		user: userState;
