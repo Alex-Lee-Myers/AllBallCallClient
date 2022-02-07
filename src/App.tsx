@@ -103,9 +103,17 @@ const App = () => {
           console.log(err);
           setIsUserLoggedIn(false);
           setErrorMessage(err.message);
+          setId("");
+          setIsAdmin(false);
+          setEmailAddress("");
+          setUsername("");
         });
     } else {
       setIsUserLoggedIn(false);
+      setId("");
+      setIsAdmin(false);
+      setEmailAddress("");
+      setUsername("");
     }
   }
 
@@ -194,7 +202,8 @@ const App = () => {
 				<Route
 					path="/settings"
 					element={
-						<Settings
+            <Settings
+              clearToken={clearToken}
 							id={id}
 							emailAddress={emailAddress}
 							setEmailAddress={setEmailAddress}

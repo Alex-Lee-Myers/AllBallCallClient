@@ -12,6 +12,7 @@ interface SettingsProps {
     setUsername: ABCuserInfo["setUsername"];
     responseStatus: ABCcalls["responseStatus"];
     setResponseStatus: ABCcalls["setResponseStatus"];
+    clearToken: ABCtoken["clearToken"];
 }
 
 interface SettingsState {
@@ -27,6 +28,16 @@ interface SettingsState {
     newPassword: string;
     confirmNewPassword: string;
     showResetOptions: boolean;
+    showDeleteUserOption: boolean;
+    showDeleteUserPasswordConfirmation: boolean;
+    showDeleteUserConfirmation: boolean;
+    showDeleteUserComments: boolean;
+    showDeleteUserCommentsPasswordConfirmation: boolean;
+    showDeleteUserCommentsConfirmation: boolean;
+    showDeleteUserVideos: boolean;
+    showDeleteUserVideosPasswordConfirmation: boolean;
+    showDeleteUserVideosConfirmation: boolean;
+    deleteContentPasswordConfirmation: boolean;
 }
 
 //! On this page, after the user has logged in, they can change their username, email address, and password.
@@ -49,6 +60,16 @@ export default class Settings extends React.Component<SettingsProps, SettingsSta
 			newPassword: "",
 			confirmNewPassword: "",
 			showResetOptions: false,
+			showDeleteUserOption: false,
+			showDeleteUserConfirmation: false,
+			showDeleteUserPasswordConfirmation: false,
+			showDeleteUserComments: false,
+			showDeleteUserCommentsConfirmation: false,
+			showDeleteUserCommentsPasswordConfirmation: false,
+			showDeleteUserVideos: false,
+			showDeleteUserVideosConfirmation: false,
+			showDeleteUserVideosPasswordConfirmation: false,
+			deleteContentPasswordConfirmation: false,
 		};
 		this.handleSubmitUpdatePassword =
 			this.handleSubmitUpdatePassword.bind(this);
@@ -57,14 +78,21 @@ export default class Settings extends React.Component<SettingsProps, SettingsSta
 		this.handleSubmitUpdateEmailAddress =
 			this.handleSubmitUpdateEmailAddress.bind(this);
 		this.handleChange = this.handleChange.bind(this);
-		// this.accountResetQuestion1 = this.accountResetQuestion1.bind(this);
-		// this.accountResetQuestion2 = this.accountResetQuestion2.bind(this);
 		this.accountResetAnswer1 = this.accountResetAnswer1.bind(this);
 		this.accountResetAnswer2 = this.accountResetAnswer2.bind(this);
 		this.didUserAnswerAccountResetAnswersCorrectlySubmit =
-            this.didUserAnswerAccountResetAnswersCorrectlySubmit.bind(this);
-        this.newPasswordInput = this.newPasswordInput.bind(this);
-        this.confirmNewPasswordInput = this.confirmNewPasswordInput.bind(this);
+			this.didUserAnswerAccountResetAnswersCorrectlySubmit.bind(this);
+		this.newPasswordInput = this.newPasswordInput.bind(this);
+		this.confirmNewPasswordInput = this.confirmNewPasswordInput.bind(this);
+		this.passwordInput = this.passwordInput.bind(this);
+		this.deleteUserSubmit = this.deleteUserSubmit.bind(this);
+		this.deleteUserCommentsSubmit = this.deleteUserCommentsSubmit.bind(this);
+		this.deleteUserVideosSubmit = this.deleteUserVideosSubmit.bind(this);
+		this.deleteUserConfirmation = this.deleteUserConfirmation.bind(this);
+		this.deleteUserCommentsConfirmation =
+			this.deleteUserCommentsConfirmation.bind(this);
+		this.deleteUserVideosConfirmation =
+			this.deleteUserVideosConfirmation.bind(this);
 	}
 
 	//! grabUsersAccountResetQuestions() grabs the users account reset questions from the database.
@@ -133,6 +161,9 @@ export default class Settings extends React.Component<SettingsProps, SettingsSta
 						responseStatus: data.status,
 						errorMessage: data.message,
 						showResetOptions: true,
+						showDeleteUserComments: true,
+						showDeleteUserVideos: true,
+						showDeleteUserOption: true,
 					});
 					console.log("Answer Confirmation Data: ", data);
 					return true;
@@ -169,19 +200,25 @@ export default class Settings extends React.Component<SettingsProps, SettingsSta
 		this.setState({
 			accountResetAnswer2: event.target.value,
 		});
-    }
-    
-    newPasswordInput(event: React.ChangeEvent<HTMLInputElement>) {
-        this.setState({
-            newPassword: event.target.value,
-        });
-    }
+	}
 
-    confirmNewPasswordInput(event: React.ChangeEvent<HTMLInputElement>) {
-        this.setState({
-            confirmNewPassword: event.target.value,
-        });
-    }
+	newPasswordInput(event: React.ChangeEvent<HTMLInputElement>) {
+		this.setState({
+			newPassword: event.target.value,
+		});
+	}
+
+	confirmNewPasswordInput(event: React.ChangeEvent<HTMLInputElement>) {
+		this.setState({
+			confirmNewPassword: event.target.value,
+		});
+	}
+
+	passwordInput(event: React.ChangeEvent<HTMLInputElement>) {
+		this.setState({
+			password: event.target.value,
+		});
+	}
 
 	//! handleChange() is called when the user changes the value of a form input.
 	handleChange = (
@@ -217,18 +254,21 @@ export default class Settings extends React.Component<SettingsProps, SettingsSta
 					errorMessage: "Please answer the account reset questions.",
 				});
 			} else {
-				await fetch(`${dbCall}/users/settings/passwordUpdate/${this.props.id}`, {
-					method: "PUT",
-					headers: new Headers({
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${this.props.sessionToken}`,
-					}),
-					body: JSON.stringify({
-						user: {
-							passwordhash: this.state.newPassword,
-						},
-					}),
-				})
+				await fetch(
+					`${dbCall}/users/settings/passwordUpdate/${this.props.id}`,
+					{
+						method: "PUT",
+						headers: new Headers({
+							"Content-Type": "application/json",
+							Authorization: `Bearer ${this.props.sessionToken}`,
+						}),
+						body: JSON.stringify({
+							user: {
+								passwordhash: this.state.newPassword,
+							},
+						}),
+					}
+				)
 					.then((res) => {
 						console.log("Password update status is: " + res.status);
 						this.props.setResponseStatus(res.status);
@@ -276,8 +316,8 @@ export default class Settings extends React.Component<SettingsProps, SettingsSta
 			await fetch(`${dbCall}/users/settings/usernameUpdate/${this.props.id}`, {
 				method: "PUT",
 				headers: new Headers({
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${this.props.sessionToken}`,
+					"Content-Type": "application/json",
+					Authorization: `Bearer ${this.props.sessionToken}`,
 				}),
 				body: JSON.stringify({
 					user: {
@@ -328,8 +368,8 @@ export default class Settings extends React.Component<SettingsProps, SettingsSta
 			await fetch(`${dbCall}/users/settings/emailUpdate/${this.props.id}`, {
 				method: "PUT",
 				headers: new Headers({
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${this.props.sessionToken}`,
+					"Content-Type": "application/json",
+					Authorization: `Bearer ${this.props.sessionToken}`,
 				}),
 				body: JSON.stringify({
 					user: {
@@ -368,6 +408,30 @@ export default class Settings extends React.Component<SettingsProps, SettingsSta
 		}
 	};
 
+	//! Delete Account + Videos + Comments
+	//? 1) The page will mount and the User's questions (AccountResetQuestion 1 and AccountResetQuestion2) will be displayed.
+	//? 2) They then will have an input field to enter their answer to the questions (AccountResetAnswer1 and AccountResetAnswer2).
+	//? 3) If in step 2, didUserAnswerAccountResetAnswersCorrectly() returns true, delete account button will be displayed, delete videos button will be displayed, and delete comments button will be displayed.
+	//? 4) If in step 2, didUserAnswerAccountResetAnswersCorrectly() returns false, then an error message will be displayed and the 3 seperate fields will not be displayed.
+	//? 5) If in step 3, the user clicks the delete account button, then handleSubmitDeleteAccount() will be called.
+	//* 5.1) The user will be prompted after hitting the delete account button to confirm that they want to delete their account by entering their password.
+	//* 5.2) This will also delete the user's account from the database.
+	//* 5.3) At the same time, the user will be logged out.
+	//* 5.4) The user will be redirected to the home page with useNavigate()
+	//* 5.5) This will delete the user's account and all of their videos and comments.
+	//* 5.6) The user will be notified that their account has been deleted.
+	//? 6) If in step 3, the user clicks the delete videos button, then handleSubmitDeleteVideos() will be called.
+	//* 6.1) The user will be prompted after hitting the delete videos button to confirm that they want to delete their videos by entering their password.
+	//* 6.2) This will also delete the user's videos from the database.
+	//* 6.3) The user will be notified that their videos have been deleted.
+	//? 7) If in step 3, the user clicks the delete comments button, then handleSubmitDeleteComments() will be called.
+	//* 7.1) The user will be prompted after hitting the delete comments button to confirm that they want to delete their comments by entering their password.
+	//* 7.2) This will also delete the user's comments from the database.
+	//* 7.3) The user will be notified that their comments have been deleted.
+
+	//! handleSubmitDeleteAccount() is called when the user clicks the delete account button.
+	//?
+
 	//!How the return will render the page.
 	//? 1) The page will mount and the User's questions (AccountResetQuestion 1 and AccountResetQuestion2) will be displayed.
 	//? 2) They then will have an input field to enter their answer to the questions (AccountResetAnswer1 and AccountResetAnswer2).
@@ -376,6 +440,349 @@ export default class Settings extends React.Component<SettingsProps, SettingsSta
 	//? 5) If in step 3, the user clicks the submit button for the update password, then handleSubmitUpdatePassword() will be called.
 	//? 6) If in step 3, the user clicks the submit button for the update username, then handleSubmitUpdateUsername() will be called.
 	//? 7) If in step 3, the user clicks the submit button for the update email address, then handleSubmitUpdateEmailAddress() will be called.
+
+	deleteContentPasswordConfirmation = async (
+		e: React.FormEvent<HTMLFormElement>
+	) => {
+		e.preventDefault();
+		await this.didUserAnswerAccountResetAnswersCorrectlySubmit;
+		if (
+			this.state.accountResetAnswer1 === "" ||
+			this.state.accountResetAnswer2 === ""
+		) {
+			this.setState({
+				errorMessage: "Please answer the account reset questions.",
+			});
+		} else {
+			await fetch(
+				`${dbCall}/users/settings/userDeleteContentPasswordConfirmation/${this.props.id}`,
+				{
+					method: "DELETE",
+					headers: new Headers({
+						"Content-Type": "application/json",
+						Authorization: `Bearer ${this.props.sessionToken}`,
+					}),
+				}
+			)
+				.then((res) => {
+					console.log("Content deletion resolution status is: " + res.status);
+					this.props.setResponseStatus(res.status);
+					return res.json();
+				})
+				.then((data) => {
+					if (
+						data.status === 200 &&
+						data.message ===
+							"Content approved to delete via Password confirmation!"
+					) {
+						this.props.clearToken();
+						console.log("Content deletion password confirmation data: " + data);
+						this.props.setResponseStatus(data.status);
+					}
+					this.setState({
+						errorMessage: data.message,
+						responseStatus: data.status,
+						deleteContentPasswordConfirmation: true,
+					});
+				})
+				.catch((error) => {
+					console.log(
+						"Content deletion password confirmation error: " + error.message
+					);
+					this.setState({
+						errorMessage: error.message,
+						responseStatus: error.status,
+					});
+				});
+		}
+	};
+
+	deleteUserSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
+		await this.didUserAnswerAccountResetAnswersCorrectlySubmit;
+		if (
+			this.state.accountResetAnswer1 === "" ||
+			this.state.accountResetAnswer2 === ""
+		) {
+			this.setState({
+				errorMessage: "Please answer the account reset questions.",
+			});
+		} else {
+			await fetch(`${dbCall}/users/settings/deleteUser/${this.props.id}`, {
+				method: "DELETE",
+				headers: new Headers({
+					"Content-Type": "application/json",
+					Authorization: `Bearer ${this.props.sessionToken}`,
+				}),
+			})
+				.then((res) => {
+					console.log("Delete User status is: " + res.status);
+					this.props.setResponseStatus(res.status);
+					return res.json();
+				})
+				.then((data) => {
+					if (
+						data.status === 200 &&
+						data.message === "User successfully deleted!"
+					) {
+						this.props.clearToken();
+						console.log("Delete User data: " + data);
+						this.props.setResponseStatus(data.status);
+					}
+					this.setState({
+						errorMessage: data.message,
+						responseStatus: data.status,
+					});
+				})
+				.catch((error) => {
+					console.log("Delete User error: " + error.message);
+					this.setState({
+						errorMessage: error.message,
+						responseStatus: error.status,
+					});
+				});
+		}
+	};
+
+	deleteUserConfirmation = async (
+		e: React.FormEvent<HTMLFormElement>
+	) => {
+		e.preventDefault();
+		if (
+			this.state.accountResetAnswer1 === "" ||
+			this.state.accountResetAnswer2 === ""
+		) {
+			this.setState({
+				errorMessage: "Please answer the account reset questions.",
+			});
+		} else {
+			await fetch(
+				`${dbCall}/users/settings/deleteUserConfirmation/${this.props.id}`,
+				{
+					method: "DELETE",
+					headers: new Headers({
+						"Content-Type": "application/json",
+						Authorization: `Bearer ${this.props.sessionToken}`,
+					}),
+				}
+			)
+				.then((res) => {
+					console.log("Delete User Confirmation status is: " + res.status);
+					this.props.setResponseStatus(res.status);
+					return res.json();
+				})
+				.then((data) => {
+					if (
+						data.status === 200 &&
+						data.message === "User successfully deleted!"
+					) {
+						this.props.clearToken();
+						console.log("Delete User Confirmation data: " + data);
+						this.props.setResponseStatus(data.status);
+					}
+					this.setState({
+						errorMessage: data.message,
+						responseStatus: data.status,
+						deleteContentPasswordConfirmation: false,
+					});
+				})
+				.catch((error) => {
+					console.log("Delete User Confirmation error: " + error.message);
+					this.setState({
+						errorMessage: error.message,
+						responseStatus: error.status,
+					});
+				});
+		}
+	};
+
+	deleteUserVideosSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
+		await this.didUserAnswerAccountResetAnswersCorrectlySubmit;
+		if (
+			this.state.accountResetAnswer1 === "" ||
+			this.state.accountResetAnswer2 === ""
+		) {
+			this.setState({
+				errorMessage: "Please answer the account reset questions.",
+			});
+		} else {
+			await fetch(`${dbCall}/users/settings/deleteVideos/${this.props.id}`, {
+				method: "DELETE",
+				headers: new Headers({
+					"Content-Type": "application/json",
+					Authorization: `Bearer ${this.props.sessionToken}`,
+				}),
+			})
+				.then((res) => {
+					console.log("Delete Videos status is: " + res.status);
+					this.props.setResponseStatus(res.status);
+					return res.json();
+				})
+				.then((data) => {
+					if (
+						data.status === 200 &&
+						data.message === "Videos successfully deleted!"
+					) {
+						this.props.clearToken();
+						console.log("Delete Videos data: " + data);
+						this.props.setResponseStatus(data.status);
+					}
+					this.setState({
+						errorMessage: data.message,
+						responseStatus: data.status,
+					});
+				})
+				.catch((error) => {
+					console.log("Delete Videos error: " + error.message);
+					this.setState({
+						errorMessage: error.message,
+						responseStatus: error.status,
+					});
+				});
+		}
+	};
+
+	deleteUserCommentsSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
+		await this.didUserAnswerAccountResetAnswersCorrectlySubmit;
+		if (
+			this.state.accountResetAnswer1 === "" ||
+			this.state.accountResetAnswer2 === ""
+		) {
+			this.setState({
+				errorMessage: "Please answer the account reset questions.",
+			});
+		} else {
+			await fetch(`${dbCall}/users/settings/deleteComments/${this.props.id}`, {
+				method: "DELETE",
+				headers: new Headers({
+					"Content-Type": "application/json",
+					Authorization: `Bearer ${this.props.sessionToken}`,
+				}),
+			})
+				.then((res) => {
+					console.log("Delete Comments status is: " + res.status);
+					this.props.setResponseStatus(res.status);
+					return res.json();
+				})
+				.then((data) => {
+					if (
+						data.status === 200 &&
+						data.message === "Comments successfully deleted!"
+					) {
+						this.props.clearToken();
+						console.log("Delete Comments data: " + data);
+						this.props.setResponseStatus(data.status);
+					}
+					this.setState({
+						errorMessage: data.message,
+						responseStatus: data.status,
+					});
+				})
+				.catch((error) => {
+					console.log("Delete Comments error: " + error.message);
+					this.setState({
+						errorMessage: error.message,
+						responseStatus: error.status,
+					});
+				});
+		}
+	};
+
+    deleteUserVideosConfirmation = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        await this.didUserAnswerAccountResetAnswersCorrectlySubmit;
+        if (
+            this.state.accountResetAnswer1 === "" ||
+            this.state.accountResetAnswer2 === ""
+        ) {
+            this.setState({
+                errorMessage: "Please answer the account reset questions.",
+            });
+        } else {
+            await fetch(`${dbCall}/users/settings/deleteVideos/${this.props.id}`, {
+                method: "DELETE",
+                headers: new Headers({
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${this.props.sessionToken}`,
+                }),
+            })
+                .then((res) => {
+                    console.log("Delete Videos status is: " + res.status);
+                    this.props.setResponseStatus(res.status);
+                    return res.json();
+                })
+                .then((data) => {
+                    if (
+                        data.status === 200 &&
+                        data.message === "Videos successfully deleted!"
+                    ) {
+                        this.props.clearToken();
+                        console.log("Delete Videos data: " + data);
+                        this.props.setResponseStatus(data.status);
+                    }
+                    this.setState({
+                        errorMessage: data.message,
+                        responseStatus: data.status,
+                    });
+                })
+                .catch((error) => {
+                    console.log("Delete Videos error: " + error.message);
+                    this.setState({
+                        errorMessage: error.message,
+                        responseStatus: error.status,
+                    });
+                });
+        }
+    };
+
+    deleteUserCommentsConfirmation = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        await this.didUserAnswerAccountResetAnswersCorrectlySubmit;
+        if (
+            this.state.accountResetAnswer1 === "" ||
+            this.state.accountResetAnswer2 === ""
+        ) {
+            this.setState({
+                errorMessage: "Please answer the account reset questions.",
+            });
+        } else {
+            await fetch(`${dbCall}/users/settings/deleteComments/${this.props.id}`, {
+                method: "DELETE",
+                headers: new Headers({
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${this.props.sessionToken}`,
+                }),
+            })
+                .then((res) => {
+                    console.log("Delete Comments status is: " + res.status);
+                    this.props.setResponseStatus(res.status);
+                    return res.json();
+                })
+                .then((data) => {
+                    if (
+                        data.status === 200 &&
+                        data.message === "Comments successfully deleted!"
+                    ) {
+                        this.props.clearToken();
+                        console.log("Delete Comments data: " + data);
+                        this.props.setResponseStatus(data.status);
+                    }
+                    this.setState({
+                        errorMessage: data.message,
+                        responseStatus: data.status,
+                    });
+                })
+                .catch((error) => {
+                    console.log("Delete Comments error: " + error.message);
+                    this.setState({
+                        errorMessage: error.message,
+                        responseStatus: error.status,
+                    });
+                });
+        }
+    };
 
 	render() {
 		return (
@@ -428,11 +835,11 @@ export default class Settings extends React.Component<SettingsProps, SettingsSta
 							>
 								<div className="account-reset-update-newPassword-input-container">
 									<input
-                                        placeholder="New Password"
-                                        type="password"
-                                        name="accountResetUpdatePassword"
-                                        value={this.state.newPassword}
-                                        onChange={this.newPasswordInput}
+										placeholder="New Password"
+										type="password"
+										name="accountResetUpdatePassword"
+										value={this.state.newPassword}
+										onChange={this.newPasswordInput}
 									/>
 								</div>
 
