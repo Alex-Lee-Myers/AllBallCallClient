@@ -47,18 +47,24 @@ export default class Settings extends React.Component<SettingsProps, SettingsSta
 			accountResetAnswer2: "",
 			password: "",
 			newPassword: "",
-            confirmNewPassword: "",
-            showResetOptions: false
+			confirmNewPassword: "",
+			showResetOptions: false,
 		};
-		this.handleSubmitUpdatePassword = this.handleSubmitUpdatePassword.bind(this);
-		this.handleSubmitUpdateUsername = this.handleSubmitUpdateUsername.bind(this);
-		this.handleSubmitUpdateEmailAddress =this.handleSubmitUpdateEmailAddress.bind(this);
+		this.handleSubmitUpdatePassword =
+			this.handleSubmitUpdatePassword.bind(this);
+		this.handleSubmitUpdateUsername =
+			this.handleSubmitUpdateUsername.bind(this);
+		this.handleSubmitUpdateEmailAddress =
+			this.handleSubmitUpdateEmailAddress.bind(this);
 		this.handleChange = this.handleChange.bind(this);
 		// this.accountResetQuestion1 = this.accountResetQuestion1.bind(this);
 		// this.accountResetQuestion2 = this.accountResetQuestion2.bind(this);
 		this.accountResetAnswer1 = this.accountResetAnswer1.bind(this);
 		this.accountResetAnswer2 = this.accountResetAnswer2.bind(this);
-		this.didUserAnswerAccountResetAnswersCorrectlySubmit =this.didUserAnswerAccountResetAnswersCorrectlySubmit.bind(this);
+		this.didUserAnswerAccountResetAnswersCorrectlySubmit =
+            this.didUserAnswerAccountResetAnswersCorrectlySubmit.bind(this);
+        this.newPasswordInput = this.newPasswordInput.bind(this);
+        this.confirmNewPasswordInput = this.confirmNewPasswordInput.bind(this);
 	}
 
 	//! grabUsersAccountResetQuestions() grabs the users account reset questions from the database.
@@ -95,33 +101,24 @@ export default class Settings extends React.Component<SettingsProps, SettingsSta
 		console.log("SessionToken: :", this.props.sessionToken);
 	}
 
-	accountResetAnswer1(event: React.ChangeEvent<HTMLInputElement>) {
-		this.setState({
-			accountResetAnswer1: event.target.value,
-		});
-	}
-
-	accountResetAnswer2(event: React.ChangeEvent<HTMLInputElement>) {
-		this.setState({
-			accountResetAnswer2: event.target.value,
-		});
-	}
 	//! didUserAnswerAccountResetQuestions() checks if the user has answered the account reset questions (accountResetAnswer1 and accountResetAnswer2) from `${dbCall}/users/settings/resetAnswers/:id`. If they have, it will return true. If they have not, it will return false. This will be used in a form to check if the user has answered the account reset questions correctly.
-	didUserAnswerAccountResetAnswersCorrectlySubmit = async (event: React.FormEvent<HTMLFormElement>): Promise<void> => {
+	didUserAnswerAccountResetAnswersCorrectlySubmit = async (
+		event: React.FormEvent<HTMLFormElement>
+	): Promise<void> => {
 		event.preventDefault();
-        await fetch(`${dbCall}/users/settings/resetAnswers/${this.props.id}`, {
-            method: "POST",
-            headers: new Headers({
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${this.props.sessionToken}`,
-            }),
-            body: JSON.stringify({
-                user: {
-                    accountResetAnswer1: this.state.accountResetAnswer1,
-                    accountResetAnswer2: this.state.accountResetAnswer2,
-                }
-            })
-        })
+		await fetch(`${dbCall}/users/settings/resetAnswers/${this.props.id}`, {
+			method: "POST",
+			headers: new Headers({
+				"Content-Type": "application/json",
+				Authorization: `Bearer ${this.props.sessionToken}`,
+			}),
+			body: JSON.stringify({
+				user: {
+					accountResetAnswer1: this.state.accountResetAnswer1,
+					accountResetAnswer2: this.state.accountResetAnswer2,
+				},
+			}),
+		})
 			.then((res) => {
 				console.log("Answer Confirmation Resolution: ", res);
 				return res.json();
@@ -134,18 +131,18 @@ export default class Settings extends React.Component<SettingsProps, SettingsSta
 				) {
 					this.setState({
 						responseStatus: data.status,
-                        errorMessage: data.message,
-                        showResetOptions: true
-                    });
-                    console.log("Answer Confirmation Data: ", data);
+						errorMessage: data.message,
+						showResetOptions: true,
+					});
+					console.log("Answer Confirmation Data: ", data);
 					return true;
 				} else {
 					this.setState({
 						responseStatus: data.status,
-                        errorMessage: data.message,
-                        showResetOptions: false
-                    });
-                    console.log("ELSE Answer Error Data :", data);
+						errorMessage: data.message,
+						showResetOptions: false,
+					});
+					console.log("ELSE Answer Error Data :", data);
 					return false;
 				}
 			})
@@ -153,14 +150,38 @@ export default class Settings extends React.Component<SettingsProps, SettingsSta
 				console.log("Answer Confirmation Error: ", error);
 				this.setState({
 					responseStatus: error.status,
-                    errorMessage: error.message,
-                    showResetOptions: false
+					errorMessage: error.message,
+					showResetOptions: false,
 				});
 				return false;
 			});
 	};
 
 	//! CHANGE section.
+
+	accountResetAnswer1(event: React.ChangeEvent<HTMLInputElement>) {
+		this.setState({
+			accountResetAnswer1: event.target.value,
+		});
+	}
+
+	accountResetAnswer2(event: React.ChangeEvent<HTMLInputElement>) {
+		this.setState({
+			accountResetAnswer2: event.target.value,
+		});
+    }
+    
+    newPasswordInput(event: React.ChangeEvent<HTMLInputElement>) {
+        this.setState({
+            newPassword: event.target.value,
+        });
+    }
+
+    confirmNewPasswordInput(event: React.ChangeEvent<HTMLInputElement>) {
+        this.setState({
+            confirmNewPassword: event.target.value,
+        });
+    }
 
 	//! handleChange() is called when the user changes the value of a form input.
 	handleChange = (
@@ -196,14 +217,15 @@ export default class Settings extends React.Component<SettingsProps, SettingsSta
 					errorMessage: "Please answer the account reset questions.",
 				});
 			} else {
-				await fetch(`${dbCall}/users/settings/password/${this.props.id}`, {
+				await fetch(`${dbCall}/users/settings/passwordUpdate/${this.props.id}`, {
 					method: "PUT",
 					headers: new Headers({
-						"Content-Type": "application/json",
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${this.props.sessionToken}`,
 					}),
 					body: JSON.stringify({
 						user: {
-							passwordhash: this.state.password,
+							passwordhash: this.state.newPassword,
 						},
 					}),
 				})
@@ -213,7 +235,7 @@ export default class Settings extends React.Component<SettingsProps, SettingsSta
 						return res.json();
 					})
 					.then((data) => {
-						if (data.status === 200 && data.message === "Username updated!") {
+						if (data.status === 200 && data.message === "Password updated!") {
 							console.log("Password reset data: " + data);
 							this.setState({
 								errorMessage: data.message,
@@ -231,7 +253,7 @@ export default class Settings extends React.Component<SettingsProps, SettingsSta
 						console.log("Password update error: " + error.message);
 						this.setState({
 							errorMessage: error.message,
-							responseStatus: error.response.status,
+							responseStatus: error.status,
 						});
 					});
 			}
@@ -251,10 +273,11 @@ export default class Settings extends React.Component<SettingsProps, SettingsSta
 				errorMessage: "Please answer the account reset questions.",
 			});
 		} else {
-			await fetch(`${dbCall}/users/settings/username/${this.props.id}`, {
+			await fetch(`${dbCall}/users/settings/usernameUpdate/${this.props.id}`, {
 				method: "PUT",
 				headers: new Headers({
-					"Content-Type": "application/json",
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${this.props.sessionToken}`,
 				}),
 				body: JSON.stringify({
 					user: {
@@ -281,7 +304,7 @@ export default class Settings extends React.Component<SettingsProps, SettingsSta
 					console.log("Username update error: " + error.message);
 					this.setState({
 						errorMessage: error.message,
-						responseStatus: error.response.status,
+						responseStatus: error.status,
 					});
 				});
 		}
@@ -302,10 +325,11 @@ export default class Settings extends React.Component<SettingsProps, SettingsSta
 				errorMessage: "Please answer the account reset questions.",
 			});
 		} else {
-			await fetch(`${dbCall}/users/settings/email/${this.props.id}`, {
+			await fetch(`${dbCall}/users/settings/emailUpdate/${this.props.id}`, {
 				method: "PUT",
 				headers: new Headers({
-					"Content-Type": "application/json",
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${this.props.sessionToken}`,
 				}),
 				body: JSON.stringify({
 					user: {
@@ -353,126 +377,137 @@ export default class Settings extends React.Component<SettingsProps, SettingsSta
 	//? 6) If in step 3, the user clicks the submit button for the update username, then handleSubmitUpdateUsername() will be called.
 	//? 7) If in step 3, the user clicks the submit button for the update email address, then handleSubmitUpdateEmailAddress() will be called.
 
-    render() {
-        return (
-            <div className="account-reset-container">
-                <div className="account-reset-question-container">
-                    <div className="account-reset-question-1">
-                        <p>{this.state.accountResetQuestion1}</p>
-                    </div>
-                    <div className="account-reset-question-2">
-                        <p>{this.state.accountResetQuestion2}</p>
-                    </div>
-                </div>
-                <form
-                    onSubmit={this.didUserAnswerAccountResetAnswersCorrectlySubmit}
-                    className="account-reset-answer-container"
-                >
-                    <div className="account-reset-answer-1">
-                        <input
-                            placeholder="Answer to Question 1"
-                            type="text"
-                            name="accountResetAnswer1"
-                            value={this.state.accountResetAnswer1}
-                            onChange={this.handleChange}
-                        />
-                    </div>
-                    <div className="account-reset-answer-2">
-                        <input
-                            placeholder="Answer to Question 2"
-                            type="text"
-                            name="accountResetAnswer2"
-                            value={this.state.accountResetAnswer2}
-                            onChange={this.handleChange}
-                        />
-                    </div>
-                    <div className="account-reset-submit-container">
-                        <button type="submit" className="account-reset-submit-button">
-                            Submit
-                        </button>
-                    </div>
-                </form>
-                {/* State showResetOptions is set to true when the user correctly answers the account reset questions. */}
-                {/* If it returns true, a drop down displays giving the user to update their username, password, and email address each in their own individual form field. */}
-                {/* If it returns false, nothing will show to the user. */}
-                {this.state.showResetOptions ? (
-                    <div className="account-reset-update-container">
-                        <div className="account-reset-update-password-container">
-                            <form
-                                onSubmit={this.handleSubmitUpdatePassword}
-                                className="account-reset-update-password-form"
-                            >
-                                <div className="account-reset-update-password-input-container">
-                                    <input
+	render() {
+		return (
+			<div className="account-reset-container">
+				<div className="account-reset-question-container">
+					<div className="account-reset-question-1">
+						<p>{this.state.accountResetQuestion1}</p>
+					</div>
+					<div className="account-reset-question-2">
+						<p>{this.state.accountResetQuestion2}</p>
+					</div>
+				</div>
+				<form
+					onSubmit={this.didUserAnswerAccountResetAnswersCorrectlySubmit}
+					className="account-reset-answer-container"
+				>
+					<div className="account-reset-answer-1">
+						<input
+							placeholder="Answer to Question 1"
+							type="text"
+							name="accountResetAnswer1"
+							value={this.state.accountResetAnswer1}
+							onChange={this.handleChange}
+						/>
+					</div>
+					<div className="account-reset-answer-2">
+						<input
+							placeholder="Answer to Question 2"
+							type="text"
+							name="accountResetAnswer2"
+							value={this.state.accountResetAnswer2}
+							onChange={this.handleChange}
+						/>
+					</div>
+					<div className="account-reset-submit-container">
+						<button type="submit" className="account-reset-submit-button">
+							Submit
+						</button>
+					</div>
+				</form>
+				{/* State showResetOptions is set to true when the user correctly answers the account reset questions. */}
+				{/* If it returns true, a drop down displays giving the user to update their username, password, and email address each in their own individual form field. */}
+				{/* If it returns false, nothing will show to the user. */}
+				{this.state.showResetOptions ? (
+					<div className="account-reset-update-container">
+						<div className="account-reset-update-password-container">
+							<form
+								onSubmit={this.handleSubmitUpdatePassword}
+								className="account-reset-update-password-form"
+							>
+								<div className="account-reset-update-newPassword-input-container">
+									<input
                                         placeholder="New Password"
                                         type="password"
                                         name="accountResetUpdatePassword"
-                                        value={this.state.password}
-                                        onChange={this.handleChange}
-                                    />
-                                </div>
-                                <div className="account-reset-update-password-submit-container">
-                                    <button
-                                        type="submit"
-                                        className="account-reset-update-password-submit-button"
-                                    >
-                                        Submit
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                        <div className="account-reset-update-username-container">
-                            <form
-                                onSubmit={this.handleSubmitUpdateUsername}
-                                className="account-reset-update-username-form"
-                            >
-                                <div className="account-reset-update-username-input-container">
-                                    <input
-                                        placeholder={this.props.username}
-                                        type="text"
-                                        name="username"
-                                        value={this.state.username}
-                                        onChange={this.handleChange}
-                                    />
-                                </div>
-                                <div className="account-reset-update-username-submit-container">
-                                    <button
-                                        type="submit"
-                                        className="account-reset-update-username-submit-button"
-                                    >
-                                        Submit
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                        <div className="account-reset-update-email-address-container">
-                            <form
-                                onSubmit={this.handleSubmitUpdateEmailAddress}
-                                className="account-reset-update-email-address-form"
-                            >
-                                <div className="account-reset-update-email-address-input-container">
-                                    <input
-                                        placeholder={this.props.emailAddress}
-                                        type="text"
-                                        name="emailAddress"
-                                        value={this.state.emailAddress}
-                                        onChange={this.handleChange}
-                                    />
-                                </div>
-                                <div className="account-reset-update-email-address-submit-container">
-                                    <button
-                                        type="submit"
-                                        className="account-reset-update-email-address-submit-button"
-                                    >
-                                        Submit
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                ) : null}
-            </div>
-        );
-    }
+                                        value={this.state.newPassword}
+                                        onChange={this.newPasswordInput}
+									/>
+								</div>
+
+								<div className="account-reset-update-newPasswordConfirm-input-container">
+									<input
+										placeholder="Confirm New Password"
+										type="password"
+										name="accountResetUpdatePasswordConfirm"
+										value={this.state.confirmNewPassword}
+										onChange={this.confirmNewPasswordInput}
+									/>
+								</div>
+
+								<div className="account-reset-update-password-submit-container">
+									<button
+										type="submit"
+										className="account-reset-update-password-submit-button"
+									>
+										Submit
+									</button>
+								</div>
+							</form>
+						</div>
+						<div className="account-reset-update-username-container">
+							<form
+								onSubmit={this.handleSubmitUpdateUsername}
+								className="account-reset-update-username-form"
+							>
+								<div className="account-reset-update-username-input-container">
+									<input
+										placeholder={this.props.username}
+										type="text"
+										name="username"
+										value={this.state.username}
+										onChange={this.handleChange}
+									/>
+								</div>
+								<div className="account-reset-update-username-submit-container">
+									<button
+										type="submit"
+										className="account-reset-update-username-submit-button"
+									>
+										Submit
+									</button>
+								</div>
+							</form>
+						</div>
+						<div className="account-reset-update-email-address-container">
+							<form
+								onSubmit={this.handleSubmitUpdateEmailAddress}
+								className="account-reset-update-email-address-form"
+							>
+								<div className="account-reset-update-email-address-input-container">
+									<input
+										placeholder={this.props.emailAddress}
+										type="text"
+										name="emailAddress"
+										value={this.state.emailAddress}
+										onChange={this.handleChange}
+									/>
+								</div>
+								<div className="account-reset-update-email-address-submit-container">
+									<button
+										type="submit"
+										className="account-reset-update-email-address-submit-button"
+									>
+										Submit
+									</button>
+								</div>
+							</form>
+						</div>
+					</div>
+				) : null}
+			</div>
+		);
+	}
 }
 
