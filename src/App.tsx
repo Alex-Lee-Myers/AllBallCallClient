@@ -12,6 +12,7 @@ import Login from "../src/components/Login";
 import Navbar from "../src/components/Navbar";
 import Register from "../src/components/Register";
 import VideoPost from "../src/components/VideoPost";
+import Settings from "../src/components/Settings";
 
 export interface ABCtoken {
   isUserLoggedIn: boolean;
@@ -71,49 +72,41 @@ const App = () => {
   };
 
   const fetchDb = async (): Promise<void> => {
-    if (localStorage.getItem('Authorization') === null) {
-      setSessionToken(null);
-    }
-    else {
+    if (localStorage.getItem('Authorization')) {
       setSessionToken(localStorage.getItem('Authorization'));
+      setIsUserLoggedIn(true);
     }
-    await fetch(`${dbCall}/users/validate`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${sessionToken}`
-      }
-    })
-    .then(res => {
-      console.log("AppAuth res.status is ", res.status);
-      setResponseStatus(res.status);
-      return res.json();
-    })
-    .then(data => {
-      console.log("AppAuth data is ", data);
-      if (data.status === 200) {
-        setIsUserLoggedIn(true);
-        setId(data.user.id);
-        setIsAdmin(data.user.isAdmin);
-        setEmailAddress(data.user.emailAddress);
-        setUsername(data.user.username);
-      }
-      else {
-        setIsUserLoggedIn(false);
-        setId('');
-        setIsAdmin(false);
-        setEmailAddress('');
-        setUsername('');
-      }
-    })
-    .catch(err => {
-      console.log("AppAuth err is ", err);
+
+    if (sessionToken !== null || undefined || "") {
+      await fetch(`${dbCall}/users/validate`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${sessionToken}`
+        }
+      })
+        .then(res => {
+          return res.json()
+        })
+        .then((data) => {
+          console.log("App Validation :", data);
+          setId(data.id);
+          setIsAdmin(data.isAdmin);
+          setEmailAddress(data.email);
+          setErrorMessage(data.message);
+          setUsername(data.username);
+          if (data.status === 200) {
+            setIsUserLoggedIn(true);
+          }
+        })
+        .catch(err => {
+          console.log(err);
+          setIsUserLoggedIn(false);
+          setErrorMessage(err.message);
+        });
+    } else {
       setIsUserLoggedIn(false);
-      setId('');
-      setIsAdmin(false);
-      setEmailAddress('');
-      setUsername('');
-    });
+    }
   }
 
   const updateToken = (mintToken: string): void => {
@@ -129,81 +122,98 @@ const App = () => {
   };
 
   useEffect(() => {
-      fetchVideos();
-  }, [isUserLoggedIn]);
+    fetchVideos();
+    fetchDb();
+  }, [sessionToken]);
 
   return (
-    <>
-      <Navbar>
-        id={id}
-        clearToken={clearToken}
-        emailAddress={emailAddress}
-        sessionToken={sessionToken}
-        setSessionToken={setSessionToken}
-        isUserLoggedIn={isUserLoggedIn}
-        username={username}
-      </Navbar>
+		<>
+			<Navbar>
+				id={id}
+				clearToken={clearToken}
+				emailAddress={emailAddress}
+				sessionToken={sessionToken}
+				setSessionToken={setSessionToken}
+				isUserLoggedIn={isUserLoggedIn}
+				username={username}
+			</Navbar>
 
-      <Routes>
-        <Route path="/" element={<Home />} />
+			<Routes>
+				<Route path="/" element={<Home />} />
 
-        <Route
-          path="/login"
-          element={
-            <Login
-              id={id}
-              setId={setId}
-              isAdmin={isAdmin}
-              setIsAdmin={setIsAdmin}
-              emailAddress={emailAddress}
-              setEmailAddress={setEmailAddress}
-              errorMessage={errorMessage}
-              setErrorMessage={setErrorMessage}
-              responseStatus={responseStatus}
-              setResponseStatus={setResponseStatus}
-              sessionToken={sessionToken}
-              setSessionToken={setSessionToken}
-              updateToken={updateToken}
-              isUserLoggedIn={isUserLoggedIn}
-              setIsUserLoggedIn={setIsUserLoggedIn}
-              username={username}
-              setUsername={setUsername}
-            />
-          }
-        />
+				<Route
+					path="/login"
+					element={
+						<Login
+							id={id}
+							setId={setId}
+							isAdmin={isAdmin}
+							setIsAdmin={setIsAdmin}
+							emailAddress={emailAddress}
+							setEmailAddress={setEmailAddress}
+							errorMessage={errorMessage}
+							setErrorMessage={setErrorMessage}
+							responseStatus={responseStatus}
+							setResponseStatus={setResponseStatus}
+							sessionToken={sessionToken}
+							setSessionToken={setSessionToken}
+							updateToken={updateToken}
+							isUserLoggedIn={isUserLoggedIn}
+							setIsUserLoggedIn={setIsUserLoggedIn}
+							username={username}
+							setUsername={setUsername}
+						/>
+					}
+				/>
 
-        <Route
-          path="/register"
-          element={
-            <Register
-              id={id}
-              setId={setId}
-              isAdmin={isAdmin}
-              setIsAdmin={setIsAdmin}
-              emailAddress={emailAddress}
-              setEmailAddress={setEmailAddress}
-              errorMessage={errorMessage}
-              setErrorMessage={setErrorMessage}
-              isUserLoggedIn={isUserLoggedIn}
-              setIsUserLoggedIn={setIsUserLoggedIn}
-              responseStatus={responseStatus}
-              setResponseStatus={setResponseStatus}
-              sessionToken={sessionToken}
-              setSessionToken={setSessionToken}
-              updateToken={updateToken}
-              username={username}
-              setUsername={setUsername}
-            />
-          }
-        />
+				<Route
+					path="/register"
+					element={
+						<Register
+							id={id}
+							setId={setId}
+							isAdmin={isAdmin}
+							setIsAdmin={setIsAdmin}
+							emailAddress={emailAddress}
+							setEmailAddress={setEmailAddress}
+							errorMessage={errorMessage}
+							setErrorMessage={setErrorMessage}
+							isUserLoggedIn={isUserLoggedIn}
+							setIsUserLoggedIn={setIsUserLoggedIn}
+							responseStatus={responseStatus}
+							setResponseStatus={setResponseStatus}
+							sessionToken={sessionToken}
+							setSessionToken={setSessionToken}
+							updateToken={updateToken}
+							username={username}
+							setUsername={setUsername}
+						/>
+					}
+				/>
 
-        <Route
-          path="/videos/content"
-          element={<VideoPost isAdmin={isAdmin} sessionToken={sessionToken} />}
-        />
-      </Routes>
-    </>
-  );
+				<Route
+					path="/settings"
+					element={
+						<Settings
+							id={id}
+							emailAddress={emailAddress}
+							setEmailAddress={setEmailAddress}
+							sessionToken={sessionToken}
+							username={username}
+							setUsername={setUsername}
+							responseStatus={responseStatus}
+							setResponseStatus={setResponseStatus}
+						/>
+					}
+				/>
+
+				<Route
+					path="/videos/content"
+					element={<VideoPost isAdmin={isAdmin} sessionToken={sessionToken} />}
+				/>
+			</Routes>
+		</>
+	);
 };
 
 export default App;

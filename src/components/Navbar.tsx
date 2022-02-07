@@ -7,6 +7,16 @@ import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { ABCtoken, ABCuserInfo } from "../App";
 
+interface AuthProps {
+	id: ABCuserInfo["id"];
+	clearToken: ABCtoken["clearToken"];
+	isAdmin: ABCuserInfo["isAdmin"];
+	isUserLoggedIn: ABCtoken["isUserLoggedIn"];
+	username: ABCuserInfo["username"];
+	sessionToken: ABCtoken["sessionToken"];
+}
+	
+
 interface userState {
     username: ABCuserInfo["username"] | undefined | string;
     emailAddress: ABCuserInfo["emailAddress"] | null | string;
@@ -42,7 +52,8 @@ interface navbarState {
     classNames: Function;
 }
 
-//TODO 0) Add conditionals based on current state. 
+//TODO 0) Fix the navbar to be responsive to userLogin.
+	//* I believe I need to work out how to pass through AuthProps to the Navbar.
 
 export default class Navbar extends React.Component<
 	{},
@@ -107,7 +118,7 @@ export default class Navbar extends React.Component<
 				{
 					id: 3,
 					name: "Streamable",
-					href: "https://streamable.com/",
+					href: "#",
 					current: false,
 					userVisible: false,
 				},
@@ -129,7 +140,7 @@ export default class Navbar extends React.Component<
 				{
 					id: 2,
 					pageName: "Settings",
-					href: "#",
+					href: "/settings/:id",
 					userVisible: false,
 				},
 				{
@@ -230,13 +241,13 @@ export default class Navbar extends React.Component<
 					{
 						id: 1,
 						pageName: "Your Park",
-						href: "#",
+						href: "/yourPark",
 						userVisible: false,
 					},
 					{
 						id: 2,
 						pageName: "Settings",
-						href: "#",
+						href: "/settings",
 						userVisible: false,
 					},
 					{

@@ -75,7 +75,7 @@ const Login = (props: AuthProps) => {
                 props.setId(data.id);
                 props.setIsAdmin(data.isAdmin);
                 props.setUsername(data.username);
-                props.setEmailAddress(data.emailAddress);
+                props.setEmailAddress(data.email);
                 navigate('/');
             } else if (data.status === 200 && data.isAdmin === true) {
                 console.log("Admin | Successfully logged-in!");
