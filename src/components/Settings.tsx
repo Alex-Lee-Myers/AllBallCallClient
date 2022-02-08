@@ -27,17 +27,17 @@ interface SettingsState {
     password: string;
     newPassword: string;
     confirmNewPassword: string;
-    showResetOptions: boolean;
-    showDeleteUserOption: boolean;
-    showDeleteUserPasswordConfirmation: boolean;
+	showResetOptions: boolean;
+	//? Delete User Options...
+    showDeleteUserContentOption: boolean; //* This drops down an accordion of options for the user to delete the user, video, and content.
+    showDeleteUserPasswordConfirmation: string; //* Password: "YES" inputted 
     showDeleteUserConfirmation: boolean;
     showDeleteUserComments: boolean;
-    showDeleteUserCommentsPasswordConfirmation: boolean;
+    showDeleteUserCommentsPasswordConfirmation: string;
     showDeleteUserCommentsConfirmation: boolean;
     showDeleteUserVideos: boolean;
-    showDeleteUserVideosPasswordConfirmation: boolean;
+    showDeleteUserVideosPasswordConfirmation: string;
     showDeleteUserVideosConfirmation: boolean;
-    deleteContentPasswordConfirmation: boolean;
 }
 
 //! On this page, after the user has logged in, they can change their username, email address, and password.
@@ -60,16 +60,15 @@ export default class Settings extends React.Component<SettingsProps, SettingsSta
 			newPassword: "",
 			confirmNewPassword: "",
 			showResetOptions: false,
-			showDeleteUserOption: false,
+			showDeleteUserContentOption: false,
 			showDeleteUserConfirmation: false,
-			showDeleteUserPasswordConfirmation: false,
+			showDeleteUserPasswordConfirmation: "",
 			showDeleteUserComments: false,
 			showDeleteUserCommentsConfirmation: false,
-			showDeleteUserCommentsPasswordConfirmation: false,
+			showDeleteUserCommentsPasswordConfirmation: "",
 			showDeleteUserVideos: false,
 			showDeleteUserVideosConfirmation: false,
-			showDeleteUserVideosPasswordConfirmation: false,
-			deleteContentPasswordConfirmation: false,
+			showDeleteUserVideosPasswordConfirmation: "",
 		};
 		this.handleSubmitUpdatePassword =
 			this.handleSubmitUpdatePassword.bind(this);
@@ -163,7 +162,7 @@ export default class Settings extends React.Component<SettingsProps, SettingsSta
 						showResetOptions: true,
 						showDeleteUserComments: true,
 						showDeleteUserVideos: true,
-						showDeleteUserOption: true,
+						showDeleteUserContentOption: true,
 					});
 					console.log("Answer Confirmation Data: ", data);
 					return true;
@@ -482,7 +481,7 @@ export default class Settings extends React.Component<SettingsProps, SettingsSta
 					this.setState({
 						errorMessage: data.message,
 						responseStatus: data.status,
-						deleteContentPasswordConfirmation: true,
+						// deleteContentPasswordConfirmation: true,
 					});
 				})
 				.catch((error) => {
@@ -583,7 +582,7 @@ export default class Settings extends React.Component<SettingsProps, SettingsSta
 					this.setState({
 						errorMessage: data.message,
 						responseStatus: data.status,
-						deleteContentPasswordConfirmation: false,
+						// deleteContentPasswordConfirmation: false,
 					});
 				})
 				.catch((error) => {

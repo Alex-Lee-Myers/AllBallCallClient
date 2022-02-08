@@ -33,212 +33,237 @@ export interface AuthProps {
 
 //! Function version
 const Register = (props: AuthProps) => {
-  //! Navigate for React-Router-Dom V6
-  const navigate = useNavigate();
-  //! UseState's
-  const [confirmPassword, setConfirmPassword] = React.useState<string>("");
-  const [passwordhash, setPasswordhash] = React.useState<string>("");
-  const [accountResetQuestion1, setAccountResetQuestion1] = React.useState<string>("");
-  const [accountResetQuestion2, setAccountResetQuestion2] = React.useState<string>("");
-  const [accountResetAnswer1, setAccountAnswer1] = React.useState<string>("");
-  const [accountResetAnswer2, setAccountAnswer2] = React.useState<string>("");
-  const [adminPassword, setAdminPassword] = React.useState<string>("");
-  const [isAdminFieldVisible, setIsAdminFieldVisible] = React.useState<boolean>(false);
+	//! Navigate for React-Router-Dom V6
+	const navigate = useNavigate();
+	//! UseState's
+	const [confirmPassword, setConfirmPassword] = React.useState<string>("");
+	const [passwordhash, setPasswordhash] = React.useState<string>("");
+	const [accountResetQuestion1, setAccountResetQuestion1] =
+		React.useState<string>("");
+	const [accountResetQuestion2, setAccountResetQuestion2] =
+		React.useState<string>("");
+	const [accountResetAnswer1, setAccountAnswer1] = React.useState<string>("");
+	const [accountResetAnswer2, setAccountAnswer2] = React.useState<string>("");
+	const [adminPassword, setAdminPassword] = React.useState<string>("");
+	const [isAdminFieldVisible, setIsAdminFieldVisible] =
+		React.useState<boolean>(false);
 
-  //! Validation Fields
+	//! Validation Fields
 
-  //? Email Address
-  const emailAddressValidation = () => {
-    if (
-      props.emailAddress.match(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i) === null
-    ) {
-      console.log("Email Address is invalid");
-      return ["Invalid email address!", false];
-    }
-    return true;
-  };
+	//? Email Address
+	const emailAddressValidation = () => {
+		if (
+			props.emailAddress.match(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i) === null
+		) {
+			console.log("Email Address is invalid");
+			return ["Invalid email address!", false];
+		}
+		return true;
+	};
 
-  //? Password
-  const passwordValidation = () => {
-    if (passwordhash.length < 5) {
-      console.log("Password must be at least 5 characters!");
-      return "Password must be at least 5 characters!";
-    }
-    return true;
-  };
+	//? Password
+	const passwordValidation = () => {
+		if (passwordhash.length < 5) {
+			console.log("Password must be at least 5 characters!");
+			return "Password must be at least 5 characters!";
+		}
+		return true;
+	};
 
-  //? Password Confirmation
-  const passwordConfirmationValidation = () => {
-    if (passwordhash !== confirmPassword) {
-      console.log("Passwords do not match!");
-      return "Passwords do not match!";
-    }
-    return true;
-  };
+	//? Password Confirmation
+	const passwordConfirmationValidation = () => {
+		if (passwordhash !== confirmPassword) {
+			console.log("Passwords do not match!");
+			return "Passwords do not match!";
+		}
+		return true;
+	};
 
-  //? Username
-  const usernameValidation = () => {
-    if (props.username.length < 3) {
-      console.log("Username must be at least 3 characters!");
-      return "Username must be at least 3 characters!";
-    }
-    return true;
-  };
+	//? Username
+	const usernameValidation = () => {
+		if (props.username.length < 3) {
+			console.log("Username must be at least 3 characters!");
+			return "Username must be at least 3 characters!";
+		}
+		return true;
+	};
 
-  //? Admin Password (if admin)
-  //* If they leave the adminPassword field blank, set isAdmin to false.
-  //* If they type in the password from process.env.ADMIN_PW_VALUE incorrectly, set isAdmin to false, display error message, set errorMessage to "Incorrect admin password. Please leave this field blank if you wish to register as a standard user or try again.", and keep the user on the page.
-  //* If they type in the password from process.env.ADMIN_PW_VALUE correctly, set isAdmin to true.
+	//? Admin Password (if admin)
+	//* If they leave the adminPassword field blank, set isAdmin to false.
+	//* If they type in the password from process.env.ADMIN_PW_VALUE incorrectly, set isAdmin to false, display error message, set errorMessage to "Incorrect admin password. Please leave this field blank if you wish to register as a standard user or try again.", and keep the user on the page.
+	//* If they type in the password from process.env.ADMIN_PW_VALUE correctly, set isAdmin to true.
 
-  const AdminPasswordValidation = () => {
-    if (adminPassword.length === 0) {
-      console.log("Admin password field is empty! Registering as standard user.");
-      props.setIsAdmin(false);
-        return null;
-    }
-    else if (adminPassword !== process.env.REACT_APP_ADMIN_PW_VALUE) {
-      console.log("Incorrect admin password! Try again/blank it out.");
-        props.setIsAdmin(null)
-        props.setErrorMessage(
-          "Incorrect admin password. Please try again or leave this field blank if you wish to register as a standard user."
-        );
-        return false;
-      }
-    else if (adminPassword === process.env.REACT_APP_ADMIN_PW_VALUE) {
-      console.log("Correct admin password!");
-      props.setIsAdmin(true);
-        return true;
-    }
-  };
+	const AdminPasswordValidation = () => {
+		if (adminPassword.length === 0) {
+			console.log(
+				"Admin password field is empty! Registering as standard user."
+			);
+			props.setIsAdmin(false);
+			return null;
+		} else if (adminPassword !== process.env.REACT_APP_ADMIN_PW_VALUE) {
+			console.log("Incorrect admin password! Try again/blank it out.");
+			props.setIsAdmin(null);
+			props.setErrorMessage(
+				"Incorrect admin password. Please try again or leave this field blank if you wish to register as a standard user."
+			);
+			return false;
+		} else if (adminPassword === process.env.REACT_APP_ADMIN_PW_VALUE) {
+			console.log("Correct admin password!");
+			props.setIsAdmin(true);
+			return true;
+		}
+	};
 
-  //? Validate all fields
-  const validateAllFields = () => {
-    if (
-      emailAddressValidation() === true &&
-      passwordValidation() === true &&
-      passwordConfirmationValidation() === true &&
-      usernameValidation() === true &&
-      AdminPasswordValidation() === true)
-    {
-        return [true, "Admin user succesfully registered!", "You are now logged in as an admin!"];
-    }
-    else if (
-      emailAddressValidation() === true &&
-      passwordValidation() === true &&
-      passwordConfirmationValidation() === true &&
-      usernameValidation() === true &&
-      AdminPasswordValidation() === null)
-    {
-        return [true, "Standard user succesfully registered!"];
-    }
-    else {
-        return [false, "Registration failed. Please validate all the fields."];
-    }
-  };
+	//? Validate all fields
+	const validateAllFields = () => {
+		if (
+			emailAddressValidation() === true &&
+			passwordValidation() === true &&
+			passwordConfirmationValidation() === true &&
+			usernameValidation() === true &&
+			AdminPasswordValidation() === true
+		) {
+			return [
+				true,
+				"Admin user succesfully registered!",
+				"You are now logged in as an admin!",
+			];
+		} else if (
+			emailAddressValidation() === true &&
+			passwordValidation() === true &&
+			passwordConfirmationValidation() === true &&
+			usernameValidation() === true &&
+			AdminPasswordValidation() === null
+		) {
+			return [true, "Standard user succesfully registered!"];
+		} else {
+			return [false, "Registration failed. Please validate all the fields."];
+		}
+	};
 
-  //? Set "isAdminFieldVisible" to true, if they select the "Admin" checkbox. if they unselect it, set it to false.
-  const handleAdminCheckbox = () => {
-    if (isAdminFieldVisible === false) {
-      console.log("isAdminFieldVisible: Admin checkbox is checked!");
-      setIsAdminFieldVisible(true);
-    } else {
-      setIsAdminFieldVisible(false);
-      console.log("isAdminFieldVisible: Admin checkbox is unchecked!");
-    }
-  };
+	//! END of Validation Fields
 
-  const registerChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.id === "emailAddress") {
-      props.setEmailAddress(event.target.value);
-    } else if (event.target.id === "passwordhash") {
-      setPasswordhash(event.target.value);
-    } else if (event.target.id === "confirmPassword") {
-      setConfirmPassword(event.target.value);
-    } else if (event.target.id === "username") {
-      props.setUsername(event.target.value);
-    } else if (event.target.id === "adminPassword") {
-      setAdminPassword(event.target.value);
-    } else if (event.target.id === "accountResetQuestion1") {
-      setAccountResetQuestion1(event.target.value);
-    } else if (event.target.id === "accountResetQuestion2") {
-      setAccountResetQuestion2(event.target.value);
-    } else if (event.target.id === "accountResetAnswer1") {
-      setAccountAnswer1(event.target.value);
-    } else if (event.target.id === "accountResetAnswer2") {
-      setAccountAnswer2(event.target.value);
-    }
-  };
+	//! Handling Changes
+	//? Set "isAdminFieldVisible" to true, if they select the "Admin" checkbox. if they unselect it, set it to false.
+	const handleAdminCheckbox = () => {
+		if (isAdminFieldVisible === false) {
+			console.log("isAdminFieldVisible: Admin checkbox is checked!");
+			setIsAdminFieldVisible(true);
+		} else {
+			setIsAdminFieldVisible(false);
+			console.log("isAdminFieldVisible: Admin checkbox is unchecked!");
+		}
+	};
 
-  const registerSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    console.log("ValidateAllFieldsFunction Result: ", validateAllFields());
-    if (validateAllFields()[0] === true) {
-      await fetch(`${dbCall}/users/register`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        //TODO If user types in password correctly matching the column "adminPassword", isAdmin will be set to true.
-        body: JSON.stringify({
-          user: {
-            username: props.username,
-            email: props.emailAddress,
-            passwordhash: passwordhash,
-            isAdmin: AdminPasswordValidation(),
-            accountResetQuestion1: accountResetQuestion1,
-            accountResetQuestion2: accountResetQuestion2,
-            accountResetAnswer1: accountResetAnswer1,
-            accountResetAnswer2: accountResetAnswer2,
-          },
-        }),
-      })
-        .then((res) => {
-          console.log("Reg res.status is ", res.status);
-          props.setResponseStatus(res.status);
-          return res.json();
-        })
-        //if response status is 201 and userAdmin is false or null, set isAdmin to false.
-        .then((data) => {
-          if (data.status === 201 && (data.user.isAdmin === false || data.user.isAdmin === null)) {
-            console.log("Successfully registered!");
-            console.log("Register data: ", data);
-            props.setId(data.user.id);
-            props.updateToken(data.sessionToken);
-            props.setEmailAddress(data.user.email);
-            props.setUsername(data.user.username);
-            props.setIsAdmin(false);
-            props.setIsUserLoggedIn(true);
-            props.setErrorMessage("");
-            navigate("/");
-          } else if (data.status === 201 && data.user.isAdmin === true) {
-            console.log("Admin | Successfully registered!");
-            console.log("Admin | Register data: ", data);
-            props.setId(data.user.id);
-            props.updateToken(data.sessionToken);
-            props.setEmailAddress(data.user.email);
-            props.setUsername(data.user.username);
-            props.setIsAdmin(true);
-            props.setIsUserLoggedIn(true);
-            props.setErrorMessage("");
-            navigate("/AdminDashboard");
-          } else {
-            console.log("Error registering user!");
-            console.log("Register data: ", data);
-            console.log("isAdmin", data.user.isAdmin);
-            props.setErrorMessage(data.message);
-          }
-        })
-        .catch((error) => {
-          console.log("Error registering user!");
-          console.log("Register data error message: ", error);
-          props.setErrorMessage(error.message);
-        });
-    } else {
-      props.setErrorMessage("Please fix the errors in the form!");
-    }
-  };
+	const registerChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+		if (event.target.id === "emailAddress") {
+			props.setEmailAddress(event.target.value);
+		} else if (event.target.id === "passwordhash") {
+			setPasswordhash(event.target.value);
+		} else if (event.target.id === "confirmPassword") {
+			setConfirmPassword(event.target.value);
+		} else if (event.target.id === "username") {
+			props.setUsername(event.target.value);
+		} else if (event.target.id === "adminPassword") {
+			setAdminPassword(event.target.value);
+		} else if (event.target.id === "accountResetQuestion1") {
+			setAccountResetQuestion1(event.target.value);
+		} else if (event.target.id === "accountResetQuestion2") {
+			setAccountResetQuestion2(event.target.value);
+		} else if (event.target.id === "accountResetAnswer1") {
+			setAccountAnswer1(event.target.value);
+		} else if (event.target.id === "accountResetAnswer2") {
+			setAccountAnswer2(event.target.value);
+		}
+	};
 
-  return (
+	//! END of Handling Changes
+
+	//! Handling Submits
+
+	const registerSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+		event.preventDefault();
+		console.log("ValidateAllFieldsFunction Result: ", validateAllFields());
+		if (validateAllFields()[0] === true) {
+			await fetch(`${dbCall}/users/register`, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				//TODO If user types in password correctly matching the column "adminPassword", isAdmin will be set to true.
+				body: JSON.stringify({
+					user: {
+						username: props.username,
+						email: props.emailAddress,
+						passwordhash: passwordhash,
+						isAdmin: AdminPasswordValidation(),
+						accountResetQuestion1: accountResetQuestion1,
+						accountResetQuestion2: accountResetQuestion2,
+						accountResetAnswer1: accountResetAnswer1,
+						accountResetAnswer2: accountResetAnswer2,
+					},
+				}),
+			})
+				.then((res) => {
+					console.log("Reg res.status is ", res.status);
+					props.setResponseStatus(res.status);
+					return res.json();
+				})
+				//if response status is 201 and userAdmin is false or null, set isAdmin to false.
+				.then((data) => {
+					if (
+						data.status === 201 &&
+						(data.user.isAdmin === false || data.user.isAdmin === null)
+					) {
+						console.log("Successfully registered!");
+						console.log("Register data: ", data);
+						props.setId(data.user.id);
+						props.updateToken(data.sessionToken);
+						props.setEmailAddress(data.user.email);
+						props.setUsername(data.user.username);
+						props.setIsAdmin(false);
+						props.setIsUserLoggedIn(true);
+						props.setErrorMessage("");
+						navigate("/");
+					} else if (data.status === 201 && data.user.isAdmin === true) {
+						console.log("Admin | Successfully registered!");
+						console.log("Admin | Register data: ", data);
+						props.setId(data.user.id);
+						props.updateToken(data.sessionToken);
+						props.setEmailAddress(data.user.email);
+						props.setUsername(data.user.username);
+						props.setIsAdmin(true);
+						props.setIsUserLoggedIn(true);
+						props.setErrorMessage("");
+						navigate("/AdminDashboard");
+					} else {
+						console.log("Error registering user!");
+						console.log("Register data: ", data);
+						console.log("isAdmin", data.user.isAdmin);
+						props.setErrorMessage(data.message);
+					}
+				})
+				.catch((error) => {
+					console.log("Error registering user!");
+					console.log("Register data error message: ", error);
+					props.setErrorMessage(error.message);
+				});
+		} else {
+			props.setErrorMessage("Please fix the errors in the form!");
+		}
+	};
+
+	//! END of Handling Submits
+
+	//! Render / Return
+
+	//TODO Add a "Forgot Password" button.
+	//TODO Add conditionals for when the tooltips are triggered when a user fails to meet registration requirements | add dismissable alerts for error message on form.
+	//TODO Possibly change tooltips to Helper text.
+	//TODO Implement fields with icons. https://flowbite.com/docs/components/forms/
+	//TODO Change the isAdmin button to a toogle switch => modal open instead. Checkboxes are scary to users. Wait, maybe I keep checkboxes then...
+
+	return (
 		<div className="z-index-10 flex pb-4 h-5/6">
 			<div
 				className="h-screen flex-1 flex flex-col justify-center py-12 px-4 sm:px-6 lg:flex-none lg:px-20
@@ -315,7 +340,8 @@ const Register = (props: AuthProps) => {
 									role="tooltip"
 									className="inline-block absolute invisible z-10 py-2 px-3 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700"
 								>
-									Test<div className="tooltip-arrow" data-popper-arrow></div>
+									Username must be at least 3 characters.
+									<div className="tooltip-arrow" data-popper-arrow></div>
 								</div>
 							</div>
 						</div>
@@ -327,7 +353,11 @@ const Register = (props: AuthProps) => {
 							>
 								Password
 							</label>
-							<div className="mt-1">
+							<div
+								className="mt-1"
+								data-tooltip-target="password-tooltip"
+								data-tooltip-placement="bottom"
+							>
 								<input
 									id="passwordhash"
 									name="passwordhash"
@@ -338,6 +368,14 @@ const Register = (props: AuthProps) => {
 									required
 									className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
 								/>
+								<div
+									id="password-tooltip"
+									role="tooltip"
+									className="inline-block absolute invisible z-10 py-2 px-3 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700"
+								>
+									Password must contain at least 5 characters.
+									<div className="tooltip-arrow" data-popper-arrow></div>
+								</div>
 							</div>
 						</div>
 
@@ -371,7 +409,11 @@ const Register = (props: AuthProps) => {
 							>
 								Account Reset Question 1
 							</label>
-							<div className="mt-1">
+							<div
+								className="mt-1"
+								data-tooltip-target="ARq1-tooltip"
+								data-tooltip-placement="bottom"
+							>
 								<input
 									id="accountResetQuestion1"
 									name="accountResetQuestion1"
@@ -381,11 +423,23 @@ const Register = (props: AuthProps) => {
 									required
 									className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
 								/>
+								<div
+									id="ARq1-tooltip"
+									role="tooltip"
+									className="inline-block absolute invisible z-10 py-2 px-3 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700"
+								>
+									ex: What's your favorite color?
+									<div className="tooltip-arrow" data-popper-arrow></div>
+								</div>
 							</div>
 						</div>
 
 						{/* Account Reset Answer 1 */}
-						<div className="space-y-1">
+						<div
+							className="space-y-1"
+							data-tooltip-target="ARa1-tooltip"
+							data-tooltip-placement="bottom"
+						>
 							<label
 								htmlFor="accountResetAnswer1"
 								className="block text-sm font-medium text-gray-700"
@@ -402,11 +456,23 @@ const Register = (props: AuthProps) => {
 									required
 									className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
 								/>
+								<div
+									id="ARa1-tooltip"
+									role="tooltip"
+									className="inline-block absolute invisible z-10 py-2 px-3 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700"
+								>
+									The answer to Account Reset Question 1.
+									<div className="tooltip-arrow" data-popper-arrow></div>
+								</div>
 							</div>
 						</div>
 
 						{/* Account Reset Question 1 */}
-						<div className="space-y-1">
+						<div
+							className="space-y-1"
+							data-tooltip-target="ARq2-tooltip"
+							data-tooltip-placement="bottom"
+						>
 							<label
 								htmlFor="accountResetQuestion2"
 								className="block text-sm font-medium text-gray-700"
@@ -423,11 +489,23 @@ const Register = (props: AuthProps) => {
 									required
 									className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
 								/>
+								<div
+									id="ARq2-tooltip"
+									role="tooltip"
+									className="inline-block absolute invisible z-10 py-2 px-3 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700"
+								>
+									ex: What's your first car?
+									<div className="tooltip-arrow" data-popper-arrow></div>
+								</div>
 							</div>
 						</div>
 
 						{/* Account Reset Answer 2 */}
-						<div className="space-y-1">
+						<div
+							className="space-y-1"
+							data-tooltip-target="ARa2-tooltip"
+							data-tooltip-placement="bottom"
+						>
 							<label
 								htmlFor="accountResetAnswer2"
 								className="block text-sm font-medium text-gray-700"
@@ -444,11 +522,23 @@ const Register = (props: AuthProps) => {
 									required
 									className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
 								/>
+								<div
+									id="ARa2-tooltip"
+									role="tooltip"
+									className="inline-block absolute invisible z-10 py-2 px-3 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700"
+								>
+									The answer to Account Reset Question 2.
+									<div className="tooltip-arrow" data-popper-arrow></div>
+								</div>
 							</div>
 						</div>
 
 						{/* Admin Radio Button. If turned on, set isAdminFieldVisible to true with isAdminFieldVisibleTrue function, and show admin password field. */}
-						<div className="space-y-1">
+						<div
+							className="space-y-1"
+							data-tooltip-target="admin-tooltip"
+							data-tooltip-placement="top"
+						>
 							<div className="flex items-center">
 								<input
 									id="isAdminFieldVisible"
@@ -464,6 +554,14 @@ const Register = (props: AuthProps) => {
 								>
 									Admin?
 								</label>
+								<div
+									id="admin-tooltip"
+									role="tooltip"
+									className="inline-block absolute invisible z-10 py-2 px-3 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700"
+								>
+									Leave this field blank if you are not an admin.
+									<div className="tooltip-no-arrow" data-popper-arrow></div>
+								</div>
 							</div>
 							{isAdminFieldVisible && (
 								<div className="mt-1">
