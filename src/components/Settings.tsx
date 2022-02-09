@@ -1025,6 +1025,16 @@ export default class Settings extends React.Component<
 									Delete Account
 								</button>
 							</div>
+
+							{/* this.state.openDeleteUserModal should be opened up if button is pushed. If not, null. */}
+
+							({this.state.openDeleteUserModal} ? {this.deleteUserVideosModal} : null)
+
+							({this.state.openDeleteUserCommentsModal} ? {this.deleteUserCommentsModal} : null)
+
+							
+
+
 							<div className="account-reset-delete-button-container">
 								<button
 									onClick={this.openModalUserVideosDelete}
@@ -1033,6 +1043,9 @@ export default class Settings extends React.Component<
 									Delete All Videos
 								</button>
 							</div>
+
+({this.state.openDeleteUserVideosModal} ? {this.deleteUserVideosModal} : null)
+
 							<div className="account-reset-delete-button-container">
 								<button
 									onClick={this.openModalUserCommentsDelete}
