@@ -70,13 +70,20 @@ Indeed I am. Feel free to reach out to me via my [LinkedIn](https://www.linkedin
     - Test client-side register and login.
     - Start implementing ReactPlayer and testing its functionality to ready for server fetch.
 - **Week 2** (January 30th through February 5th, 2022)
-    - ...
-    - ...
-    - ...
+    - Debugged profile dropdown menu crashing to become fully functional. 
+    - MVP basic video post now possible with a user logged in.
+    - Provided ability for registering a user and logging in.
+    - Admin registration now available. 
+    - Navbar conditionals setup to further provide functionality when props properly pass through.
+    - Styled both login and register page, including for mobile.
+    - Routing fixed up further.
 - **Week 3** (February 5th through February 12th, 2022)
-    - ...
-    - ...
-    - ...
+    - Navbar fully responds to states of a guest, user logged in, or an admin.
+    - New Settings.tsx Component: 
+    - Structure built for users ability to edit their username, password, and email. Fully functional.
+    - Setting up the ability for a user to delete their account, all their videos, or all their comments.
+    - Tooltip added for registration. Conditionals being added later for friendlier UX.
+    - Mapping home page from server. Pagination process beginning. 
 - **Week 4** (February 12th through February 19th, 2022)
     - Head to San Diego...🌞⛱
     - ...
@@ -101,3 +108,15 @@ Indeed I am. Feel free to reach out to me via my [LinkedIn](https://www.linkedin
 | [*1/27/22* P.1](https://github.com/Alex-Lee-Myers/AllBallCallClient/commit/8c84411ec2918f78133e8edc4fdb866aafffdd1b)  | Tested ReactPlayer functionality. Minimal Tailwind UI integration with a card-style grid. Base structure working. Need to move to Home.tsx and then integrate fetching the server. |
 | [*1/27/22* P.2](https://github.com/Alex-Lee-Myers/AllBallCallClient/commit/142f52780f6baf70d168ccc10a470e8e4b03d40f)  | Started build up of Login UI. Needs a lot more work before functional. Additionally, did a copy-paste into Register file for a base start. Will touch that after Login finished. |
 | [*1/28/22*]() | Working on Login+Register further and testing. Navbar dropdown as well. |
+| [*1/29/22*]() | ... |
+| [*1/30/22*]() | ... |
+| [*1/31/22*]() | ... |
+| [*2/1/22*]() | ... |
+| [*2/2/22*]() | ... |
+| [*2/3/22*]() | ... |
+| [*2/4/22*]() | ... |
+| [*2/5/22*]() | ... |
+| [*2/6/22*]() | ... |
+| [*2/7/22*]() | ... |
+| [*2/8/22*]() | ... |
+| [*2/9/22*]() | ... |
