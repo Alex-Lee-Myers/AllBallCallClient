@@ -13,6 +13,7 @@ import Navbar from "../src/components/Navbar";
 import Register from "../src/components/Register";
 import VideoPost from "../src/components/VideoPost";
 import Settings from "../src/components/Settings";
+import Logout from "../src/components/Logout";
 
 export interface ABCtoken {
   isUserLoggedIn: boolean;
@@ -24,14 +25,14 @@ export interface ABCtoken {
 }
 
 export interface ABCuserInfo {
-  isAdmin: boolean | null;
-  setIsAdmin: (isAdmin: boolean | null) => void;
-  emailAddress: string;
-  setEmailAddress: (email: string) => void;
-  username: string;
-  setUsername: (username: string) => void;
-  id: string;
-  setId: (id: string) => void;
+	id: string;
+	isAdmin: boolean | null;
+	setIsAdmin: (isAdmin: boolean | null) => void;
+	emailAddress: string;
+	setEmailAddress: (email: string) => void;
+	username: string;
+	setUsername: (username: string) => void;
+	setId: (id: string) => void;
 }
 
 export interface ABCcalls {
@@ -127,6 +128,10 @@ const App = () => {
     setSessionToken(null);
     updateToken("");
     setIsUserLoggedIn(false);
+    setId("");
+    setIsAdmin(false);
+    setEmailAddress("");
+    setUsername("");
   };
 
   useEffect(() => {
@@ -136,15 +141,16 @@ const App = () => {
 
   return (
 		<>
-			<Navbar>
-				id={id}
+			<Navbar
+				isAdmin={isAdmin}
 				clearToken={clearToken}
 				emailAddress={emailAddress}
+				id={id}
 				sessionToken={sessionToken}
 				setSessionToken={setSessionToken}
 				isUserLoggedIn={isUserLoggedIn}
 				username={username}
-			</Navbar>
+			/>
 
 			<Routes>
 				<Route path="/" element={<Home />} />
@@ -199,11 +205,21 @@ const App = () => {
 					}
 				/>
 
+        <Route
+          path="/logout"
+          element={
+            <Logout
+              clearToken={clearToken}
+            
+            />
+          }
+        />
+
 				<Route
 					path="/settings"
 					element={
-            <Settings
-              clearToken={clearToken}
+						<Settings
+							clearToken={clearToken}
 							id={id}
 							emailAddress={emailAddress}
 							setEmailAddress={setEmailAddress}

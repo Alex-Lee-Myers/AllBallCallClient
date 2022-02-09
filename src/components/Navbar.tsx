@@ -9,41 +9,39 @@ import { ABCtoken, ABCuserInfo } from "../App";
 import tempProfilePic from "../images/temp_prof_pic.jpg";
 
 interface AuthProps {
-	id: ABCuserInfo["id"];
-	clearToken: ABCtoken["clearToken"];
 	isAdmin: ABCuserInfo["isAdmin"];
+	clearToken: ABCtoken["clearToken"];
+	emailAddress: ABCuserInfo["emailAddress"];
+	id: ABCuserInfo["id"];
+	sessionToken: ABCtoken["sessionToken"];
+	setSessionToken: ABCtoken["setSessionToken"];
 	isUserLoggedIn: ABCtoken["isUserLoggedIn"];
 	username: ABCuserInfo["username"];
-	sessionToken: ABCtoken["sessionToken"];
 }
-	
+
 
 interface userState {
-    username: ABCuserInfo["username"] | undefined | string;
-    emailAddress: ABCuserInfo["emailAddress"] | null | string;
-    imageUrl: string | undefined | "";
-    userVisible: boolean;
-    setUserVisible: (value: boolean) => void;
-    isAdmin: ABCuserInfo["isAdmin"];
-    setIsAdmin: (value: ABCuserInfo["isAdmin"]) => void;
-    isUserLoggedIn: ABCtoken["isUserLoggedIn"];
-    setIsUserLoggedIn: (value: ABCtoken["isUserLoggedIn"]) => void;
-    id: ABCuserInfo["id"];
+	isAdmin: ABCuserInfo["isAdmin"];
+	emailAddress: ABCuserInfo["emailAddress"] | null | string;
+	id: string;
+	imageUrl: string | undefined | "";
+	isUserLoggedIn: ABCtoken["isUserLoggedIn"];
+	username: ABCuserInfo["username"] | undefined | string;
 }
 
 interface navigationState {
-    id: number;
-    name: string;
-    href: string;
-    current: boolean;
-    userVisible: boolean;
+	id: number;
+	current: boolean;
+	href: string;
+	name: string;
+	userVisible: boolean;
 }
 
 interface userNavigationState {
-    id: number;
-    pageName: string;
-    href: string;
-    userVisible: boolean;
+	id: number;
+	href: string;
+	pageName: string;
+	userVisible: boolean;
 }
 //! Interface for:
 // handles function classNames(...classes) {
@@ -57,8 +55,7 @@ interface navbarState {
 	//* I believe I need to work out how to pass through AuthProps to the Navbar. Contstructor can't have props: any.
 
 export default class Navbar extends React.Component<
-	//  (AuthProps) | undefined,
-	{},
+	AuthProps,
 	{
 		user: userState;
 		navigation: navigationState[];
@@ -74,33 +71,8 @@ export default class Navbar extends React.Component<
 				username: "",
 				emailAddress: "",
 				imageUrl: "",
-				userVisible: false,
-				setUserVisible: (value: boolean) => {
-					this.setState({
-						user: {
-							...this.state.user,
-							userVisible: value,
-						},
-					});
-				},
 				isAdmin: false,
-				setIsAdmin: (value: ABCuserInfo["isAdmin"]) => {
-					this.setState({
-						user: {
-							...this.state.user,
-							isAdmin: value,
-						},
-					});
-				},
-				isUserLoggedIn: false,
-				setIsUserLoggedIn: (value: ABCtoken["isUserLoggedIn"]) => {
-					this.setState({
-						user: {
-							...this.state.user,
-							isUserLoggedIn: value,
-						},
-					});
-				},
+				isUserLoggedIn: false
 			},
 			navigation: [
 				{
@@ -194,20 +166,15 @@ export default class Navbar extends React.Component<
 
 	handleUserVisibility() {
 		//! GUEST NAV
-		if (
-			this.state.user.isUserLoggedIn === false &&
-			this.state.user.isAdmin === false
-		) {
-			console.log(
-				"GuestNav.isUserLoggedIn: ",
-				this.state.user.isUserLoggedIn,
-				"GuestNav.isAdmin: ",
-				this.state.user.isAdmin
-			);
+		if (this.props.isUserLoggedIn === false) {
 			this.setState({
 				user: {
-					...this.state.user,
-					userVisible: false,
+					id: this.props.id,
+					username: this.props.username,
+					emailAddress: this.props.emailAddress,
+					imageUrl: tempProfilePic,
+					isAdmin: this.props.isAdmin,
+					isUserLoggedIn: this.props.isUserLoggedIn,
 				},
 				navigation: [
 					{
@@ -227,7 +194,7 @@ export default class Navbar extends React.Component<
 					{
 						id: 3,
 						name: "Streamable",
-						href: "https://streamable.com/",
+						href: "#",
 						current: false,
 						userVisible: false,
 					},
@@ -243,13 +210,13 @@ export default class Navbar extends React.Component<
 					{
 						id: 1,
 						pageName: "Your Park",
-						href: "/yourPark",
+						href: "#",
 						userVisible: false,
 					},
 					{
 						id: 2,
 						pageName: "Settings",
-						href: "/settings",
+						href: "/settings/:id",
 						userVisible: false,
 					},
 					{
@@ -272,21 +239,17 @@ export default class Navbar extends React.Component<
 					},
 				],
 			});
-			//! STANDARD USER
-		} else if (
-			this.state.user.isUserLoggedIn === true &&
-			this.state.user.isAdmin === false
-		) {
-			console.log(
-				"StandardNav.isUserLoggedIn: ",
-				this.state.user.isUserLoggedIn,
-				"StandardNav.isAdmin: ",
-				this.state.user.isAdmin
-			);
+		}
+		//! USER NAV
+		if (this.props.isUserLoggedIn === true && this.props.isAdmin === false) {
 			this.setState({
 				user: {
-					...this.state.user,
-					userVisible: true,
+					id: this.props.id,
+					username: this.props.username,
+					emailAddress: this.props.emailAddress,
+					imageUrl: tempProfilePic,
+					isAdmin: this.props.isAdmin,
+					isUserLoggedIn: this.props.isUserLoggedIn,
 				},
 				navigation: [
 					{
@@ -306,7 +269,7 @@ export default class Navbar extends React.Component<
 					{
 						id: 3,
 						name: "Streamable",
-						href: "https://streamable.com/",
+						href: "#",
 						current: false,
 						userVisible: true,
 					},
@@ -328,7 +291,7 @@ export default class Navbar extends React.Component<
 					{
 						id: 2,
 						pageName: "Settings",
-						href: "#",
+						href: "/settings/:id",
 						userVisible: true,
 					},
 					{
@@ -351,21 +314,17 @@ export default class Navbar extends React.Component<
 					},
 				],
 			});
-			//! ADMIN
-		} else if (
-			this.state.user.isUserLoggedIn === true &&
-			this.state.user.isAdmin === true
-		) {
-			console.log(
-				"StandardNav.isUserLoggedIn: ",
-				this.state.user.isUserLoggedIn,
-				"StandardNav.isAdmin: ",
-				this.state.user.isAdmin
-			);
+		}
+		//! ADMIN NAV
+		if (this.props.isUserLoggedIn === true && this.props.isAdmin === true) {
 			this.setState({
 				user: {
-					...this.state.user,
-					userVisible: true,
+					id: this.props.id,
+					username: this.props.username,
+					emailAddress: this.props.emailAddress,
+					imageUrl: tempProfilePic,
+					isAdmin: this.props.isAdmin,
+					isUserLoggedIn: this.props.isUserLoggedIn,
 				},
 				navigation: [
 					{
@@ -385,7 +344,7 @@ export default class Navbar extends React.Component<
 					{
 						id: 3,
 						name: "Streamable",
-						href: "https://streamable.com/",
+						href: "#",
 						current: false,
 						userVisible: true,
 					},
@@ -407,7 +366,7 @@ export default class Navbar extends React.Component<
 					{
 						id: 2,
 						pageName: "Settings",
-						href: "#",
+						href: "/settings/:id",
 						userVisible: true,
 					},
 					{
@@ -433,12 +392,26 @@ export default class Navbar extends React.Component<
 		}
 	}
 
+
+
+
+
 	//! The Navbar component should re-render whenever the ABCuserInfo.id changes. This is because the user's id changes when they log in. The function handleUserVisibility() is called whenever the ABCuserInfo.id changes.
-	// componentDidUpdate(userLoginState: ABCuserInfo["id"] ) {
-	//     if (userLoginState !== this.state.user.id) {
-	//         this.handleUserVisibility();
-	//     }
-	// }
+	//* handleUserVisibility() is called in the constructor() and in the componentDidUpdate() function.
+	//* componentDidUpdate will compare the ABCuserInfo.id to the ABCuserInfo.id in the previous state. If they are different, then the handleUserVisibility() function will be called.
+	
+	componentDidMount() {
+		this.handleUserVisibility();
+	}
+
+	componentDidUpdate(prevProps: Readonly<AuthProps>) {
+		if (prevProps.id !== this.state.user.id) {
+			this.handleUserVisibility();
+		}
+	}
+
+
+
 
 
 	render() {
