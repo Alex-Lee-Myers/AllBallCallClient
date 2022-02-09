@@ -216,7 +216,7 @@ export default class Navbar extends React.Component<
 					{
 						id: 2,
 						pageName: "Settings",
-						href: "/settings/:id",
+						href: `/settings/:${this.props.id}`,
 						userVisible: false,
 					},
 					{
@@ -291,7 +291,7 @@ export default class Navbar extends React.Component<
 					{
 						id: 2,
 						pageName: "Settings",
-						href: "/settings/:id",
+						href: `/settings/:${this.props.id}`,
 						userVisible: true,
 					},
 					{
@@ -366,7 +366,7 @@ export default class Navbar extends React.Component<
 					{
 						id: 2,
 						pageName: "Settings",
-						href: "/settings/:id",
+						href: `/settings/:${this.props.id}`,
 						userVisible: true,
 					},
 					{
@@ -393,9 +393,6 @@ export default class Navbar extends React.Component<
 	}
 
 
-
-
-
 	//! The Navbar component should re-render whenever the ABCuserInfo.id changes. This is because the user's id changes when they log in. The function handleUserVisibility() is called whenever the ABCuserInfo.id changes.
 	//* handleUserVisibility() is called in the constructor() and in the componentDidUpdate() function.
 	//* componentDidUpdate will compare the ABCuserInfo.id to the ABCuserInfo.id in the previous state. If they are different, then the handleUserVisibility() function will be called.
@@ -409,10 +406,6 @@ export default class Navbar extends React.Component<
 			this.handleUserVisibility();
 		}
 	}
-
-
-
-
 
 	render() {
 		return (
