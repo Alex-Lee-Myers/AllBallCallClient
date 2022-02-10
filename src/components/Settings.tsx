@@ -1045,7 +1045,7 @@ export default class Settings extends React.Component<
 							</div>
 
 							{this.state.openDeleteUserModal
-								? console.log(this.deleteUserVideosModal())
+								? console.log(this.deleteUserModal)
 								: null}
 
 							{this.state.openDeleteUserVideosModal
