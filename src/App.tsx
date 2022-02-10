@@ -216,7 +216,7 @@ const App = () => {
         />
 
 				<Route
-          path={`/settings/:${id}`}
+          path={`/settings/${username}`}
 					element={
 						<Settings
 							clearToken={clearToken}

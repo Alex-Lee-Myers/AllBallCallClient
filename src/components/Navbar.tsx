@@ -216,7 +216,7 @@ export default class Navbar extends React.Component<
 					{
 						id: 2,
 						pageName: "Settings",
-						href: `/settings/:${this.props.id}`,
+						href: `/settings/${this.props.username}`,
 						userVisible: false,
 					},
 					{
@@ -291,7 +291,7 @@ export default class Navbar extends React.Component<
 					{
 						id: 2,
 						pageName: "Settings",
-						href: `/settings/:${this.props.id}`,
+						href: `/settings/${this.props.username}`,
 						userVisible: true,
 					},
 					{
@@ -366,7 +366,7 @@ export default class Navbar extends React.Component<
 					{
 						id: 2,
 						pageName: "Settings",
-						href: `/settings/:${this.props.id}`,
+						href: `/settings/${this.props.username}`,
 						userVisible: true,
 					},
 					{
