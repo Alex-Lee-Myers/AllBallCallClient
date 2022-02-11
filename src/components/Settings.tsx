@@ -1,7 +1,14 @@
 import React from "react";
 import { ABCtoken, ABCuserInfo, ABCcalls } from "../App";
 import dbCall from "../helpers/Environments";
-import { useNavigate, Link } from "react-router-dom";
+import { Navigate } from "react-router-dom";
+import Button from "@mui/material/Button";
+import TextField from "@mui/material/TextField";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
 
 interface SettingsProps {
 	id: ABCuserInfo["id"];
@@ -32,20 +39,19 @@ interface SettingsState {
 	//? Delete Options.
 	deleteContentOptions: boolean; //* This drops down an accordion of options for the user to delete the user, video, and content.
 	//! Delete the user.
-	showDeleteUserModal: boolean; //* User has clicked on modal to open prompting to delete user account.
-	deleteUserPassword: string; //* Password: "IHATEBASKETBALL" inputted
+	deleteUserAccountPassword: string; //* Password: "IHATEBASKETBALL" inputted
 	userIsDeleted: boolean; //* If the password is correct for "deleteUserPassword", and they click the "Delete My Account" button, set to true.
 	openDeleteUserModal: boolean; //* User has clicked on the "Delete My Account" button.
 	//! Delete all of user's comments.
-	showDeleteUserCommentsModal: boolean; //* User has clicked on modal to open prompting them to delete all of their comments.
 	deleteUserCommentsPassword: string; //* Password: "CANTJUMP" inputted
 	userCommentsIsDeleted: boolean; //* If the password is correct for "deleteUserCommentsPassword", and they click the "Delete All My Comments" button, set to true.
 	openDeleteUserCommentsModal: boolean; //* User has clicked on the "Delete All My Comments" button.
 	//! Delete all of user's videos
-	showDeleteUserVideosModal: boolean; //* User has clicked on modal to open prompting them to delete all of their videos.
 	deleteUserVideosPassword: string; //* Password: "HOOSIER"
 	userVideosIsDeleted: boolean; //* If the password is correct for "deleteUserVideosPassword", and they click the "Delete All of My Videos" button, set to true.
 	openDeleteUserVideosModal: boolean; //* User has clicked on the "Delete All of My Videos" button.
+	//? React-Router-V6
+	redirect: boolean;
 }
 
 // TODO Deleting comments button and deleting videos button takes user to a page to individually delete their comments or videos.
@@ -72,20 +78,19 @@ export default class Settings extends React.Component<
 			//? Delete Options.
 			deleteContentOptions: false,
 			//! Delete the User
-			showDeleteUserModal: false,
-			deleteUserPassword: "",
+			deleteUserAccountPassword: "",
 			userIsDeleted: false,
 			openDeleteUserModal: false,
 			//! Delete the Comments
-			showDeleteUserCommentsModal: false,
 			deleteUserCommentsPassword: "",
 			userCommentsIsDeleted: false,
 			openDeleteUserCommentsModal: false,
 			//! Delete the Videos,
-			showDeleteUserVideosModal: false,
 			deleteUserVideosPassword: "",
 			userVideosIsDeleted: false,
 			openDeleteUserVideosModal: false,
+			//? React-Router-V6
+			redirect: false,
 		};
 		this.handleSubmitUpdatePassword =
 			this.handleSubmitUpdatePassword.bind(this);
@@ -94,6 +99,7 @@ export default class Settings extends React.Component<
 		this.handleSubmitUpdateEmailAddress =
 			this.handleSubmitUpdateEmailAddress.bind(this);
 		this.handleChange = this.handleChange.bind(this);
+		this.handleChangeMUI = this.handleChangeMUI.bind(this);
 		this.accountResetAnswer1 = this.accountResetAnswer1.bind(this);
 		this.accountResetAnswer2 = this.accountResetAnswer2.bind(this);
 		this.didUserAnswerAccountResetAnswersCorrectlySubmit =
@@ -101,16 +107,23 @@ export default class Settings extends React.Component<
 		this.newPasswordInput = this.newPasswordInput.bind(this);
 		this.confirmNewPasswordInput = this.confirmNewPasswordInput.bind(this);
 		this.passwordInput = this.passwordInput.bind(this);
-		this.deleteUserSubmit = this.deleteUserSubmit.bind(this);
+		this.deleteUserAccountSubmit = this.deleteUserAccountSubmit.bind(this);
 		this.deleteUserCommentsSubmit = this.deleteUserCommentsSubmit.bind(this);
 		this.deleteUserVideosSubmit = this.deleteUserVideosSubmit.bind(this);
-		this.openModalUserDelete = this.openModalUserDelete.bind(this);
+		this.openModalUserAccountDelete =
+			this.openModalUserAccountDelete.bind(this);
 		this.openModalUserCommentsDelete =
 			this.openModalUserCommentsDelete.bind(this);
 		this.openModalUserVideosDelete = this.openModalUserVideosDelete.bind(this);
-		this.deleteUserModal = this.deleteUserModal.bind(this);
+		this.renderDeleteUserAccountModalmui =
+			this.renderDeleteUserAccountModalmui.bind(this);
+		this.renderDeleteUserCommentsModalmui =
+			this.renderDeleteUserCommentsModalmui.bind(this);
+		this.renderDeleteUserVideosModalmui =
+			this.renderDeleteUserVideosModalmui.bind(this);
 	}
 
+	
 	//! grabUsersAccountResetQuestions() grabs the users account reset questions from the database.
 	//? The database fetch GET request is made to the `${dbCall}/users/settings/:id` route.
 	//? It is asynchronously called.
@@ -138,7 +151,7 @@ export default class Settings extends React.Component<
 				});
 			});
 	};
-
+	//* LIFECYCLE METHOD
 	//! grabUserAccountResetQuestions is loaded immediately after the component mounts.
 	componentDidMount() {
 		this.grabUsersAccountResetQuestions();
@@ -235,7 +248,13 @@ export default class Settings extends React.Component<
 		});
 	}
 
-	//! handleChange() is called when the user changes the value of a form input.
+	handleChangeMUI(event: React.ChangeEvent<HTMLInputElement>) {
+		this.setState({
+			...this.state,
+			[event.target.name]: event.target.value,
+		});
+	}
+
 	handleChange = (
 		e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
 	) => {
@@ -426,155 +445,101 @@ export default class Settings extends React.Component<
 	//? Delete User Content: Section
 
 	//! Start: Delete User
-	openModalUserDelete = (): void => {
+	openModalUserAccountDelete = (): void => {
 		this.setState({
 			openDeleteUserModal: !this.state.openDeleteUserModal,
 		});
 	};
 
-	deleteUserModal = (): JSX.Element => {
-		//! Delete User Modal
-		return (
-			<div
-				className="hidden overflow-y-auto overflow-x-hidden fixed right-0 left-0 top-4 z-50 justify-center items-center md:inset-0 h-modal sm:h-full"
-				id="popup-modal"
-			>
-				<div className="relative px-4 w-full max-w-md h-full md:h-auto">
-					{/* Modal content */}
-					<div className="relative bg-white rounded-lg shadow dark:bg-gray-700">
-						{/* Modal header */}
-						<div className="flex justify-end p-2">
-							<button
-								type="button"
-								className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-800 dark:hover:text-white"
-								data-modal-toggle="popup-modal"
-							>
-								<svg
-									className="w-5 h-5"
-									fill="currentColor"
-									viewBox="0 0 20 20"
-									xmlns="http://www.w3.org/2000/svg"
-								>
-									<path
-										fillRule="evenodd"
-										d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-										clipRule="evenodd"
-									></path>
-								</svg>
-							</button>
-						</div>
-						{/* Modal body */}
-						<div className="p-6 pt-0 text-center">
-							<svg
-								className="mx-auto mb-4 w-14 h-14 text-gray-400 dark:text-gray-200"
-								fill="none"
-								stroke="currentColor"
-								viewBox="0 0 24 24"
-								xmlns="http://www.w3.org/2000/svg"
-							>
-								<path
-									strokeLinecap="round"
-									strokeLinejoin="round"
-									strokeWidth="2"
-									d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-								></path>
-							</svg>
-							<h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
-								Are you sure?
-							</h3>
-							<form
-								className="px-6 pb-4 space-y-6 lg:px-8 sm:pb-6 xl:pb-8"
-								onSubmit={this.deleteUserSubmit}
-							>
-								<h3 className="text-xl font-medium text-gray-900 dark:text-white">
-									Please enter the prompt below in order to delete your account.
-								</h3>
-								<div>
-									<label
-										htmlFor="text"
-										className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-									>
-										Account Deletion Confirmation
-									</label>
-									<input
-										type="text"
-										name="text"
-										id="text"
-										onChange={this.handleChange}
-										value={this.state.deleteUserPassword}
-										className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
-										placeholder="Type 'I HATE BASKETBALL' to confirm."
-										required
-									></input>
-								</div>
-								<button
-									data-modal-toggle="popup-modal"
-									type="button"
-									className="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center mr-2"
-								>
-									Yes, I'm sure
-								</button>
-							</form>
-							<button
-								data-modal-toggle="popup-modal"
-								type="button"
-								className="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:ring-gray-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600"
-							>
-								No, cancel
-							</button>
-						</div>
-					</div>
-				</div>
-			</div>
-		);
-	};
-
-	deleteUserSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-		e.preventDefault();
+	deleteUserAccountSubmit = async (
+		event: React.MouseEvent<HTMLButtonElement>
+	) => {
+		event.preventDefault();
 		await this.didUserAnswerAccountResetAnswersCorrectlySubmit;
 		if (
 			(this.state.accountResetAnswer1 === "" ||
 				this.state.accountResetAnswer2 === "") &&
-			this.state.deleteUserPassword === "I HATE BASKETBALL"
+			this.state.deleteUserAccountPassword !== "IHATEBASKETBALL"
 		) {
 			this.setState({
 				errorMessage: "Please answer the account reset questions.",
 			});
 		} else {
-			await fetch(`${dbCall}/users/settings/deleteUser/${this.props.id}`, {
-				method: "DELETE",
-				headers: new Headers({
-					"Content-Type": "application/json",
-					Authorization: `Bearer ${this.props.sessionToken}`,
-				}),
-			})
-				.then((res) => {
-					console.log("Delete User status is: " + res.status);
-					this.props.setResponseStatus(res.status);
-					return res.json();
+			if (this.state.deleteUserAccountPassword === "IHATEBASKETBALL")
+				await fetch(`${dbCall}/users/settings/deleteUser/${this.props.id}`, {
+					method: "DELETE",
+					headers: new Headers({
+						"Content-Type": "application/json",
+						Authorization: `Bearer ${this.props.sessionToken}`,
+					}),
 				})
-				.then((data) => {
-					if (
-						data.status === 200 &&
-						data.message === "User successfully deleted!"
-					) {
-						this.props.clearToken();
-						console.log("Delete User data: " + data);
-						this.props.setResponseStatus(data.status);
-					}
-					this.setState({
-						errorMessage: data.message,
-						responseStatus: data.status,
+					.then((res) => {
+						console.log("Delete User status is: " + res.status);
+						this.props.setResponseStatus(res.status);
+
+						return res.json();
+					})
+					.then((data) => {
+						if (
+							data.status === 200 &&
+							data.message === "User successfully deleted!"
+						) {
+							console.log("Delete User data: " + data);
+							this.props.setResponseStatus(data.status);
+							this.props.clearToken();
+							this.state.redirect && <Navigate to="/" replace={true} />;
+						}
+						this.setState({
+							errorMessage: data.message,
+							responseStatus: data.status,
+							openDeleteUserModal: false,
+						});
+					})
+					.catch((error) => {
+						console.log("Delete User error: " + error.message);
+						this.setState({
+							errorMessage: error.message,
+							responseStatus: error.status,
+						});
 					});
-				})
-				.catch((error) => {
-					console.log("Delete User error: " + error.message);
-					this.setState({
-						errorMessage: error.message,
-						responseStatus: error.status,
-					});
-				});
 		}
+	};
+
+	renderDeleteUserAccountModalmui = (): JSX.Element => {
+		return (
+			<div>
+				<Dialog open={true} onClose={this.openModalUserVideosDelete}>
+					<DialogTitle>Delete Account</DialogTitle>
+					<DialogContent>
+						<DialogContentText>
+							In order to delete all your account, please enter
+							"IHATEBASKETBALL" into the text field below. After doing so, click
+							"Delete My Account". This is final. You will not be able to
+							recover your account.
+						</DialogContentText>
+						<TextField
+							autoFocus
+							margin="dense"
+							id="deleteUserCommentTextField"
+							name="deleteUserAccountPassword"
+							label="Confirm Delete"
+							type="text"
+							fullWidth
+							placeholder="IHATEBASKETBALL"
+							variant="standard"
+							onChange={this.handleChangeMUI}
+							value={this.state.deleteUserAccountPassword}
+						/>
+					</DialogContent>
+					<DialogActions>
+						<Button onClick={this.openModalUserAccountDelete}>Cancel</Button>
+						<Button onClick={this.deleteUserAccountSubmit}>
+							Delete My Account
+						</Button>
+					</DialogActions>
+				</Dialog>
+			</div>
+		);
 	};
 	//! End: Delete User
 
@@ -585,148 +550,90 @@ export default class Settings extends React.Component<
 		});
 	};
 
-	deleteUserVideosSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-		e.preventDefault();
+	deleteUserVideosSubmit = async (
+		event: React.MouseEvent<HTMLButtonElement>
+	) => {
+		event.preventDefault();
 		await this.didUserAnswerAccountResetAnswersCorrectlySubmit;
 		if (
 			(this.state.accountResetAnswer1 === "" ||
 				this.state.accountResetAnswer2 === "") &&
-			this.state.deleteUserVideosPassword === "HOOSIER"
+			this.state.deleteUserVideosPassword !== "HOOSIER"
 		) {
 			this.setState({
-				errorMessage: "Please answer the account reset questions.",
+				errorMessage: "Please type 'HOOSIER' if you wish to delete your videos.",
 			});
 		} else {
-			await fetch(`${dbCall}/users/settings/deleteVideos/${this.props.id}`, {
-				method: "DELETE",
-				headers: new Headers({
-					"Content-Type": "application/json",
-					Authorization: `Bearer ${this.props.sessionToken}`,
-				}),
-			})
-				.then((res) => {
-					console.log("Delete Videos status is: " + res.status);
-					this.props.setResponseStatus(res.status);
-					return res.json();
+			if (this.state.deleteUserVideosPassword === "HOOSIER")
+				await fetch(`${dbCall}/videos/content/${this.props.id}`, {
+					method: "DELETE",
+					headers: new Headers({
+						"Content-Type": "application/json",
+						Authorization: `Bearer ${this.props.sessionToken}`,
+					}),
 				})
-				.then((data) => {
-					if (
-						data.status === 200 &&
-						data.message === "Videos successfully deleted!"
-					) {
-						this.props.clearToken();
-						console.log("Delete Videos data: " + data);
-						this.props.setResponseStatus(data.status);
-					}
-					this.setState({
-						errorMessage: data.message,
-						responseStatus: data.status,
+					.then((res) => {
+						console.log("Delete Videos status is: " + res.status);
+						this.props.setResponseStatus(res.status);
+						this.openModalUserVideosDelete();
+						return res.json();
+					})
+					.then((data) => {
+						if (
+							data.status === 200 &&
+							data.message === "Videos successfully deleted!"
+						) {
+							console.log("Delete Videos data: " + data);
+							this.props.setResponseStatus(data.status);
+						}
+						this.setState({
+							errorMessage: data.message,
+							responseStatus: data.status,
+						});
+					})
+					.catch((error) => {
+						console.log("Delete Videos error: " + error.message);
+						this.setState({
+							errorMessage: error.message,
+							responseStatus: error.status,
+						});
 					});
-				})
-				.catch((error) => {
-					console.log("Delete Videos error: " + error.message);
-					this.setState({
-						errorMessage: error.message,
-						responseStatus: error.status,
-					});
-				});
 		}
 	};
 
-	deleteUserVideosModal = (): JSX.Element => {
-		//! Delete Videos Modal
+	renderDeleteUserVideosModalmui = (): JSX.Element => {
 		return (
-			<div
-				className="hidden overflow-y-auto overflow-x-hidden fixed right-0 left-0 top-4 z-50 justify-center items-center md:inset-0 h-modal sm:h-full"
-				id="popup-modal"
-			>
-				<div className="relative px-4 w-full max-w-md h-full md:h-auto">
-					{/* Modal content */}
-					<div className="relative bg-white rounded-lg shadow dark:bg-gray-700">
-						{/* Modal header */}
-						<div className="flex justify-end p-2">
-							<button
-								type="button"
-								className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-800 dark:hover:text-white"
-								data-modal-toggle="popup-modal"
-							>
-								<svg
-									className="w-5 h-5"
-									fill="currentColor"
-									viewBox="0 0 20 20"
-									xmlns="http://www.w3.org/2000/svg"
-								>
-									<path
-										fillRule="evenodd"
-										d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-										clipRule="evenodd"
-									></path>
-								</svg>
-							</button>
-						</div>
-						{/* Modal body */}
-						<div className="p-6 pt-0 text-center">
-							<svg
-								className="mx-auto mb-4 w-14 h-14 text-gray-400 dark:text-gray-200"
-								fill="none"
-								stroke="currentColor"
-								viewBox="0 0 24 24"
-								xmlns="http://www.w3.org/2000/svg"
-							>
-								<path
-									strokeLinecap="round"
-									strokeLinejoin="round"
-									strokeWidth="2"
-									d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-								></path>
-							</svg>
-							<h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
-								Are you sure?
-							</h3>
-							<form
-								className="px-6 pb-4 space-y-6 lg:px-8 sm:pb-6 xl:pb-8"
-								onSubmit={this.deleteUserVideosSubmit}
-							>
-								<h3 className="text-xl font-medium text-gray-900 dark:text-white">
-									Please enter the prompt below in order to delete all your
-									videos.
-								</h3>
-								<div>
-									<label
-										htmlFor="text"
-										className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-									>
-										Videos Deletion Confirmation
-									</label>
-									<input
-										type="text"
-										name="text"
-										id="text"
-										onChange={this.handleChange}
-										value={this.state.deleteUserVideosPassword}
-										className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
-										placeholder="Type 'HOOSIER' to confirm."
-										required
-									></input>
-								</div>
-								<button
-									data-modal-toggle="popup-modal"
-									type="button"
-									className="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center mr-2"
-								>
-									Yes, I'm sure
-								</button>
-							</form>
-							<button
-								data-modal-toggle="popup-modal"
-								type="button"
-								className="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:ring-gray-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600"
-							>
-								No, cancel
-							</button>
-						</div>
-					</div>
-				</div>
+			<div>
+				<Dialog open={true} onClose={this.openModalUserVideosDelete}>
+					<DialogTitle>Delete All Videos</DialogTitle>
+					<DialogContent>
+						<DialogContentText>
+							In order to delete all of your videos, please enter "HOOSIER" into
+							the text field below. After doing so, click "Delete All My
+							Videos". This is final. You will not be able to recover your
+							account.
+						</DialogContentText>
+						<TextField
+							autoFocus
+							margin="dense"
+							id="deleteUserCommentTextField"
+							name="deleteUserVideosPassword"
+							label="Confirm Delete"
+							type="text"
+							fullWidth
+							placeholder="HOOSIER"
+							variant="standard"
+							onChange={this.handleChangeMUI}
+							value={this.state.deleteUserVideosPassword}
+						/>
+					</DialogContent>
+					<DialogActions>
+						<Button onClick={this.openModalUserVideosDelete}>Cancel</Button>
+						<Button onClick={this.deleteUserVideosSubmit}>
+							Delete All My Videos
+						</Button>
+					</DialogActions>
+				</Dialog>
 			</div>
 		);
 	};
@@ -740,147 +647,89 @@ export default class Settings extends React.Component<
 		});
 	};
 
-	deleteUserCommentsSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-		e.preventDefault();
+	deleteUserCommentsSubmit = async (
+		event: React.MouseEvent<HTMLButtonElement>
+	) => {
+		event.preventDefault();
 		await this.didUserAnswerAccountResetAnswersCorrectlySubmit;
 		if (
-			(this.state.accountResetAnswer1 === "" ||
-				this.state.accountResetAnswer2 === "") &&
-			this.state.deleteUserVideosPassword === "CANTJUMP"
+			this.state.accountResetAnswer1 === "" ||
+				this.state.accountResetAnswer2 === ""
 		) {
 			this.setState({
 				errorMessage: "Please answer the account reset questions.",
 			});
 		} else {
-			await fetch(`${dbCall}/users/settings/deleteComments/${this.props.id}`, {
-				method: "DELETE",
-				headers: new Headers({
-					"Content-Type": "application/json",
-					Authorization: `Bearer ${this.props.sessionToken}`,
-				}),
-			})
-				.then((res) => {
-					console.log("Delete Comments status is: " + res.status);
-					this.props.setResponseStatus(res.status);
-					return res.json();
+			if (this.state.deleteUserCommentsPassword === "CANTJUMP")
+				await fetch(`${dbCall}/comments/${this.props.id}`, {
+					method: "DELETE",
+					headers: new Headers({
+						"Content-Type": "application/json",
+						Authorization: `Bearer ${this.props.sessionToken}`,
+					}),
 				})
-				.then((data) => {
-					if (
-						data.status === 200 &&
-						data.message === "Comments successfully deleted!"
-					) {
-						console.log("Delete Comments data: " + data);
-						this.props.setResponseStatus(data.status);
-					}
-					this.setState({
-						errorMessage: data.message,
-						responseStatus: data.status,
+					.then((res) => {
+						console.log("Delete Comments status is: " + res.status);
+						this.openModalUserCommentsDelete();
+						this.props.setResponseStatus(res.status);
+						return res.json();
+					})
+					.then((data) => {
+						if (
+							data.status === 200 &&
+							data.message === "Comments successfully deleted!"
+						) {
+							console.log("Delete Comments data: " + data);
+							this.props.setResponseStatus(data.status);
+						}
+						this.setState({
+							errorMessage: data.message,
+							responseStatus: data.status,
+						});
+					})
+					.catch((error) => {
+						console.log("Delete Comments error: " + error.message);
+						this.setState({
+							errorMessage: error.message,
+							responseStatus: error.status,
+						});
 					});
-				})
-				.catch((error) => {
-					console.log("Delete Comments error: " + error.message);
-					this.setState({
-						errorMessage: error.message,
-						responseStatus: error.status,
-					});
-				});
 		}
 	};
 
-	deleteUserCommentsModal = (): JSX.Element => {
-		//! Delete Comments Modal
+	renderDeleteUserCommentsModalmui = (): JSX.Element => {
 		return (
-			<div
-				className="hidden overflow-y-auto overflow-x-hidden fixed right-0 left-0 top-4 z-50 justify-center items-center md:inset-0 h-modal sm:h-full"
-				id="popup-modal"
-			>
-				<div className="relative px-4 w-full max-w-md h-full md:h-auto">
-					{/* Modal content */}
-					<div className="relative bg-white rounded-lg shadow dark:bg-gray-700">
-						{/* Modal header */}
-						<div className="flex justify-end p-2">
-							<button
-								type="button"
-								className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-800 dark:hover:text-white"
-								data-modal-toggle="popup-modal"
-							>
-								<svg
-									className="w-5 h-5"
-									fill="currentColor"
-									viewBox="0 0 20 20"
-									xmlns="http://www.w3.org/2000/svg"
-								>
-									<path
-										fillRule="evenodd"
-										d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-										clipRule="evenodd"
-									></path>
-								</svg>
-							</button>
-						</div>
-						{/* Modal body */}
-						<div className="p-6 pt-0 text-center">
-							<svg
-								className="mx-auto mb-4 w-14 h-14 text-gray-400 dark:text-gray-200"
-								fill="none"
-								stroke="currentColor"
-								viewBox="0 0 24 24"
-								xmlns="http://www.w3.org/2000/svg"
-							>
-								<path
-									strokeLinecap="round"
-									strokeLinejoin="round"
-									strokeWidth="2"
-									d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-								></path>
-							</svg>
-							<h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
-								Are you sure?
-							</h3>
-							<form
-								className="px-6 pb-4 space-y-6 lg:px-8 sm:pb-6 xl:pb-8"
-								onSubmit={this.deleteUserCommentsSubmit}
-							>
-								<h3 className="text-xl font-medium text-gray-900 dark:text-white">
-									Please enter the prompt below in order to delete all your
-									comments.
-								</h3>
-								<div>
-									<label
-										htmlFor="text"
-										className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-									>
-										Comments Deletion Confirmation
-									</label>
-									<input
-										type="text"
-										name="text"
-										id="text"
-										onChange={this.handleChange}
-										value={this.state.deleteUserCommentsPassword}
-										className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
-										placeholder="Type 'HOOSIER' to confirm."
-										required
-									></input>
-								</div>
-								<button
-									data-modal-toggle="popup-modal"
-									type="button"
-									className="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center mr-2"
-								>
-									Yes, I'm sure
-								</button>
-							</form>
-							<button
-								data-modal-toggle="popup-modal"
-								type="button"
-								className="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:ring-gray-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600"
-							>
-								No, cancel
-							</button>
-						</div>
-					</div>
-				</div>
+			<div>
+				<Dialog open={true} onClose={this.openModalUserCommentsDelete}>
+					<DialogTitle>Delete All Comments</DialogTitle>
+					<DialogContent>
+						<DialogContentText>
+							In order to delete all your comments, please enter "CANTJUMP" into
+							the text field below. After doing so, click "Delete All My
+							Comments". This is final. You will not be able to recover your
+							account.
+						</DialogContentText>
+						<TextField
+							autoFocus
+							margin="dense"
+							id="deleteUserCommentTextField"
+							name="deleteUserCommentsPassword"
+							label="Confirm Delete"
+							type="text"
+							fullWidth
+							placeholder="CANTJUMP"
+							variant="standard"
+							onChange={this.handleChangeMUI}
+							value={this.state.deleteUserCommentsPassword}
+						/>
+					</DialogContent>
+					<DialogActions>
+						<Button onClick={this.openModalUserCommentsDelete}>Cancel</Button>
+						<Button onClick={this.deleteUserCommentsSubmit}>
+							Delete All My Comments
+						</Button>
+					</DialogActions>
+				</Dialog>
 			</div>
 		);
 	};
@@ -1019,7 +868,7 @@ export default class Settings extends React.Component<
 						<div className="account-reset-delete-container">
 							<div className="account-reset-delete-button-container">
 								<button
-									onClick={this.openModalUserDelete}
+									onClick={this.openModalUserAccountDelete}
 									className="account-reset-delete-button"
 								>
 									Delete Account
@@ -1045,15 +894,15 @@ export default class Settings extends React.Component<
 							</div>
 
 							{this.state.openDeleteUserModal
-								? console.log(this.deleteUserModal)
+								? this.renderDeleteUserAccountModalmui()
 								: null}
 
 							{this.state.openDeleteUserVideosModal
-								? this.deleteUserVideosModal()
+								? this.renderDeleteUserVideosModalmui()
 								: null}
 
 							{this.state.openDeleteUserCommentsModal
-								? this.deleteUserCommentsModal()
+								? this.renderDeleteUserCommentsModalmui()
 								: null}
 						</div>
 					</div>
@@ -1063,4 +912,15 @@ export default class Settings extends React.Component<
 			</div>
 		);
 	}
+	//* LIFECYCLE METHOD
+	componentWillUnmount() {
+		this.setState({
+			openDeleteUserModal: false,
+			openDeleteUserVideosModal: false,
+			openDeleteUserCommentsModal: false,
+		}
+		);
+	}
 }
+
+

@@ -72,7 +72,7 @@ export default class Navbar extends React.Component<
 				emailAddress: "",
 				imageUrl: "",
 				isAdmin: false,
-				isUserLoggedIn: false
+				isUserLoggedIn: false,
 			},
 			navigation: [
 				{
@@ -114,7 +114,7 @@ export default class Navbar extends React.Component<
 				{
 					id: 2,
 					pageName: "Settings",
-					href: "/settings/:id",
+					href: "/settings/",
 					userVisible: false,
 				},
 				{
