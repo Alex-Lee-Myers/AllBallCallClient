@@ -22,7 +22,7 @@ interface AuthProps {
 interface userState {
 	isAdmin: ABCuserInfo["isAdmin"];
 	emailAddress: ABCuserInfo["emailAddress"] | null | string;
-	id: string;
+	id: ABCuserInfo["id"];
 	imageUrl: string | undefined | "";
 	isUserLoggedIn: ABCtoken["isUserLoggedIn"];
 	username: ABCuserInfo["username"] | undefined | string;
@@ -67,13 +67,13 @@ export default class Navbar extends React.Component<
 		super(props);
 		this.state = {
 			user: {
-				id: "",
-				username: "",
-				emailAddress: "",
+				id: this.props.id,
+				username: this.props.username,
+				emailAddress: this.props.emailAddress,
 				imageUrl: "",
-				isAdmin: false,
-				isUserLoggedIn: false,
-				sessionToken: "",
+				isAdmin: this.props.isAdmin,
+				isUserLoggedIn: this.props.isUserLoggedIn,
+				sessionToken: this.props.sessionToken,
 			},
 			navigation: [
 				{
@@ -115,7 +115,7 @@ export default class Navbar extends React.Component<
 				{
 					id: 2,
 					pageName: "Settings",
-					href: `/settings/${this.props.username}`,
+					href: `/settings/`,
 					userVisible: false,
 				},
 				{
@@ -218,7 +218,7 @@ export default class Navbar extends React.Component<
 					{
 						id: 2,
 						pageName: "Settings",
-						href: `/settings/${this.props.username}`,
+						href: `/settings/`,
 						userVisible: false,
 					},
 					{
@@ -294,7 +294,7 @@ export default class Navbar extends React.Component<
 					{
 						id: 2,
 						pageName: "Settings",
-						href: `/settings/${this.state.user.username}`,
+						href: `/settings/`,
 						userVisible: true,
 					},
 					{
@@ -370,7 +370,7 @@ export default class Navbar extends React.Component<
 					{
 						id: 2,
 						pageName: "Settings",
-						href: `/settings/${this.state.user.username}`,
+						href: `/settings/`,
 						userVisible: true,
 					},
 					{
@@ -422,6 +422,12 @@ export default class Navbar extends React.Component<
 			this.handleUserVisibility();
 		} else if (prevProps.username !== this.state.user.username) {
 			console.log("User username changed");
+			this.handleUserVisibility();
+		} else if (
+			// if the localStorage token changes, then the user's session token will be updated.
+			localStorage.getItem("Authorization") !== this.state.user.sessionToken
+		) {
+			console.log("User localStorage token changed");
 			this.handleUserVisibility();
 		}
 	}

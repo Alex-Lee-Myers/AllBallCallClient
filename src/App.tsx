@@ -233,7 +233,7 @@ const App = () => {
 				<Route path="/logout" element={<Logout clearToken={clearToken} />} />
 
 				<Route
-					path={`/settings/${username}`}
+					path={`/settings/`}
 					element={
 						<Settings
 							clearToken={clearToken}
