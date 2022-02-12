@@ -19,7 +19,6 @@ interface AuthProps {
 	username: ABCuserInfo["username"];
 }
 
-
 interface userState {
 	isAdmin: ABCuserInfo["isAdmin"];
 	emailAddress: ABCuserInfo["emailAddress"] | null | string;
@@ -27,6 +26,7 @@ interface userState {
 	imageUrl: string | undefined | "";
 	isUserLoggedIn: ABCtoken["isUserLoggedIn"];
 	username: ABCuserInfo["username"] | undefined | string;
+	sessionToken: ABCtoken["sessionToken"];
 }
 
 interface navigationState {
@@ -45,14 +45,14 @@ interface userNavigationState {
 }
 //! Interface for:
 // handles function classNames(...classes) {
-    //     return classes.filter(Boolean).join(" ");
-    //   }
+//     return classes.filter(Boolean).join(" ");
+//   }
 interface navbarState {
-    classNames: Function;
+	classNames: Function;
 }
 
 //TODO 0) Fix the navbar to be responsive to userLogin.
-	//* I believe I need to work out how to pass through AuthProps to the Navbar. Contstructor can't have props: any.
+//* I believe I need to work out how to pass through AuthProps to the Navbar. Contstructor can't have props: any.
 
 export default class Navbar extends React.Component<
 	AuthProps,
@@ -73,6 +73,7 @@ export default class Navbar extends React.Component<
 				imageUrl: "",
 				isAdmin: false,
 				isUserLoggedIn: false,
+				sessionToken: "",
 			},
 			navigation: [
 				{
@@ -114,7 +115,7 @@ export default class Navbar extends React.Component<
 				{
 					id: 2,
 					pageName: "Settings",
-					href: "/settings/",
+					href: `/settings/${this.props.username}`,
 					userVisible: false,
 				},
 				{
@@ -175,6 +176,7 @@ export default class Navbar extends React.Component<
 					imageUrl: tempProfilePic,
 					isAdmin: this.props.isAdmin,
 					isUserLoggedIn: this.props.isUserLoggedIn,
+					sessionToken: this.props.sessionToken,
 				},
 				navigation: [
 					{
@@ -250,6 +252,7 @@ export default class Navbar extends React.Component<
 					imageUrl: tempProfilePic,
 					isAdmin: this.props.isAdmin,
 					isUserLoggedIn: this.props.isUserLoggedIn,
+					sessionToken: this.props.sessionToken,
 				},
 				navigation: [
 					{
@@ -291,7 +294,7 @@ export default class Navbar extends React.Component<
 					{
 						id: 2,
 						pageName: "Settings",
-						href: `/settings/${this.props.username}`,
+						href: `/settings/${this.state.user.username}`,
 						userVisible: true,
 					},
 					{
@@ -325,6 +328,7 @@ export default class Navbar extends React.Component<
 					imageUrl: tempProfilePic,
 					isAdmin: this.props.isAdmin,
 					isUserLoggedIn: this.props.isUserLoggedIn,
+					sessionToken: this.props.sessionToken,
 				},
 				navigation: [
 					{
@@ -366,7 +370,7 @@ export default class Navbar extends React.Component<
 					{
 						id: 2,
 						pageName: "Settings",
-						href: `/settings/${this.props.username}`,
+						href: `/settings/${this.state.user.username}`,
 						userVisible: true,
 					},
 					{
@@ -392,17 +396,32 @@ export default class Navbar extends React.Component<
 		}
 	}
 
-
 	//! The Navbar component should re-render whenever the ABCuserInfo.id changes. This is because the user's id changes when they log in. The function handleUserVisibility() is called whenever the ABCuserInfo.id changes.
 	//* handleUserVisibility() is called in the constructor() and in the componentDidUpdate() function.
 	//* componentDidUpdate will compare the ABCuserInfo.id to the ABCuserInfo.id in the previous state. If they are different, then the handleUserVisibility() function will be called.
-	
+
 	componentDidMount() {
 		this.handleUserVisibility();
 	}
 
 	componentDidUpdate(prevProps: Readonly<AuthProps>) {
 		if (prevProps.id !== this.state.user.id) {
+			console.log("User id changed");
+			this.handleUserVisibility();
+		} else if (prevProps.isUserLoggedIn !== this.state.user.isUserLoggedIn) {
+			console.log("User logged in changed");
+			this.handleUserVisibility();
+		} else if (prevProps.isAdmin !== this.state.user.isAdmin) {
+			console.log("User admin status changed");
+			this.handleUserVisibility();
+		} else if (prevProps.sessionToken !== this.state.user.sessionToken) {
+			console.log("User session token changed");
+			this.handleUserVisibility();
+		} else if (prevProps.emailAddress !== this.state.user.emailAddress) {
+			console.log("User email address changed");
+			this.handleUserVisibility();
+		} else if (prevProps.username !== this.state.user.username) {
+			console.log("User username changed");
 			this.handleUserVisibility();
 		}
 	}
@@ -608,4 +627,3 @@ export default class Navbar extends React.Component<
 		);
 	}
 }
-
