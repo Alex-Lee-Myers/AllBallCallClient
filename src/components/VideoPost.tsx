@@ -6,8 +6,8 @@ import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 import Stack from '@mui/material/Stack';
 import ReactPlayer from 'react-player';
-import { ABCtoken, ABCuserInfo } from '../App';
 import dbCall from '../helpers/Environments';
+import { ABCtoken, ABCvideo, ABCuserInfo, ABCcalls } from '../App';
 
 // !VideoPost information:
 //     //? What does this file do?
@@ -45,9 +45,15 @@ import dbCall from '../helpers/Environments';
 //             //* adminHighlighted and adminDelete will not be viewable or editable by a user without isAdmin=true state.
 
 
-interface userProps {
+interface ABCprops {
     sessionToken: ABCtoken['sessionToken']
     isAdmin: ABCuserInfo['isAdmin']
+    setVideoId: ABCvideo['setVideoId']
+    setVideoTitle: ABCvideo['setVideoTitle']
+    setVideoLink: ABCvideo['setVideoLink']
+    errorMessage: ABCcalls['errorMessage']
+    setErrorMessage: ABCcalls['setErrorMessage']
+
 }
 
 // interface playersHighlightedProps {
@@ -88,264 +94,212 @@ interface videoPostState {
     // adminDelete: boolean
 }
 
-class VideoPost extends React.Component<userProps, videoPostState> {
-        constructor(props: userProps) {
-            super(props);
-            this.state = {
-                videoTitle: '',
-                videoLink: '',
-    //             thumbnailImage: '',
-    //             playersHighlighted: [''],
-    //             teamsFeatured: [''],
-    //             tags: [''],
-    //             gameDate: new Date(),
-    //             nbaSeason: '',
-    //             isPlayoffs: false,
-    //             clutch: false,
-    //             adminHighlighted: false,
-    //             adminDelete: false,
-    //             isAdmin: false,
-    //             players: [],
-    //             teams: [],
-            }
+class VideoPost extends React.Component<ABCprops, videoPostState> {
+	constructor(props: ABCprops) {
+		super(props);
+		this.state = {
+			videoTitle: "",
+			videoLink: "",
+			//             thumbnailImage: '',
+			//             playersHighlighted: [''],
+			//             teamsFeatured: [''],
+			//             tags: [''],
+			//             gameDate: new Date(),
+			//             nbaSeason: '',
+			//             isPlayoffs: false,
+			//             clutch: false,
+			//             adminHighlighted: false,
+			//             adminDelete: false,
+			//             isAdmin: false,
+			//             players: [],
+			//             teams: [],
+		};
 
-            this.handleChange = this.handleChange.bind(this);
+		this.handleChange = this.handleChange.bind(this);
+		this.handleSubmit = this.handleSubmit.bind(this);
 
-    //         this.handlePlayersHighlighted = this.handlePlayersHighlighted.bind(this);
-    //         this.handleTeamsFeatured = this.handleTeamsFeatured.bind(this);
-    //         this.handleTags = this.handleTags.bind(this);
-    //         this.handleGameDate = this.handleGameDate.bind(this);
-    //         this.handleNbaSeason = this.handleNbaSeason.bind(this);
-    //         this.handleIsPlayoffs = this.handleIsPlayoffs.bind(this);
-    //         this.handleClutch = this.handleClutch.bind(this);
+		//         this.handlePlayersHighlighted = this.handlePlayersHighlighted.bind(this);
+		//         this.handleTeamsFeatured = this.handleTeamsFeatured.bind(this);
+		//         this.handleTags = this.handleTags.bind(this);
+		//         this.handleGameDate = this.handleGameDate.bind(this);
+		//         this.handleNbaSeason = this.handleNbaSeason.bind(this);
+		//         this.handleIsPlayoffs = this.handleIsPlayoffs.bind(this);
+		//         this.handleClutch = this.handleClutch.bind(this);
 
-    //         this.handleAdminHighlighted = this.handleAdminHighlighted.bind(this);
-    //         this.handleAdminDelete = this.handleAdminDelete.bind(this);
-        }
+		//         this.handleAdminHighlighted = this.handleAdminHighlighted.bind(this);
+		//         this.handleAdminDelete = this.handleAdminDelete.bind(this);
+	}
 
-    //! handleChange:
-    handleChange(event: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement>) {
-        this.setState({
-            ...this.state,
-            [event.target.name]: event.target.value
-        })
-    }
+	//! handleChange:
+	handleChange(
+		event:
+			| React.ChangeEvent<HTMLInputElement>
+			| React.ChangeEvent<HTMLTextAreaElement>
+	) {
+		this.setState({
+			...this.state,
+			[event.target.name]: event.target.value,
+		});
+	}
 
-    //! handleSubmit:
-    handleSubmit = async (event: React.FormEvent<HTMLFormElement>):Promise<void> => {
-        event.preventDefault();
-        console.log(this.state);
-        fetch(`${dbCall}/videos/content/`, {
-          method: "POST",
-          headers: new Headers({
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${this.props.sessionToken}`,
-          }),
-          body: JSON.stringify({
-            videopost: {
-              videoTitle: this.state.videoTitle,
-              videoLink: this.state.videoLink,
-              // thumbnailImage: this.state.thumbnailImage,
-              // playersHighlighted: this.state.playersHighlighted,
-              // teamsFeatured: this.state.teamsFeatured,
-              // tags: this.state.tags,
-              // gameDate: this.state.gameDate,
-              // nbaSeason: this.state.nbaSeason,
-              // isPlayoffs: this.state.isPlayoffs,
-              // clutch: this.state.clutch,
-              // adminHighlighted: this.state.adminHighlighted,
-              // adminDelete: this.state.adminDelete,
-            },
-          }),
-        })
-          .then((res) => {
-            return res.json();
-          })
-          .then((res) => {
-            console.log(res);
-            this.setState({
-              videoTitle: "",
-              videoLink: "",
-              // thumbnailImage: '',
-              // playersHighlighted: [''],
-              // teamsFeatured: [''],
-              // tags: [''],
-              // gameDate: new Date(),
-              // nbaSeason: '',
-              // isPlayoffs: false,
-              // clutch: false,
-              // adminHighlighted: false,
-              // adminDelete: false,
-            });
-          })
-          .catch((err) => {
-            console.log("VideoPostSubmit: ", err);
-          });
-                }
+	//! handleSubmit:
+	handleSubmit = async (
+		event: React.FormEvent<HTMLFormElement>
+	): Promise<void> => {
+		event.preventDefault();
+		console.log(this.state);
+		await fetch(`${dbCall}/videos/content/`, {
+			method: "POST",
+			headers: new Headers({
+				"Content-Type": "application/json",
+				Authorization: `Bearer ${this.props.sessionToken}`,
+			}),
+			body: JSON.stringify({
+				videopost: {
+					videoTitle: this.state.videoTitle,
+					videoLink: this.state.videoLink,
+					// thumbnailImage: this.state.thumbnailImage,
+					// playersHighlighted: this.state.playersHighlighted,
+					// teamsFeatured: this.state.teamsFeatured,
+					// tags: this.state.tags,
+					// gameDate: this.state.gameDate,
+					// nbaSeason: this.state.nbaSeason,
+					// isPlayoffs: this.state.isPlayoffs,
+					// clutch: this.state.clutch,
+					// adminHighlighted: this.state.adminHighlighted,
+					// adminDelete: this.state.adminDelete,
+				},
+			}),
+		})
+			.then((res) => {
+					return res.json();
+			})
+			.then((data) => {
+				console.log(data);
+				this.props.setVideoId(data.id);
+				this.props.setVideoTitle(data.videoTitle);
+				this.props.setVideoLink(data.videoLink);
+			})
+			.catch((err) => {
+				console.log(err);
+				this.props.setErrorMessage(err);
+			});
+	};
 
-    //! handlePlayersHighlighted:
-    // handlePlayersHighlighted(event: any) {
-    //     let playersHighlighted = this.state.playersHighlighted;
-    //     playersHighlighted[event.target.name] = event.target.value;
-    //     this.setState({
-    //         playersHighlighted: playersHighlighted
-    //     })
-    // }
+	//! handlePlayersHighlighted:
+	// handlePlayersHighlighted(event: any) {
+	//     let playersHighlighted = this.state.playersHighlighted;
+	//     playersHighlighted[event.target.name] = event.target.value;
+	//     this.setState({
+	//         playersHighlighted: playersHighlighted
+	//     })
+	// }
 
-    //! handleTeamsFeatured:
-    // handleTeamsFeatured(event: any) {
-    //     let teamsFeatured = this.state.teamsFeatured;
-    //     teamsFeatured[event.target.name] = event.target.value;
-    //     this.setState({
-    //         teamsFeatured: teamsFeatured
-    //     })
-    // }
+	//! handleTeamsFeatured:
+	// handleTeamsFeatured(event: any) {
+	//     let teamsFeatured = this.state.teamsFeatured;
+	//     teamsFeatured[event.target.name] = event.target.value;
+	//     this.setState({
+	//         teamsFeatured: teamsFeatured
+	//     })
+	// }
 
-    //! handleTags:
-    // handleTags(event: any) {
-    //     let tags = this.state.tags;
-    //     tags[event.target.name] = event.target.value;
-    //     this.setState({
-    //         tags: tags
-    //     })
-    // }
+	//! handleTags:
+	// handleTags(event: any) {
+	//     let tags = this.state.tags;
+	//     tags[event.target.name] = event.target.value;
+	//     this.setState({
+	//         tags: tags
+	//     })
+	// }
 
-    //! handleGameDate:
-    // handleGameDate(event: any) {
-    //     this.setState({
-    //         gameDate: event.target.value
-    //     })
-    // }
-
-    //! handleNbaSeason:
-    // handleNbaSeason(event: any) {
-    //     this.setState({
-    //         nbaSeason: event.target.value
-    //     })
-    // }
-
-    //! handleIsPlayoffs:   //? What does this function do? 
-    // handleIsPlayoffs(event: any) {
-    //     this.setState({
-    //         isPlayoffs: event.target.value
-    //     })
-    // }
-
-    //! handleClutch:
-    // handleClutch(event: any) {
-    //     this.setState({
-    //         clutch: event.target.value
-    //     })
-    // }
-
-    //! handleAdminHighlighted:
-    // handleAdminHighlighted(event: any) {
-    //     this.setState({
-    //         adminHighlighted: event.target.value
-    //     })
-    // }
-
-    //! handleAdminDelete:
-    // handleAdminDelete(event: any) {
-    //     this.setState({
-    //         adminDelete: event.target.value
-    //     })
-    // }
-
-    //! handleThumbnailImage:
-    // handleThumbnailImage(event: any) {
-    //     this.setState({
-    //         thumbnailImage: event.target.value
-    //     })
-    // }
-
-    //! handleVideoLink:
-    // handleVideoLink(event: any) {
-    //     this.setState({
-    //         videoLink: event.target.value
-    //     })
-    // }
-
-    //! handleVideoTitle:
-    // handleVideoTitle(event: any) {
-    //     this.setState({
-    //         videoTitle: event.target.value
-    //     })
-    // }
-
-    render(): React.ReactNode {
-        return (
-            <>
-                <div>
-                    <div className="md:grid md:grid-cols-3 md:gap-6">
-                        <div className="md:col-span-1">
-                            <div className="px-4 sm:px-0">
-                                <h3 className="text-lg font-medium leading-6 text-gray-900">Post Your Highlight</h3>
-                                <p className="mt-1 text-sm text-gray-600">
-                                    Share your highlight with the world! Do note, only <a href="https://www.youtube.com/">YouTube</a> and <a href="https://streamable.com/">Streamable</a> links are accepted.
-                                </p>
-                            </div>
-                        </div>
-                        <div className="mt-5 md:mt-0 md:col-span-2">
-                            <form onSubmit={this.handleSubmit}>
-                                <div className="shadow sm:rounded-md sm:overflow-hidden">
-                                    <div className="px-4 py-5 bg-white space-y-6 sm:p-6">
-                                        <div className="grid grid-cols-3 gap-6">
-                                            <div className="col-span-3 sm:col-span-2">
-                                                <label htmlFor="video-website" className="block text-sm font-medium text-gray-700">
-                                                    Website
-                                                </label>
-                                                <div className="mt-1 flex rounded-md shadow-sm">
-                                                    <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
-                                                        http://
-                                                    </span>
-                                                    <input
-                                                        type="text"
-                                                        name="video-website"
-                                                        id="video-website"
-                                                        className="focus:ring-indigo-500 focus:border-indigo-500 flex-1 block w-full rounded-none rounded-r-md sm:text-sm border-gray-300"
+	render(): React.ReactNode {
+		return (
+			<>
+				<div>
+					<div className="md:grid md:grid-cols-3 md:gap-6">
+						<div className="md:col-span-1">
+							<div className="px-4 sm:px-0">
+								<h3 className="text-lg font-medium leading-6 text-gray-900">
+									Post Your Highlight
+								</h3>
+								<p className="mt-1 text-sm text-gray-600">
+									Share your highlight with the world! Do note, only{" "}
+									<a href="https://www.youtube.com/">YouTube</a> and{" "}
+									<a href="https://streamable.com/">Streamable</a> links are
+									accepted.
+								</p>
+							</div>
+						</div>
+						<div className="mt-5 md:mt-0 md:col-span-2">
+							<form onSubmit={this.handleSubmit}>
+								<div className="shadow sm:rounded-md sm:overflow-hidden">
+									<div className="px-4 py-5 bg-white space-y-6 sm:p-6">
+										<div className="grid grid-cols-3 gap-6">
+											<div className="col-span-3 sm:col-span-2">
+												<label
+													htmlFor="video-website"
+													className="block text-sm font-medium text-gray-700"
+												>
+													Website
+												</label>
+												<div className="mt-1 flex rounded-md shadow-sm">
+													<span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
+														http://
+													</span>
+													<input
+														type="text"
+														name="videoLink"
+														id="videoLink"
+														className="focus:ring-indigo-500 focus:border-indigo-500 flex-1 block w-full rounded-none rounded-r-md sm:text-sm border-gray-300"
                                                         placeholder="www.streamable.com"
-                                                    />
-                                                </div>
-                                            </div>
-                                        </div>
+                                                        onChange={this.handleChange}
+                                                        value={this.state.videoLink}
+													/>
+												</div>
+											</div>
+										</div>
 
-                                        <div>
-                                            <label htmlFor="about" className="block text-sm font-medium text-gray-700">
-                                                About
-                                            </label>
-                                            <div className="mt-1">
+										<div>
+											<label
+												htmlFor="about"
+												className="block text-sm font-medium text-gray-700"
+											>
+												Title of Highlight
+											</label>
+											<div className="mt-1">
                                                 <textarea
-                                                    id="about"
-                                                    name="about"
-                                                    rows={3}
-                                                    className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 mt-1 block w-full sm:text-sm border border-gray-300 rounded-md"
-                                                    placeholder="you@example.com"
-                                                    defaultValue={''}
-                                                />
-                                            </div>
-                                            <p className="mt-2 text-sm text-gray-500">
-                                                Brief description for your profile. URLs are hyperlinked.
-                                            </p>
-                                        </div>
+													id="videoTitle"
+													name="videoTitle"
+													rows={3}
+													onChange={this.handleChange}
+													className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 mt-1 block w-full sm:text-sm border border-gray-300 rounded-md"
+													placeholder="you@example.com"
+													value={this.state.videoTitle}
+												/>
+											</div>
+											<p className="mt-2 text-sm text-gray-500">
+												Brief title for your highlight. URLs are hyperlinked.
+											</p>
+										</div>
 
-                                        <div className="px-4 py-3 bg-gray-50 text-right sm:px-6">
-                                            <button
-                                                type="submit"
-                                                className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                                            >
-                                                Save
-                                            </button>
-                                        </div>
-                                        </div>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </>
-        );
-    }
+										<div className="px-4 py-3 bg-gray-50 text-right sm:px-6">
+											<button
+												type="submit"
+												className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+											>
+												Save
+											</button>
+										</div>
+									</div>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</>
+		);
+	}
 }
 
 export default VideoPost;

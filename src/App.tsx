@@ -39,38 +39,49 @@ export interface ABCcalls {
   errorMessage: string;
   setErrorMessage: (message: string) => void;
   fetchDb: () => Promise<void>;
-  fetchVideos: () => Promise<void>;
+  
   responseStatus: number;
   setResponseStatus: (responseStatus: number) => void;
-  // mountyPython: boolean,
+}
+
+export interface ABCvideo {
+  videoId: string;
+  setVideoId: (videoId: string) => void;
+  videoTitle: string;
+  setVideoTitle: (videoTitle: string) => void;
+  videoLink: string;
+  setVideoLink: (videoLink: string) => void;
+	// thumbnailImage: string;
+	// playersHighlighted: playersHighlightedArray[];
+	// teamsFeatured: teamsFeaturedArray[];
+	// tags: tagsArray[];
+	// gameDate: Date;
+	// nbaSeason: string;
+	// isPlayoffs: boolean;
+	// clutch: boolean;
+	// adminHighlighted: boolean;
+	// adminDelete: boolean;
 }
 
 // Did not use React.FunctionComponent as per (https://github.com/typescript-cheatsheets/react/blob/main/README.md#basic-cheatsheet-table-of-contents) this methology is deprecated.
 
 const App = () => {
+  //! userInfo States
   const [id, setId] = useState<ABCuserInfo["id"]>("");
   const [isAdmin, setIsAdmin] = useState<ABCuserInfo["isAdmin"]>(false);
   const [emailAddress, setEmailAddress] = useState<ABCuserInfo["emailAddress"]>("");
+  const [username, setUsername] = useState<ABCuserInfo["username"]>("");
+  //! calls States
   const [errorMessage, setErrorMessage] = useState<ABCcalls["errorMessage"]>("");
   const [responseStatus, setResponseStatus] = useState<ABCcalls["responseStatus"]>(500);
+  //! token States
   const [sessionToken, setSessionToken] = useState<ABCtoken["sessionToken"]>(null);
   const [isUserLoggedIn, setIsUserLoggedIn] = useState<ABCtoken["isUserLoggedIn"]>(false);
-  const [username, setUsername] = useState<ABCuserInfo["username"]>("");
+  //! video States
+  const [videoId, setVideoId] = useState<ABCvideo["videoId"]>("");
+  const [videoTitle, setVideoTitle] = useState<ABCvideo["videoTitle"]>("");
+  const [videoLink, setVideoLink] = useState<ABCvideo["videoLink"]>("");
 
-  //! fetching all videos, regardless of validation.
-  //! sort by newest first.
-  const fetchVideos = async () => {
-    const response = await fetch(`${dbCall}/videos/content/all`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    const data = await response.json();
-    console.log(data);
-    setResponseStatus(response.status);
-    setErrorMessage(data.errorMessage);
-  };
 
   const fetchDb = async (): Promise<void> => {
     if (localStorage.getItem('Authorization')) {
@@ -135,7 +146,6 @@ const App = () => {
   };
 
   useEffect(() => {
-    fetchVideos();
     fetchDb();
   }, [sessionToken]);
 
@@ -153,7 +163,22 @@ const App = () => {
 			/>
 
 			<Routes>
-				<Route path="/" element={<Home />} />
+				<Route
+					path="/"
+					element={
+						<Home
+							errorMessage={errorMessage}
+							setErrorMessage={setErrorMessage}
+							responseStatus={responseStatus}
+							setResponseStatus={setResponseStatus}
+							isUserLoggedIn={isUserLoggedIn}
+							sessionToken={sessionToken}
+							videoId={videoId}
+							videoTitle={videoTitle}
+							videoLink={videoLink}
+						/>
+					}
+				/>
 
 				<Route
 					path="/login"
@@ -205,18 +230,10 @@ const App = () => {
 					}
 				/>
 
-        <Route
-          path="/logout"
-          element={
-            <Logout
-              clearToken={clearToken}
-            
-            />
-          }
-        />
+				<Route path="/logout" element={<Logout clearToken={clearToken} />} />
 
 				<Route
-          path={`/settings/${username}`}
+					path={`/settings/${username}`}
 					element={
 						<Settings
 							clearToken={clearToken}
@@ -234,7 +251,17 @@ const App = () => {
 
 				<Route
 					path="/videos/content"
-					element={<VideoPost isAdmin={isAdmin} sessionToken={sessionToken} />}
+					element={
+						<VideoPost
+							isAdmin={isAdmin}
+							sessionToken={sessionToken}
+							setVideoId={setVideoId}
+							setVideoTitle={setVideoTitle}
+              setVideoLink={setVideoLink}
+              errorMessage={errorMessage}
+              setErrorMessage={setErrorMessage}
+						/>
+					}
 				/>
 			</Routes>
 		</>
