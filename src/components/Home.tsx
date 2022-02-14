@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import ReactPlayer from 'react-player';
 import { ABCcalls, ABCvideo, ABCuserInfo, ABCtoken } from '../App';
 import dbCall from "../helpers/Environments";
+import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
+import Video from "../components/Video";
 
 interface videoState {
 	videoId: string;
@@ -126,12 +128,28 @@ export default class Home extends Component<
 							/>
 						</div>
 
-						<div className="space-y-2 ">
-							<div className="text-lg -mt-4 pb-5 leading-6 font-medium space-y-1">
+						<div className="space-y-20">
+							<div className="text-lg -mt-2 pb-5 leading-6 font-medium space-y-1">
 								<h3>{videos.videoTitle}</h3>
-								<p className="text-indigo-600">
-									{videos.videoOwnerUsername}
-								</p>
+								<div className="flex justify-between px-2">
+									<p className="text-indigo-600">
+										{/* LINK TO: Added to later. Goes to User's account information (all posts and comments.) If they're owner of the account, they can edit/delete everything on this page. If not, they can only view. */}
+										{videos.user.username}
+									</p>
+									<div className="mr-4">
+										<Link to={`/videos/${videos.videoID}`}>
+											<svg
+												xmlns="http://www.w3.org/2000/svg"
+												className="h-5 w-5"
+												viewBox="0 0 20 20"
+												fill="currentColor"
+											>
+												<path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z" />
+												<path d="M15 7v2a4 4 0 01-4 4H9.828l-1.766 1.767c.28.149.599.233.938.233h2l3 3v-3h2a2 2 0 002-2V9a2 2 0 00-2-2h-1z" />
+											</svg>
+										</Link>
+									</div>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -158,24 +176,10 @@ export default class Home extends Component<
 							className="-mt-7 scroll-px-12 sm:grid sm:grid-cols-2 sm:gap-x-6 sm:gap-y-12 sm:space-y-0 lg:grid-cols-3 lg:gap-x-8"
 						>
 							{this.videoPostArrayRender()}
-												{/* <ul role="list" className="flex space-x-5">
-                            <li>
-                            <a href={video.team} className="text-gray-400 hover:text-gray-500">
-                                <span className="sr-only">{Team Name}</span>
-                                <svg className="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20">
-                                <path team picture here" /> }
-                                </svg>
-                            </a>
-                            </li>
-                            <li>
-                            could put a second logo here of something for category or list out names
-                            </li>
-							</ul> */
-							}
 						</ul>
 					</div>
 				</div>
-				</div>
+			</div>
 		);
 		}
 	}

@@ -14,6 +14,7 @@ import Register from "../src/components/Register";
 import VideoPost from "../src/components/VideoPost";
 import Settings from "../src/components/Settings";
 import Logout from "../src/components/Logout";
+import Video from "../src/components/Video";
 
 export interface ABCtoken {
   isUserLoggedIn: boolean;
@@ -39,7 +40,6 @@ export interface ABCcalls {
   errorMessage: string;
   setErrorMessage: (message: string) => void;
   fetchDb: () => Promise<void>;
-  
   responseStatus: number;
   setResponseStatus: (responseStatus: number) => void;
 }
@@ -230,7 +230,11 @@ const App = () => {
 					}
 				/>
 
-				<Route path="/logout" element={<Logout clearToken={clearToken} />} />
+			  <Route path="/logout" element={
+				  <Logout
+					  clearToken={clearToken}
+				  />}
+			  />
 
 				<Route
 					path={`/settings/`}
@@ -257,12 +261,27 @@ const App = () => {
 							sessionToken={sessionToken}
 							setVideoId={setVideoId}
 							setVideoTitle={setVideoTitle}
-              setVideoLink={setVideoLink}
-              errorMessage={errorMessage}
-              setErrorMessage={setErrorMessage}
+              				setVideoLink={setVideoLink}
+              				errorMessage={errorMessage}
+              				setErrorMessage={setErrorMessage}
 						/>
 					}
-				/>
+			  />
+			  
+			  <Route
+				  path="/videos/:videoId"
+				  element={
+					  <Video
+						  videoId={videoId}
+						  videoTitle={videoTitle}
+						  videoLink={videoLink}
+						  username={username}
+						  isAdmin={isAdmin}
+						  id={id}
+						  isUserLoggedIn={isUserLoggedIn}
+					  />
+				  }
+			  />
 			</Routes>
 		</>
 	);
