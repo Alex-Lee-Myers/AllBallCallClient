@@ -4,6 +4,9 @@ import { ABCcalls, ABCvideo, ABCuserInfo, ABCtoken } from '../App';
 import { Fragment } from "react";
 import { StarIcon } from "@heroicons/react/solid";
 import { Tab } from "@headlessui/react";
+import { BrowserRouter as Route, Link } from "react-router-dom";
+import dbCall from "../helpers/Environments";
+import tempProfilePic from "../images/temp_prof_pic.jpg";
 
 interface videoProps {
     videoId: ABCvideo['videoId'];
@@ -12,7 +15,8 @@ interface videoProps {
     username: ABCuserInfo['username'];
     id: ABCuserInfo['id'];
     isAdmin: ABCuserInfo['isAdmin'];
-    isUserLoggedIn: ABCtoken['isUserLoggedIn'];
+	isUserLoggedIn: ABCtoken['isUserLoggedIn'];
+	sessionToken: ABCtoken['sessionToken'];
 }
 
 interface videoState {
@@ -23,6 +27,7 @@ interface videoState {
 	videoOwnerId: string;
 	videoOwnerUsername: string;
 	videoPostsArray: string[];
+	commentsArray: string[];
 }
 
 interface renderClassNames {
@@ -40,30 +45,64 @@ export default class Video extends Component<
         super(props);
         this.state = {
             videoState: {
-                videoId: '',
-                videoTitle: '',
-                videoLink: '',
+                videoId: this.props.videoId,
+                videoTitle: this.props.videoTitle,
+                videoLink: this.props.videoLink,
                 videoOwner: '',
                 videoOwnerId: '',
                 videoOwnerUsername: '',
-                videoPostsArray: [],
+				videoPostsArray: [],
+				commentsArray: [],
             },
             renderClassNames: {
 				classNames: function (...classes: string[]) {
 					return classes.filter(Boolean).join(" ");
 				},
 			}
+		}
+		this.fetchCommentsArray = this.fetchCommentsArray.bind(this);
+	}
+	
+	fetchCommentsArray = async () => {
+		await fetch(`${dbCall}/comments/${this.props.videoId}`, {
+			method: "GET",
+			headers: {
+				"Content-Type": "application/json",
+				Authorization: `Bearer ${this.props.sessionToken}`,
+			},
+		})
+			.then((response) => {
+				if (response.status === 200) {
+					return response.json();
+				} else {
+					throw new Error("Error fetching this video's comments");
+				}
+			})
+			.then((responseJson) => {
+				console.log("Video :", responseJson);
+				this.setState({
+					videoState: {
+						...this.state.videoState,
+						commentsArray: responseJson.allComments,
+					},
+				});
+				console.log("Comments Array:", this.state.videoState.commentsArray);
+			})
+			.catch((error) => {
+				console.log(error);
+			});
+	}
 
-        }
-    }
+
 
     // componentWillMount() {
 
     // }
 
-    // componentDidMount() {
-
-    // }
+    componentDidMount() {
+		this.fetchCommentsArray();
+		console.log(`${dbCall}/comments/${this.props.videoId}`);
+    }
 
     // componentWillReceiveProps(nextProps) {
 
@@ -95,9 +134,11 @@ export default class Video extends Component<
 								<div className="lg:row-end-1 lg:col-span-4">
 									<div className="aspect-w-4 aspect-h-3 rounded-lg bg-gray-100 overflow-hidden">
 										<ReactPlayer
-											src="" //{videos.videoLink}
-											alt="" //{videos.videoTitle}
-											className="object-center object-cover"
+											width={"100%"}
+											height={"100%"}
+											url={this.state.videoState.videoLink} //{videos.videoLink}
+											alt={this.state.videoState.videoTitle} //{videos.videoTitle}
+											className="object-center object-cover shadow-2xl"
 										/>
 									</div>
 								</div>
@@ -107,7 +148,7 @@ export default class Video extends Component<
 									<div className="flex flex-col-reverse">
 										<div className="mt-4">
 											<h1 className="text-2xl font-extrabold tracking-tight text-gray-900 sm:text-3xl">
-												{/* {videos.videoTitle} */}
+												{this.state.videoState.videoTitle}
 											</h1>
 
 											<h2 id="information-heading" className="sr-only">
@@ -117,7 +158,7 @@ export default class Video extends Component<
 												Game Date:
 												<time dateTime="">
 													{" "}
-													{/*{product.version.dateTime}*/}{" "}
+													{/*{this.state.videoState.dateTime}*/}{" "}
 												</time>
 											</p>
 										</div>
@@ -127,9 +168,9 @@ export default class Video extends Component<
 											<div className="flex items-center">
 												{/* {[0, 1, 2, 3, 4].map((rating) => (
 													<StarIcon
-														key={rating}
+														key={this.state.videoState.likes}
 														className={classNames(
-															reviews.average > rating
+															this.state.videoState.likes > rating
 																? "text-yellow-400"
 																: "text-gray-300",
 															"h-5 w-5 flex-shrink-0"
@@ -139,13 +180,13 @@ export default class Video extends Component<
 												))} */}
 											</div>
 											<p className="sr-only">
-												{/* {reviews.average} out of 5 stars */}
+												{/* {this.state.videoState.likes} vs {this.state.videoState.dislikes}*/}
 											</p>
 										</div>
 									</div>
 
 									<p className="text-gray-500 mt-6">
-										{/* {product.description}*/}
+										{/* {videos.description}*/}
 									</p>
 
 									<div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-2">
@@ -159,7 +200,8 @@ export default class Video extends Component<
 											type="button"
 											className="w-full bg-indigo-50 border border-transparent rounded-md py-3 px-8 flex items-center justify-center text-base font-medium text-indigo-700 hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-50 focus:ring-indigo-500"
 										>
-											Chexx {/* {videos.username} */}
+											
+											Chexx {/* {this.state.videoState.videoOwner} */}
 										</button>
 									</div>
 
@@ -179,12 +221,12 @@ export default class Video extends Component<
 									<div className="border-t border-gray-200 mt-10 pt-10">
 										<h3 className="text-sm font-medium text-gray-900">Tags</h3>
 										{/* <p className="mt-4 text-sm text-gray-500">
-											{tagsArray.summary}{" "}
+											{tagsArray.idk}{" "}
 											<a
-												href={license.href}
+												href={tags.href}
 												className="font-medium text-indigo-600 hover:text-indigo-500"
 											>
-												Read full license
+												Tags Here
 											</a>
 										</p> */}
 									</div>
@@ -193,7 +235,7 @@ export default class Video extends Component<
 										<h3 className="text-sm font-medium text-gray-900">Share</h3>
 										<ul className="flex items-center space-x-6 mt-4">
 											<li>
-												{/* <a
+												<a
 													href="#"
 													className="flex items-center justify-center w-6 h-6 text-gray-400 hover:text-gray-500"
 												>
@@ -210,10 +252,10 @@ export default class Video extends Component<
 															clipRule="evenodd"
 														/>
 													</svg>
-												</a> */}
+												</a>
 											</li>
 											<li>
-												{/* <a
+												<a
 													href="#"
 													className="flex items-center justify-center w-6 h-6 text-gray-400 hover:text-gray-500"
 												>
@@ -230,10 +272,10 @@ export default class Video extends Component<
 															clipRule="evenodd"
 														/>
 													</svg>
-												</a> */}
+												</a>
 											</li>
 											<li>
-												{/* <a
+												<a
 													href="#"
 													className="flex items-center justify-center w-6 h-6 text-gray-400 hover:text-gray-500"
 												>
@@ -246,156 +288,46 @@ export default class Video extends Component<
 													>
 														<path d="M6.29 18.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0020 3.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.073 4.073 0 01.8 7.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 010 16.407a11.616 11.616 0 006.29 1.84" />
 													</svg>
-												</a> */}
+												</a>
 											</li>
 										</ul>
 									</div>
 								</div>
 
-								<div className="w-full max-w-2xl mx-auto mt-16 lg:max-w-none lg:mt-0 lg:col-span-4">
-									<Tab.Group as="div">
-										<div className="border-b border-gray-200">
-											<Tab.List className="-mb-px flex space-x-8">
-												<Tab
-													className={this.state.renderClassNames.classNames(
-														"w-full px-4 py-2 text-sm leading-5 text-gray-700 rounded-md cursor-default",
-														{
-															"bg-gray-100":
-																this.state.videoState.videoPostsArray.length >
-																0,
-															"bg-gray-200":
-																this.state.videoState.videoPostsArray.length ===
-																0,
-														}
-													)}
-													// isActive={this.state.videoState.videoPostsArray.length > 0}
-												>
-													<span>Comments</span>
-												</Tab>
-
-												{/* // ? "border-indigo-600 text-indigo-600"
-												 				: "border-transparent text-gray-700 hover:text-gray-800 hover:border-gray-300",
-												 			"whitespace-nowrap py-6 border-b-2 font-medium text-sm") */}
-
-												{/*<Tab
-                                             className={this.state.renderClassNames.classNames(
-                                                    selected
-                                                        ? "border-indigo-600 text-indigo-600"
-                                                        : "border-transparent text-gray-700 hover:text-gray-800 hover:border-gray-300",
-                                                    "whitespace-nowrap py-6 border-b-2 font-medium text-sm"
-                                                    )
-                                                } 
-                                                
-								
-												>
-													FAQ
-												</Tab>
-                                        {/*
-												<Tab
-													className={({ selected }) =>
-														classNames(
-															selected
-																? "border-indigo-600 text-indigo-600"
-																: "border-transparent text-gray-700 hover:text-gray-800 hover:border-gray-300",
-															"whitespace-nowrap py-6 border-b-2 font-medium text-sm"
-														)
-													}
-												>
-													License
-												</Tab>*/}
-											</Tab.List>
+						
+						{/* Tab List that shows comments from {this.state.videoState.commentsArray} which are 
+							1) mapped out listing commentsArray.commentText, 
+							2) indexed by commentsArray.commentsID, 
+							3) sorted by commentsArray.createdAt, 
+							4) showing the commentsArray.user.username. */}
+						<ul className="mt-4">
+							{this.state.videoState.commentsArray?.map((comment: any) => {
+								return (
+									<li key={comment.commentsID}>
+										<div className="flex items-center">
+											<div className="flex-shrink-0">
+												<img
+													className="h-10 w-10 rounded-full"
+													src={tempProfilePic}
+													alt={comment.user.username}
+												/>
+											</div>
+											<div className="ml-4">
+												<div className="text-sm leading-5 font-medium text-gray-900">
+													{comment.user.username}
+												</div>
+												<div className="mt-2 text-sm leading-5 text-gray-600">
+													{comment.commentText}
+												</div>
+											</div>
 										</div>
-										<Tab.Panels as={Fragment}>
-											<Tab.Panel className="-mb-10">
-												<h3 className="sr-only">Customer Reviews</h3>
-
-												{/* {reviews.featured.map((review, reviewIdx) => (
-													<div
-														key={review.id}
-														className="flex text-sm text-gray-500 space-x-4"
-													>
-														<div className="flex-none py-10">
-															<img
-																src={review.avatarSrc}
-																alt=""
-																className="w-10 h-10 bg-gray-100 rounded-full"
-															/>
-														</div>
-														<div
-															className={classNames(
-																reviewIdx === 0
-																	? ""
-																	: "border-t border-gray-200",
-																"py-10"
-															)}
-														>
-															<h3 className="font-medium text-gray-900">
-																{review.author}
-															</h3>
-															<p>
-																<time dateTime={review.datetime}>
-																	{review.date}
-																</time>
-															</p>
-
-															<div className="flex items-center mt-4">
-																{[0, 1, 2, 3, 4].map((rating) => (
-																	<StarIcon
-																		key={rating}
-																		className={classNames(
-																			review.rating > rating
-																				? "text-yellow-400"
-																				: "text-gray-300",
-																			"h-5 w-5 flex-shrink-0"
-																		)}
-																		aria-hidden="true"
-																	/>
-																))}
-															</div>
-															<p className="sr-only">
-																{review.rating} out of 5 stars
-															</p>
-
-															<div
-																className="mt-4 prose prose-sm max-w-none text-gray-500"
-																dangerouslySetInnerHTML={{
-																	__html: review.content,
-																}}
-															/>
-														</div>
-													</div>
-												))} */}
-											</Tab.Panel>
-
-											<Tab.Panel as="dl" className="text-sm text-gray-500">
-												<h3 className="sr-only">Frequently Asked Questions</h3>
-
-												{/* {faqs.map((faq) => (
-													<Fragment key={faq.question}>
-														<dt className="mt-10 font-medium text-gray-900">
-															{faq.question}
-														</dt>
-														<dd className="mt-2 prose prose-sm max-w-none text-gray-500">
-															<p>{faq.answer}</p>
-														</dd>
-													</Fragment>
-												))} */}
-											</Tab.Panel>
-
-											<Tab.Panel className="pt-10">
-												<h3 className="sr-only">License</h3>
-
-												{/* <div
-													className="prose prose-sm max-w-none text-gray-500"
-													dangerouslySetInnerHTML={{ __html: license.content }}
-												/> */}
-											</Tab.Panel>
-										</Tab.Panels>
-									</Tab.Group>
-								</div>
-							</div>
-						</div>
+									</li>
+								);
+							})}
+						</ul>
 					</div>
-				);
+				</div>
+			</div>
+		);
     }
 }

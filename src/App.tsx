@@ -91,35 +91,35 @@ const App = () => {
 
     if (sessionToken !== null || undefined || "") {
       await fetch(`${dbCall}/users/validate`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${sessionToken}`
-        }
-      })
-        .then(res => {
-          return res.json()
-        })
-        .then((data) => {
-          console.log("App Validation :", data);
-          setId(data.id);
-          setIsAdmin(data.isAdmin);
-          setEmailAddress(data.email);
-          setErrorMessage(data.message);
-          setUsername(data.username);
-          if (data.status === 200) {
-            setIsUserLoggedIn(true);
-          }
-        })
-        .catch(err => {
-          console.log(err);
-          setIsUserLoggedIn(false);
-          setErrorMessage(err.message);
-          setId("");
-          setIsAdmin(false);
-          setEmailAddress("");
-          setUsername("");
-        });
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+					Authorization: `Bearer ${sessionToken}`,
+				},
+			})
+				.then((res) => {
+					return res.json();
+				})
+				.then((data) => {
+					console.log("App Validation :", data);
+					setId(data.id);
+					setIsAdmin(data.isAdmin);
+					setEmailAddress(data.email);
+					setErrorMessage(data.message);
+					setUsername(data.username);
+					if (data.status === 200) {
+						setIsUserLoggedIn(true);
+					}
+				})
+				.catch((err) => {
+					console.log(err);
+					setIsUserLoggedIn(false);
+					setErrorMessage(err.message);
+					setId("");
+					setIsAdmin(false);
+					setEmailAddress("");
+					setUsername("");
+				});
     } else {
       setIsUserLoggedIn(false);
       setId("");
@@ -230,11 +230,7 @@ const App = () => {
 					}
 				/>
 
-			  <Route path="/logout" element={
-				  <Logout
-					  clearToken={clearToken}
-				  />}
-			  />
+				<Route path="/logout" element={<Logout clearToken={clearToken} />} />
 
 				<Route
 					path={`/settings/`}
@@ -261,27 +257,28 @@ const App = () => {
 							sessionToken={sessionToken}
 							setVideoId={setVideoId}
 							setVideoTitle={setVideoTitle}
-              				setVideoLink={setVideoLink}
-              				errorMessage={errorMessage}
-              				setErrorMessage={setErrorMessage}
+							setVideoLink={setVideoLink}
+							errorMessage={errorMessage}
+							setErrorMessage={setErrorMessage}
 						/>
 					}
-			  />
-			  
-			  <Route
-				  path="/videos/:videoId"
-				  element={
-					  <Video
-						  videoId={videoId}
-						  videoTitle={videoTitle}
-						  videoLink={videoLink}
-						  username={username}
-						  isAdmin={isAdmin}
-						  id={id}
-						  isUserLoggedIn={isUserLoggedIn}
-					  />
-				  }
-			  />
+				/>
+
+				<Route
+					path="/videos/:videoId"
+					element={
+						<Video
+							videoId={videoId}
+							videoTitle={videoTitle}
+							videoLink={videoLink}
+							username={username}
+							isAdmin={isAdmin}
+							id={id}
+							isUserLoggedIn={isUserLoggedIn}
+							sessionToken={sessionToken}
+						/>
+					}
+				/>
 			</Routes>
 		</>
 	);
