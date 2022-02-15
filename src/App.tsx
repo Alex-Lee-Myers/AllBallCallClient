@@ -173,9 +173,9 @@ const App = () => {
 							setResponseStatus={setResponseStatus}
 							isUserLoggedIn={isUserLoggedIn}
 							sessionToken={sessionToken}
-							videoId={videoId}
-							videoTitle={videoTitle}
-							videoLink={videoLink}
+							setVideoId={setVideoId}
+							setVideoTitle={setVideoTitle}
+							setVideoLink={setVideoLink}
 						/>
 					}
 				/>

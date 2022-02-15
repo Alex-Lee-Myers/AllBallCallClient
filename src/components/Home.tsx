@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 import ReactPlayer from 'react-player';
-import { ABCcalls, ABCvideo, ABCuserInfo, ABCtoken } from '../App';
+import { ABCcalls, ABCvideo, ABCtoken } from '../App';
 import dbCall from "../helpers/Environments";
-import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
-import Video from "../components/Video";
+import { BrowserRouter as  Route,  Link } from "react-router-dom";
 
 interface videoState {
 	videoId: string;
@@ -17,9 +16,9 @@ interface videoState {
 
 interface videoProps {
     //? Video Props
-	videoId: ABCvideo['videoId'];
-	videoTitle: string;
-	videoLink: string;
+	setVideoId: ABCvideo['setVideoId'];
+	setVideoTitle: ABCvideo['setVideoTitle'];
+	setVideoLink: ABCvideo['setVideoLink'];
     //? ABCcalls
     errorMessage: ABCcalls["errorMessage"];
     setErrorMessage: ABCcalls["setErrorMessage"];
@@ -137,16 +136,24 @@ export default class Home extends Component<
 										{videos.user.username}
 									</p>
 									<div className="mr-4">
-										<Link to={`/videos/${videos.videoID}`}>
-											<svg
-												xmlns="http://www.w3.org/2000/svg"
-												className="h-5 w-5"
-												viewBox="0 0 20 20"
-												fill="currentColor"
-											>
-												<path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z" />
-												<path d="M15 7v2a4 4 0 01-4 4H9.828l-1.766 1.767c.28.149.599.233.938.233h2l3 3v-3h2a2 2 0 002-2V9a2 2 0 00-2-2h-1z" />
-											</svg>
+										{/* onClick event that <Link to={`/videos/${videos.videoID}`}> and then this.props.setVideoId{videos.videoID} + this.props.setVideoTitle{videos.videoTitle} + this.props.setVideoLink */}
+										<Link
+											to={`/videos/${videos.videoID}`}
+											onClick={() => {
+												this.props.setVideoId(videos.videoID);
+												this.props.setVideoTitle(videos.videoTitle);
+												this.props.setVideoLink(videos.videoLink);
+											}}
+										>
+												<svg
+													xmlns="http://www.w3.org/2000/svg"
+													className="h-5 w-5"
+													viewBox="0 0 20 20"
+													fill="currentColor"
+												>
+													<path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z" />
+													<path d="M15 7v2a4 4 0 01-4 4H9.828l-1.766 1.767c.28.149.599.233.938.233h2l3 3v-3h2a2 2 0 002-2V9a2 2 0 00-2-2h-1z" />
+												</svg>
 										</Link>
 									</div>
 								</div>
@@ -158,7 +165,7 @@ export default class Home extends Component<
 		})
 	};
 
-
+// setState of videoId onClick of video in lined 140.
 	render(): React.ReactNode {
 		return (
 			<div className="bg-white">
