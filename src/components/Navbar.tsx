@@ -423,13 +423,7 @@ export default class Navbar extends React.Component<
 		} else if (prevProps.username !== this.state.user.username) {
 			console.log("User username changed");
 			this.handleUserVisibility();
-		} else if (
-			// if the localStorage token changes, then the user's session token will be updated.
-			localStorage.getItem("Authorization") !== this.state.user.sessionToken
-		) {
-			console.log("User localStorage token changed");
-			this.handleUserVisibility();
-		}
+		} 
 	}
 
 	render() {

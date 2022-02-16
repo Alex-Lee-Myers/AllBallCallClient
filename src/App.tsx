@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-// import the css
 import "./App.css";
 import dbCall from "./helpers/Environments";
 
