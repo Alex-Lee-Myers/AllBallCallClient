@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from "react";
-import ReactPlayer from 'react-player';
-import { ABCvideo, ABCuserInfo, ABCtoken } from '../App';
+import ReactPlayer from "react-player";
+import { ABCvideo, ABCuserInfo, ABCtoken } from "../App";
 import { StarIcon } from "@heroicons/react/solid";
 import { Tab } from "@headlessui/react";
 import { BrowserRouter as Route, Link, Navigate } from "react-router-dom";
@@ -15,14 +15,14 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 
 interface videoProps {
-    videoId: ABCvideo['videoId'];
-    videoTitle: ABCvideo['videoTitle'];
-    videoLink: ABCvideo['videoLink'];
-    username: ABCuserInfo['username'];
-    id: ABCuserInfo['id'];
-    isAdmin: ABCuserInfo['isAdmin'];
-	isUserLoggedIn: ABCtoken['isUserLoggedIn'];
-	sessionToken: ABCtoken['sessionToken'];
+	videoId: ABCvideo["videoId"];
+	videoTitle: ABCvideo["videoTitle"];
+	videoLink: ABCvideo["videoLink"];
+	username: ABCuserInfo["username"];
+	id: ABCuserInfo["id"];
+	isAdmin: ABCuserInfo["isAdmin"];
+	isUserLoggedIn: ABCtoken["isUserLoggedIn"];
+	sessionToken: ABCtoken["sessionToken"];
 }
 
 interface VideoState {
@@ -37,8 +37,8 @@ interface VideoState {
 	commentsArray: string[];
 	//? Return Conditionals
 	isVideoOwner: boolean;
-	commentId: string;
-	deleteCommentId: string;
+	deleteCommentId: any;
+	editCommentId: string;
 	editCommentText: string;
 	isCommentOwner: boolean;
 	isCommentEditModalOpen: boolean;
@@ -74,8 +74,8 @@ export default class Video extends Component<
 				commentsArray: [],
 				//? Return Conditionals
 				isVideoOwner: false,
-				commentId: "",
 				deleteCommentId: "",
+				editCommentId: "",
 				editCommentText: "",
 				isCommentOwner: false,
 				isCommentEditModalOpen: false,
@@ -172,16 +172,20 @@ export default class Video extends Component<
 
 	editCommentSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
 		e.preventDefault();
-		await fetch(`${dbCall}/comments/${this.props.videoId}/${this.state.VideoState.commentId}`, {
-			method: "PUT",
-			headers: {
-				"Content-Type": "application/json",
-				Authorization: `Bearer ${this.props.sessionToken}`,
-			},
-			body: JSON.stringify({
-				commentText: this.state.VideoState.commentText,
-			}),
-		})
+
+		await fetch(
+			`${dbCall}/comments/${this.props.videoId}/${this.state.VideoState.editCommentId}`,
+			{
+				method: "PUT",
+				headers: {
+					"Content-Type": "application/json",
+					Authorization: `Bearer ${this.props.sessionToken}`,
+				},
+				body: JSON.stringify({
+					commentText: this.state.VideoState.commentText,
+				}),
+			}
+		)
 			.then((response) => {
 				if (response.status === 200) {
 					return response.json();
@@ -205,6 +209,8 @@ export default class Video extends Component<
 	};
 
 	deleteComment = async (commentId: string) => {
+		console.log(this.props.videoId);
+
 		await fetch(`${dbCall}/comments/${this.props.videoId}/${commentId}`, {
 			method: "DELETE",
 			headers: {
@@ -213,7 +219,7 @@ export default class Video extends Component<
 			},
 		})
 			.then((response) => {
-				if (response.status === 200) {
+				if (response.status === 201) {
 					return response.json();
 				} else {
 					throw new Error("Error deleting comment");
@@ -576,42 +582,58 @@ export default class Video extends Component<
 								</div>
 							</div>
 						) : (
-						<ul className="mt-4">
-							{this.state.VideoState.commentsArray?.map((comment: any) => {
-								return (
-									<li key={comment.commentID}>
-										<div className="flex items-center">
-											<div className="flex-shrink-0">
-												<img
-													className="h-10 w-10 rounded-full"
-													src={tempProfilePic}
-													alt={comment.user.username}
-												/>
+							<ul className="mt-4">
+								{this.state.VideoState.commentsArray?.map((comment: any) => {
+									{
+										console.log(comment.commentID);
+									}
+
+									return (
+										<li key={comment.commentID}>
+											<div className="flex items-center">
+												<div className="flex-shrink-0">
+													<img
+														className="h-10 w-10 rounded-full"
+														src={tempProfilePic}
+														alt={comment.user.username}
+													/>
+												</div>
+												<div className="ml-4">
+													<div className="text-sm leading-5 font-medium text-gray-900">
+														{comment.user.username}
+													</div>
+													<div className="mt-2 text-sm leading-5 text-gray-600">
+														{comment.commentText}
+													</div>
+												</div>
+												{/* If  comment.user.id === this.props.id of the commentID, then show a button that opens a MUI modal of a text box with a submit button that onSubmit={this.editVideo} */}
+												{comment.user.id === this.props.id && (
+													<div className="ml-auto text-sm leading-5 text-gray-600">
+														<button
+															className="text-xs font-medium text-gray-500 hover:text-gray-900 focus:outline-none focus:underline transition ease-in-out duration-150"
+															// onClick={() => {
+															// 	console.log(this.state.VideoState);
+															// 	this.setState({VideoState.editCommentId: comment.commentID})
+															// }
+														>
+															Edit
+														</button>
+														<button
+															className="text-xs font-medium text-gray-500 hover:text-gray-900 focus:outline-none focus:underline transition ease-in-out duration-150"
+															onClick={() => {
+																console.log(comment.commentID);
+																this.deleteComment(comment.commentID);
+															}}
+														>
+															Delete
+														</button>
+													</div>
+												)}
 											</div>
-											<div className="ml-4">
-												<div className="text-sm leading-5 font-medium text-gray-900">
-													{comment.user.username}
-												</div>
-												<div className="mt-2 text-sm leading-5 text-gray-600">
-													{comment.commentText}
-												</div>
-											</div>
-											{/* If  comment.user.id === this.props.id of the commentID, then show a button that opens a MUI modal of a text box with a submit button that onSubmit={this.editVideo} */}
-											{comment.user.id === this.props.id && (
-												<div className="ml-auto text-sm leading-5 text-gray-600">
-													<button className="text-xs font-medium text-gray-500 hover:text-gray-900 focus:outline-none focus:underline transition ease-in-out duration-150">
-														Edit
-													</button>
-													<button className="text-xs font-medium text-gray-500 hover:text-gray-900 focus:outline-none focus:underline transition ease-in-out duration-150">
-														Delete
-													</button>
-												</div>
-											)}
-										</div>
-									</li>
-								);
-							})}
-						</ul>
+										</li>
+									);
+								})}
+							</ul>
 						)}
 					</div>
 				</div>
