@@ -41,6 +41,7 @@ interface VideoState {
 	editCommentId: string;
 	editCommentText: string;
 	isCommentOwner: boolean;
+	isPostCommentModalOpen: boolean;
 	isCommentEditModalOpen: boolean;
 	isCommentDeleteModalOpen: boolean;
 	editVideoTitleText: string;
@@ -78,6 +79,7 @@ export default class Video extends Component<
 				editCommentId: "",
 				editCommentText: "",
 				isCommentOwner: false,
+				isPostCommentModalOpen: false,
 				isCommentEditModalOpen: false,
 				isCommentDeleteModalOpen: false,
 				editVideoTitleText: "",
@@ -91,7 +93,7 @@ export default class Video extends Component<
 			},
 		};
 		this.fetchCommentsArray = this.fetchCommentsArray.bind(this);
-		this.postComment = this.postComment.bind(this);
+		this.postCommentSubmit = this.postCommentSubmit.bind(this);
 		this.editCommentSubmit = this.editCommentSubmit.bind(this);
 		this.deleteComment = this.deleteComment.bind(this);
 		this.editVideo = this.editVideo.bind(this);
@@ -101,9 +103,10 @@ export default class Video extends Component<
 
 	handleChangeMUI(event: React.ChangeEvent<HTMLInputElement>) {
 		this.setState({
-			...this.state,
-			[event.target.name]: event.target.value,
-		});
+			VideoState: {
+				...this.state.VideoState,
+				[event.target.name]: event.target.value,
+			}});
 	}
 
 	//! COMMMENTS
@@ -137,30 +140,76 @@ export default class Video extends Component<
 			});
 	};
 
-	postComment = async () => {
-		await fetch(`${dbCall}/${this.props.videoId}`, {
+	//? Post Comment
+	isPostCommentModalOpenConditional = (): void => {
+		this.setState({
+			VideoState: {
+				...this.state.VideoState,
+				isPostCommentModalOpen: !this.state.VideoState.isPostCommentModalOpen,
+			},
+		});
+	};
+
+	renderPostCommentModal = (): JSX.Element => {
+		return (
+			<Dialog
+				open={this.state.VideoState.isPostCommentModalOpen}
+				onClose={this.isPostCommentModalOpenConditional}
+				aria-labelledby="form-dialog-title"
+			>
+				<DialogTitle id="form-dialog-title">Post a Comment</DialogTitle>
+				<DialogContent>
+					<DialogContentText>
+						Please enter your comment below.
+					</DialogContentText>
+					<TextField
+						autoFocus
+						margin="dense"
+						id="commentText"
+						name="commentText"
+						label="Comment"
+						type="text"
+						value={this.state.VideoState.commentText}
+						fullWidth
+						onChange={this.handleChangeMUI}
+					/>
+				</DialogContent>
+				<DialogActions>
+					<Button onClick={this.isPostCommentModalOpenConditional} color="primary">
+						Cancel
+					</Button>
+					<Button onClick={this.postCommentSubmit} color="primary">
+						Post
+					</Button>
+				</DialogActions>
+			</Dialog>
+		);
+	};
+
+	postCommentSubmit = async () => {
+		console.log("Post Comment Submit: ", this.state.VideoState.commentText);
+		await fetch(`${dbCall}/comments/${this.props.videoId}`, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
 				Authorization: `Bearer ${this.props.sessionToken}`,
 			},
 			body: JSON.stringify({
-				commentText: this.state.VideoState.commentText,
+				comments: {
+					commentText: this.state.VideoState.commentText,
+				}
 			}),
 		})
 			.then((response) => {
-				if (response.status === 200) {
 					return response.json();
-				} else {
-					throw new Error("Error posting comment");
-				}
 			})
 			.then((responseJson) => {
 				console.log("Video :", responseJson);
 				this.setState({
 					VideoState: {
 						...this.state.VideoState,
-						commentsArray: responseJson.allComments,
+						isPostCommentModalOpen: false,
+						commentText: "",
 					},
 				});
 				console.log("Comments Array:", this.state.VideoState.commentsArray);
@@ -170,6 +219,7 @@ export default class Video extends Component<
 			});
 	};
 
+	//? Edit Comment
 	editCommentSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
 		e.preventDefault();
 
@@ -208,36 +258,38 @@ export default class Video extends Component<
 			});
 	};
 
+	//? Delete Comment
 	deleteComment = async (commentId: string) => {
-		console.log(this.props.videoId);
-
-		await fetch(`${dbCall}/comments/${this.props.videoId}/${commentId}`, {
-			method: "DELETE",
-			headers: {
-				"Content-Type": "application/json",
-				Authorization: `Bearer ${this.props.sessionToken}`,
-			},
-		})
-			.then((response) => {
-				if (response.status === 201) {
-					return response.json();
-				} else {
-					throw new Error("Error deleting comment");
-				}
+		// confirm delete comment before running the fetch
+		if (window.confirm("Are you sure you want to delete this comment?")) {
+			await fetch(`${dbCall}/comments/${this.props.videoId}/${commentId}`, {
+				method: "DELETE",
+				headers: {
+					"Content-Type": "application/json",
+					Authorization: `Bearer ${this.props.sessionToken}`,
+				},
 			})
-			.then((responseJson) => {
-				console.log("Video :", responseJson);
-				this.setState({
-					VideoState: {
-						...this.state.VideoState,
-						commentsArray: responseJson.allComments,
-					},
+				.then((response) => {
+					if (response.status === 201) {
+						return response.json();
+					} else {
+						throw new Error("Error deleting comment");
+					}
+				})
+				.then((responseJson) => {
+					console.log("Video :", responseJson);
+					this.setState({
+						VideoState: {
+							...this.state.VideoState,
+							commentsArray: responseJson.allComments,
+						},
+					});
+					console.log("Comments Array:", this.state.VideoState.commentsArray);
+				})
+				.catch((error) => {
+					console.log(error);
 				});
-				console.log("Comments Array:", this.state.VideoState.commentsArray);
-			})
-			.catch((error) => {
-				console.log(error);
-			});
+		}
 	};
 
 	//! COMMENTS CONDITIONALS
@@ -247,7 +299,7 @@ export default class Video extends Component<
 	// 			...this.state.VideoState,
 	// 			isCommentEditModalOpen: !this.state.VideoState.isCommentEditModalOpen,
 	// 			// set commentId to the li key value this.state.VideoState.commentsArray?.map((comment: any) => { li key={comment.commentId}
-	// 			commentId: this.state.VideoState.commentsArray?.map((comment: any) => {
+	// 			editCommentId: this.state.VideoState.commentsArray?.map((comment: any) => {
 	// 				return comment.commentId;
 	// 			}),
 	// 		},
@@ -256,6 +308,7 @@ export default class Video extends Component<
 
 	//! COMMENTS RENDER
 	// renderEditComment = (): JSX.Element => {
+
 	// 	return (
 	// 		<div className="edit-comment-container">
 	// 			<Dialog open={true} onClose={this.openEditCommentsModal}>
@@ -456,11 +509,16 @@ export default class Video extends Component<
 
 							<div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-2">
 								<button
+									onClick={this.isPostCommentModalOpenConditional}
 									type="button"
 									className="w-full bg-indigo-600 border border-transparent rounded-md py-3 px-8 flex items-center justify-center text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-50 focus:ring-indigo-500"
 								>
 									Comment {/* {comment button} */}
 								</button>
+
+								{this.state.VideoState.isPostCommentModalOpen
+								? this.renderPostCommentModal() : null}
+
 								<button
 									type="button"
 									className="w-full bg-indigo-50 border border-transparent rounded-md py-3 px-8 flex items-center justify-center text-base font-medium text-indigo-700 hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-50 focus:ring-indigo-500"
@@ -584,10 +642,6 @@ export default class Video extends Component<
 						) : (
 							<ul className="mt-4">
 								{this.state.VideoState.commentsArray?.map((comment: any) => {
-									{
-										console.log(comment.commentID);
-									}
-
 									return (
 										<li key={comment.commentID}>
 											<div className="flex items-center">
@@ -611,17 +665,16 @@ export default class Video extends Component<
 													<div className="ml-auto text-sm leading-5 text-gray-600">
 														<button
 															className="text-xs font-medium text-gray-500 hover:text-gray-900 focus:outline-none focus:underline transition ease-in-out duration-150"
-															// onClick={() => {
-															// 	console.log(this.state.VideoState);
-															// 	this.setState({VideoState.editCommentId: comment.commentID})
-															// }
+															onClick={() => {
+																// pass the event paramater andcommentID to the editCommentSubmit function
+																this.editCommentSubmit(comment.commentID);
+															}}
 														>
 															Edit
 														</button>
 														<button
 															className="text-xs font-medium text-gray-500 hover:text-gray-900 focus:outline-none focus:underline transition ease-in-out duration-150"
 															onClick={() => {
-																console.log(comment.commentID);
 																this.deleteComment(comment.commentID);
 															}}
 														>
