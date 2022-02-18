@@ -237,11 +237,9 @@ export default class Video extends Component<
 	};
 
 	editCommentSubmit = async (
-		event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
 		commentId: string,
 		commentText: string,
 	) => {
-		event.preventDefault();
 
 		await fetch(`${dbCall}/comments/${this.props.videoId}/${commentId}`, {
 			method: "PUT",
@@ -250,11 +248,13 @@ export default class Video extends Component<
 				Authorization: `Bearer ${this.props.sessionToken}`,
 			},
 			body: JSON.stringify({
-				commentText: commentText,
+				comments: {
+					commentText: commentText
+				},
 			}),
 		})
 			.then((response) => {
-				if (response.status === 200) {
+				if (response.status === 201) {
 					return response.json();
 				} else {
 					throw new Error("Error editing comment");
@@ -641,40 +641,57 @@ export default class Video extends Component<
 															Edit
 														</button>
 
-			{this.state.VideoState.isEditCommentModalOpen
-				? 
-			<div className="edit-comment-container">
-				<Dialog open={true} onClose={this.isEditCommentModalOpenConditional}>
-					<DialogContent>
-						<DialogContentText>Edit your comments.</DialogContentText>
-						<TextField
-							autoFocus
-							margin="dense"
-							id="commentText"
-							name="commentText"
-							label="Edit Comment"
-							type="text"
-							fullWidth
-							placeholder="HOOSIER"
-							variant="standard"
-							onChange={this.handleChangeMUI}
-							value={this.state.VideoState.commentText}
-						/>
-					</DialogContent>
-					<DialogActions>
-						<Button
-							onClick={this.isEditCommentModalOpenConditional}
-							color="primary"
-						>
-							Cancel
-						</Button>
-						<Button onClick={this.editCommentSubmit(comment.commentID, comment.commentText)} color="primary">
-							Edit
-						</Button>
-					</DialogActions>
-				</Dialog>
-			</div>
-															: null}
+														{this.state.VideoState.isEditCommentModalOpen ? (
+															<div className="edit-comment-container">
+																<Dialog
+																	open={true}
+																	onClose={
+																		this.isEditCommentModalOpenConditional
+																	}
+																>
+																	<DialogContent>
+																		<DialogContentText>
+																			Edit your comments.
+																		</DialogContentText>
+																		<TextField
+																			autoFocus
+																			margin="dense"
+																			id="commentText"
+																			name="commentText"
+																			label="Edit Comment"
+																			type="text"
+																			fullWidth
+																			placeholder="HOOSIER"
+																			variant="standard"
+																			onChange={this.handleChangeMUI}
+																			value={this.state.VideoState.commentText}
+																		/>
+																	</DialogContent>
+																	<DialogActions>
+																		<Button
+																			onClick={
+																				this.isEditCommentModalOpenConditional
+																			}
+																			color="primary"
+																		>
+																			Cancel
+																		</Button>
+																		<Button
+																			onClick={() =>
+																				this.editCommentSubmit(
+
+																					comment.commentID,
+																					comment.commentText
+																				)
+																			}
+																			color="primary"
+																		>
+																			Edit
+																		</Button>
+																	</DialogActions>
+																</Dialog>
+															</div>
+														) : null}
 
 														<button
 															className="text-xs font-medium text-gray-500 hover:text-gray-900 focus:outline-none focus:underline transition ease-in-out duration-150"
