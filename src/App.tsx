@@ -44,12 +44,16 @@ export interface ABCcalls {
 }
 
 export interface ABCvideo {
-  videoId: string;
-  setVideoId: (videoId: string) => void;
-  videoTitle: string;
-  setVideoTitle: (videoTitle: string) => void;
-  videoLink: string;
-  setVideoLink: (videoLink: string) => void;
+  	videoId: string;
+  	setVideoId: (videoId: string) => void;
+  	videoTitle: string;
+  	setVideoTitle: (videoTitle: string) => void;
+  	videoLink: string;
+	setVideoLink: (videoLink: string) => void;
+	videoOwner: string;
+	setVideoOwner: (videoOwner: string) => void;
+	videoOwnerUsername: string;
+	setVideoOwnerUsername: (videoOwnerUsername: string) => void;
 	// thumbnailImage: string;
 	// playersHighlighted: playersHighlightedArray[];
 	// teamsFeatured: teamsFeaturedArray[];
@@ -79,7 +83,9 @@ const App = () => {
   //! video States
   const [videoId, setVideoId] = useState<ABCvideo["videoId"]>("");
   const [videoTitle, setVideoTitle] = useState<ABCvideo["videoTitle"]>("");
-  const [videoLink, setVideoLink] = useState<ABCvideo["videoLink"]>("");
+	const [videoLink, setVideoLink] = useState<ABCvideo["videoLink"]>("");
+	const [videoOwner, setVideoOwner] = useState<ABCvideo["videoOwner"]>("");
+	const [videoOwnerUsername, setVideoOwnerUsername] = useState<ABCvideo["videoOwnerUsername"]>("");
 
 
   const fetchDb = async (): Promise<void> => {
@@ -175,6 +181,8 @@ const App = () => {
 							setVideoId={setVideoId}
 							setVideoTitle={setVideoTitle}
 							setVideoLink={setVideoLink}
+							setVideoOwner={setVideoOwner}
+							setVideoOwnerUsername={setVideoOwnerUsername}
 						/>
 					}
 				/>
@@ -270,6 +278,8 @@ const App = () => {
 							videoId={videoId}
 							videoTitle={videoTitle}
 							videoLink={videoLink}
+							videoOwner={videoOwner}
+							videoOwnerUsername={videoOwnerUsername}
 							username={username}
 							isAdmin={isAdmin}
 							id={id}

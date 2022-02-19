@@ -23,6 +23,8 @@ interface videoProps {
 	videoId: ABCvideo["videoId"];
 	videoTitle: ABCvideo["videoTitle"];
 	videoLink: ABCvideo["videoLink"];
+	videoOwner: ABCvideo["videoOwner"];
+	videoOwnerUsername: ABCvideo["videoOwnerUsername"];
 	username: ABCuserInfo["username"];
 	id: ABCuserInfo["id"];
 	isAdmin: ABCuserInfo["isAdmin"];
@@ -50,8 +52,7 @@ interface VideoState {
 	isEditCommentModalOpen: boolean;
 	isCommentDeleteModalOpen: boolean;
 	editVideoTitleText: string;
-	isVideoEditModalOpen: boolean;
-	isVideoDeleteModalOpen: boolean;
+	isVideoOwnerEditOrDeleteVideoModalOpen: boolean;
 }
 
 interface renderClassNames {
@@ -73,9 +74,9 @@ export default class Video extends Component<
 				videoId: this.props.videoId,
 				videoTitle: this.props.videoTitle,
 				videoLink: this.props.videoLink,
-				videoOwner: "",
-				videoOwnerId: "",
-				videoOwnerUsername: "",
+				videoOwner: this.props.videoOwnerUsername,
+				videoOwnerId: this.props.videoOwner,
+				videoOwnerUsername: this.props.videoOwnerUsername,
 				videoPostsArray: [],
 				commentsArray: [],
 				//? Return Conditionals
@@ -88,8 +89,7 @@ export default class Video extends Component<
 				isEditCommentModalOpen: false,
 				isCommentDeleteModalOpen: false,
 				editVideoTitleText: "",
-				isVideoEditModalOpen: false,
-				isVideoDeleteModalOpen: false,
+				isVideoOwnerEditOrDeleteVideoModalOpen: false
 			},
 			renderClassNames: {
 				classNames: function (...classes: string[]) {
@@ -101,12 +101,15 @@ export default class Video extends Component<
 		this.postCommentSubmit = this.postCommentSubmit.bind(this);
 		this.editCommentSubmit = this.editCommentSubmit.bind(this);
 		this.deleteComment = this.deleteComment.bind(this);
-		this.editVideo = this.editVideo.bind(this);
 		this.deleteVideo = this.deleteVideo.bind(this);
 		this.handleChangeMUI = this.handleChangeMUI.bind(this);
 		this.isEditCommentModalOpenConditional =
 			this.isEditCommentModalOpenConditional.bind(this);
 		this.editCommentSubmit = this.editCommentSubmit.bind(this);
+		this.checkIfUserIsVideoOwner = this.checkIfUserIsVideoOwner.bind(this);
+		this.renderVideoOwnerEditOrDeleteVideoModal = this.renderVideoOwnerEditOrDeleteVideoModal.bind(
+			this
+		);
 	}
 
 	handleChangeMUI(event: React.ChangeEvent<HTMLInputElement>) {
@@ -226,6 +229,7 @@ export default class Video extends Component<
 						commentText: "",
 					},
 				});
+				this.fetchCommentsArray();
 				console.log("Comments Array:", this.state.VideoState.commentsArray);
 			})
 			.catch((error) => {
@@ -235,33 +239,42 @@ export default class Video extends Component<
 
 	//? Edit Comment
 	//* User hits edit comment button, opens the Edit Comment Modal (renderEditCommentModal).
-	isEditCommentModalOpenConditional = (commentId: string, commentText: string) => {
+	isEditCommentModalOpenConditional = (
+		commentId: string,
+		commentText: string
+	) => {
 		console.log(commentId);
 		this.setState({
 			VideoState: {
 				...this.state.VideoState,
 				isEditCommentModalOpen: !this.state.VideoState.isEditCommentModalOpen,
 				editCommentId: commentId,
-				commentText: commentText
+				commentText: commentText,
 			},
 		});
 	};
 
 	editCommentSubmit = async () => {
-		console.log("editComment editCommentText: ", this.state.VideoState.editCommentText);
+		console.log(
+			"editComment editCommentText: ",
+			this.state.VideoState.editCommentText
+		);
 		console.log("editComment ID: ", this.state.VideoState.editCommentId);
-		await fetch(`${dbCall}/comments/${this.props.videoId}/${this.state.VideoState.editCommentId}`, {
-			method: "PUT",
-			headers: {
-				"Content-Type": "application/json",
-				Authorization: `Bearer ${this.props.sessionToken}`,
-			},
-			body: JSON.stringify({
-				comments: {
-					commentText: this.state.VideoState.editCommentText,
+		await fetch(
+			`${dbCall}/comments/${this.props.videoId}/${this.state.VideoState.editCommentId}`,
+			{
+				method: "PUT",
+				headers: {
+					"Content-Type": "application/json",
+					Authorization: `Bearer ${this.props.sessionToken}`,
 				},
-			}),
-		})
+				body: JSON.stringify({
+					comments: {
+						commentText: this.state.VideoState.editCommentText,
+					},
+				}),
+			}
+		)
 			.then((response) => {
 				if (response.status === 201) {
 					return response.json();
@@ -275,8 +288,10 @@ export default class Video extends Component<
 					VideoState: {
 						...this.state.VideoState,
 						commentsArray: responseJson.allComments,
+						isEditCommentModalOpen: false,
 					},
 				});
+				this.fetchCommentsArray();
 				console.log("Comments Array:", this.state.VideoState.commentsArray);
 			})
 			.catch((error) => {
@@ -310,6 +325,7 @@ export default class Video extends Component<
 							commentsArray: responseJson.allComments,
 						},
 					});
+					this.fetchCommentsArray();
 					console.log("Comments Array:", this.state.VideoState.commentsArray);
 				})
 				.catch((error) => {
@@ -319,42 +335,54 @@ export default class Video extends Component<
 	};
 
 	//! VIDEO POSTS
-	editVideo = async () => {
-		await fetch(
-			`${dbCall}/videos/content/${this.props.id}/${this.props.videoId}`,
-			{
-				method: "PUT",
-				headers: {
-					"Content-Type": "application/json",
-					Authorization: `Bearer ${this.props.sessionToken}`,
-				},
-				body: JSON.stringify({
-					videoTitle: this.state.VideoState.videoTitle,
-					videoLink: this.props.videoLink,
-				}),
-			}
-		)
-			.then((response) => {
-				if (response.status === 200) {
-					return response.json();
-				} else {
-					throw new Error("Error editing video");
-				}
-			})
-			.then((responseJson) => {
-				console.log("Video Update :", responseJson);
-				this.setState({
-					VideoState: {
-						...this.state.VideoState,
-						videoTitle: responseJson.videoTitle,
-						videoLink: responseJson.videoLink,
-					},
-				});
-				console.log("Video State:", this.state.VideoState);
-			})
-			.catch((error) => {
-				console.log(error);
-			});
+	isVideoOwnerEditOrDeleteVideoModalOpenConditional = () => {
+		this.setState({
+			VideoState: {
+				...this.state.VideoState,
+				isVideoOwnerEditOrDeleteVideoModalOpen: !this.state.VideoState.isVideoOwnerEditOrDeleteVideoModalOpen,
+			},
+		});
+	};
+
+	renderVideoOwnerEditOrDeleteVideoModal = (): JSX.Element => {
+		return (
+			<Dialog
+				open={this.state.VideoState.isPostCommentModalOpen}
+				onClose={this.isPostCommentModalOpenConditional}
+				aria-labelledby="form-dialog-title"
+			>
+				<DialogTitle id="form-dialog-title">Post a Comment</DialogTitle>
+				<DialogContent>
+					<DialogContentText>
+						Please enter your comment below.
+					</DialogContentText>
+					<TextField
+						autoFocus
+						margin="dense"
+						id="commentText"
+						name="commentText"
+						label="Comment"
+						type="text"
+						value={this.state.VideoState.commentText}
+						fullWidth
+						onChange={this.handleChangeMUI}
+					/>
+				</DialogContent>
+				<DialogActions>
+					<Button
+						onClick={this.isPostCommentModalOpenConditional}
+						color="primary"
+					>
+						Cancel
+					</Button>
+					<Button
+						onClick={this.deleteVideo}
+					<Button onClick={this.postCommentSubmit} color="primary">
+						Post
+					</Button>
+				</DialogActions>
+			</Dialog>
+		);
 	};
 
 	deleteVideo = async () => {
@@ -384,6 +412,7 @@ export default class Video extends Component<
 						videoLink: "",
 					},
 				});
+
 				console.log("Video State:", this.state.VideoState);
 			})
 			.catch((error) => {
@@ -399,7 +428,20 @@ export default class Video extends Component<
 
 	componentDidMount() {
 		this.fetchCommentsArray();
+		this.checkIfUserIsVideoOwner();
 	}
+
+	// check if user is videoOwner, if so, set isVideoOwner to true
+	checkIfUserIsVideoOwner = () => {
+		if (this.props.id === this.state.VideoState.videoOwnerId) {
+			this.setState({
+				VideoState: {
+					...this.state.VideoState,
+					isVideoOwner: true,
+				},
+			});
+		}
+	};
 
 	// componentWillReceiveProps(nextProps) {
 
@@ -497,12 +539,28 @@ export default class Video extends Component<
 									? this.renderPostCommentModal()
 									: null}
 
-								<button
-									type="button"
-									className="w-full bg-indigo-50 border border-transparent rounded-md py-3 px-8 flex items-center justify-center text-base font-medium text-indigo-700 hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-50 focus:ring-indigo-500"
-								>
-									Chexx {/* {this.state.videoState.videoOwner} */}
-								</button>
+								{!this.state.VideoState.isVideoOwner ? (
+									<button
+										type="button"
+										className="w-full bg-indigo-50 border border-transparent rounded-md py-3 px-8 flex items-center justify-center text-base font-medium text-indigo-700 hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-50 focus:ring-indigo-500"
+									>
+										{this.props.videoOwnerUsername}
+									</button>
+								) : (
+									<button
+										type="button"
+										className="w-full bg-indigo-50 border border-transparent rounded-md py-3 px-8 flex items-center justify-center text-base font-medium text-indigo-700 hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-50 focus:ring-indigo-500"
+										onClick={() =>
+											this.isVideoOwnerEditOrDeleteVideoModalOpenConditional()
+										}
+									>
+										Edit Video
+									</button>
+								)}
+
+								{this.state.VideoState.isVideoOwnerEditOrDeleteVideoModalOpen
+									? this.renderVideoOwnerEditOrDeleteVideoModal()
+									: null}
 							</div>
 
 							<div className="border-t border-gray-200 mt-10 pt-10">
@@ -667,8 +725,9 @@ export default class Video extends Component<
 																	open={true}
 																	onClose={() => {
 																		this.isEditCommentModalOpenConditional(
-																		comment.commentID,
-																			comment.commentText)
+																			comment.commentID,
+																			comment.commentText
+																		);
 																	}}
 																>
 																	<DialogContent>
@@ -683,7 +742,9 @@ export default class Video extends Component<
 																			label="Edit Comment"
 																			type="text"
 																			fullWidth
-																			placeholder={this.state.VideoState.commentText}
+																			placeholder={
+																				this.state.VideoState.commentText
+																			}
 																			variant="standard"
 																			onChange={this.handleChangeMUI}
 																			value={
@@ -704,10 +765,7 @@ export default class Video extends Component<
 																			Cancel
 																		</Button>
 																		<Button
-																			onClick={() =>
-																				this.editCommentSubmit(
-																				)
-																			}
+																			onClick={() => this.editCommentSubmit()}
 																			color="primary"
 																		>
 																			Edit
@@ -716,8 +774,6 @@ export default class Video extends Component<
 																</Dialog>
 															</div>
 														) : null}
-
-														
 													</div>
 												)}
 											</div>

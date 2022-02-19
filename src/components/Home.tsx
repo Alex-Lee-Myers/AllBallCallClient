@@ -19,6 +19,8 @@ interface videoProps {
 	setVideoId: ABCvideo['setVideoId'];
 	setVideoTitle: ABCvideo['setVideoTitle'];
 	setVideoLink: ABCvideo['setVideoLink'];
+	setVideoOwner: ABCvideo['setVideoOwner'];
+	setVideoOwnerUsername: ABCvideo['setVideoOwnerUsername'];
     //? ABCcalls
     errorMessage: ABCcalls["errorMessage"];
     setErrorMessage: ABCcalls["setErrorMessage"];
@@ -143,6 +145,8 @@ export default class Home extends Component<
 												this.props.setVideoId(videos.videoID);
 												this.props.setVideoTitle(videos.videoTitle);
 												this.props.setVideoLink(videos.videoLink);
+												this.props.setVideoOwner(videos.userId);
+												this.props.setVideoOwnerUsername(videos.user.username);
 											}}
 										>
 												<svg
