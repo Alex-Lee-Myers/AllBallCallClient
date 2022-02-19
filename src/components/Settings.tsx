@@ -476,7 +476,6 @@ export default class Settings extends React.Component<
 					.then((res) => {
 						console.log("Delete User status is: " + res.status);
 						this.props.setResponseStatus(res.status);
-
 						return res.json();
 					})
 					.then((data) => {

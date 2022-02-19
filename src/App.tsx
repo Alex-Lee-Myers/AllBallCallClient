@@ -141,7 +141,7 @@ const App = () => {
     setId("");
     setIsAdmin(false);
     setEmailAddress("");
-    setUsername("");
+	setUsername("");
   };
 
   useEffect(() => {

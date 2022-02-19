@@ -1,11 +1,5 @@
-import React, { Fragment, useState } from 'react'
-import { Disclosure, Menu, RadioGroup, Transition } from '@headlessui/react'
-import { HomeIcon, PlusIcon, SearchIcon } from '@heroicons/react/solid'
-import { BellIcon, MenuIcon, XIcon } from '@heroicons/react/outline'
-import TextField from '@mui/material/TextField';
-import Autocomplete from '@mui/material/Autocomplete';
-import Stack from '@mui/material/Stack';
-import ReactPlayer from 'react-player';
+import React from 'react'
+import { useNavigate } from 'react-router-dom';
 import dbCall from '../helpers/Environments';
 import { ABCtoken, ABCvideo, ABCuserInfo, ABCcalls } from '../App';
 
@@ -92,6 +86,8 @@ interface videoPostState {
     // clutch: boolean
     // adminHighlighted: boolean
     // adminDelete: boolean
+	//? useNavigate declaration
+	// navigate: ReturnType<typeof useNavigate>
 }
 
 class VideoPost extends React.Component<ABCprops, videoPostState> {
@@ -113,10 +109,12 @@ class VideoPost extends React.Component<ABCprops, videoPostState> {
 			//             isAdmin: false,
 			//             players: [],
 			//             teams: [],
+			//? useNavigate declaration
 		};
 
 		this.handleChange = this.handleChange.bind(this);
 		this.handleSubmit = this.handleSubmit.bind(this);
+
 
 		//         this.handlePlayersHighlighted = this.handlePlayersHighlighted.bind(this);
 		//         this.handleTeamsFeatured = this.handleTeamsFeatured.bind(this);
@@ -129,6 +127,7 @@ class VideoPost extends React.Component<ABCprops, videoPostState> {
 		//         this.handleAdminHighlighted = this.handleAdminHighlighted.bind(this);
 		//         this.handleAdminDelete = this.handleAdminDelete.bind(this);
 	}
+
 
 	//! handleChange:
 	handleChange(
@@ -172,13 +171,14 @@ class VideoPost extends React.Component<ABCprops, videoPostState> {
 			}),
 		})
 			.then((res) => {
-					return res.json();
+				return res.json();
 			})
 			.then((data) => {
 				console.log(data);
 				this.props.setVideoId(data.id);
 				this.props.setVideoTitle(data.videoTitle);
 				this.props.setVideoLink(data.videoLink);
+				useNavigate();
 			})
 			.catch((err) => {
 				console.log(err);
@@ -217,13 +217,13 @@ class VideoPost extends React.Component<ABCprops, videoPostState> {
 		return (
 			<>
 				<div>
-					<div className="md:grid md:grid-cols-3 md:gap-6">
-						<div className="md:col-span-1">
+					<div className="space-y-8 divide-y divide-gray-200">
+						<div className="space-y-8 divide-y divide-gray-200">
 							<div className="px-4 sm:px-0">
-								<h3 className="text-lg font-medium leading-6 text-gray-900">
+								<h3 className="text-lg leading-6 font-medium text-gray-900">
 									Post Your Highlight
 								</h3>
-								<p className="mt-1 text-sm text-gray-600">
+								<p className="mt-1 text-sm text-gray-500">
 									Share your highlight with the world! Do note, only{" "}
 									<a href="https://www.youtube.com/">YouTube</a> and{" "}
 									<a href="https://streamable.com/">Streamable</a> links are
@@ -245,16 +245,16 @@ class VideoPost extends React.Component<ABCprops, videoPostState> {
 												</label>
 												<div className="mt-1 flex rounded-md shadow-sm">
 													<span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
-														http://
+														Link
 													</span>
 													<input
 														type="text"
 														name="videoLink"
 														id="videoLink"
 														className="focus:ring-indigo-500 focus:border-indigo-500 flex-1 block w-full rounded-none rounded-r-md sm:text-sm border-gray-300"
-                                                        placeholder="www.streamable.com"
-                                                        onChange={this.handleChange}
-                                                        value={this.state.videoLink}
+														placeholder="www.streamable.com"
+														onChange={this.handleChange}
+														value={this.state.videoLink}
 													/>
 												</div>
 											</div>
@@ -268,7 +268,7 @@ class VideoPost extends React.Component<ABCprops, videoPostState> {
 												Title of Highlight
 											</label>
 											<div className="mt-1">
-                                                <textarea
+												<textarea
 													id="videoTitle"
 													name="videoTitle"
 													rows={3}
@@ -288,7 +288,7 @@ class VideoPost extends React.Component<ABCprops, videoPostState> {
 												type="submit"
 												className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
 											>
-												Save
+												Submit
 											</button>
 										</div>
 									</div>

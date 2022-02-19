@@ -1,8 +1,13 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import React, { Component, Fragment } from "react";
 import ReactPlayer from "react-player";
 import { ABCvideo, ABCuserInfo, ABCtoken } from "../App";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { StarIcon } from "@heroicons/react/solid";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { Tab } from "@headlessui/react";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { BrowserRouter as Route, Link, Navigate } from "react-router-dom";
 import dbCall from "../helpers/Environments";
 import tempProfilePic from "../images/temp_prof_pic.jpg";
@@ -99,6 +104,9 @@ export default class Video extends Component<
 		this.editVideo = this.editVideo.bind(this);
 		this.deleteVideo = this.deleteVideo.bind(this);
 		this.handleChangeMUI = this.handleChangeMUI.bind(this);
+		this.isEditCommentModalOpenConditional =
+			this.isEditCommentModalOpenConditional.bind(this);
+		this.editCommentSubmit = this.editCommentSubmit.bind(this);
 	}
 
 	handleChangeMUI(event: React.ChangeEvent<HTMLInputElement>) {
@@ -227,21 +235,22 @@ export default class Video extends Component<
 
 	//? Edit Comment
 	//* User hits edit comment button, opens the Edit Comment Modal (renderEditCommentModal).
-	isEditCommentModalOpenConditional = (): void => {
+	isEditCommentModalOpenConditional = (commentId: string, commentText: string) => {
+		console.log(commentId);
 		this.setState({
 			VideoState: {
 				...this.state.VideoState,
 				isEditCommentModalOpen: !this.state.VideoState.isEditCommentModalOpen,
+				editCommentId: commentId,
+				commentText: commentText
 			},
 		});
 	};
 
-	editCommentSubmit = async (
-		commentId: string,
-		commentText: string,
-	) => {
-
-		await fetch(`${dbCall}/comments/${this.props.videoId}/${commentId}`, {
+	editCommentSubmit = async () => {
+		console.log("editComment editCommentText: ", this.state.VideoState.editCommentText);
+		console.log("editComment ID: ", this.state.VideoState.editCommentId);
+		await fetch(`${dbCall}/comments/${this.props.videoId}/${this.state.VideoState.editCommentId}`, {
 			method: "PUT",
 			headers: {
 				"Content-Type": "application/json",
@@ -249,7 +258,7 @@ export default class Video extends Component<
 			},
 			body: JSON.stringify({
 				comments: {
-					commentText: commentText
+					commentText: this.state.VideoState.editCommentText,
 				},
 			}),
 		})
@@ -277,7 +286,7 @@ export default class Video extends Component<
 
 	//? Delete Comment
 	deleteComment = async (commentId: string) => {
-		// confirm delete comment before running the fetch
+		console.log("Delete Comment: ", commentId);
 		if (window.confirm("Are you sure you want to delete this comment?")) {
 			await fetch(`${dbCall}/comments/${this.props.videoId}/${commentId}`, {
 				method: "DELETE",
@@ -635,19 +644,32 @@ export default class Video extends Component<
 														<button
 															className="text-xs font-medium text-gray-500 hover:text-gray-900 focus:outline-none focus:underline transition ease-in-out duration-150"
 															onClick={() => {
-																this.isEditCommentModalOpenConditional();
+																this.isEditCommentModalOpenConditional(
+																	comment.commentID,
+																	comment.commentText
+																);
 															}}
 														>
 															Edit
+														</button>
+														<button
+															className="border-2 ml-2 text-xs font-medium text-gray-500 hover:text-gray-900 focus:outline-none focus:underline transition ease-in-out duration-150"
+															onClick={() => {
+																this.deleteComment(comment.commentID);
+															}}
+														>
+															Delete
 														</button>
 
 														{this.state.VideoState.isEditCommentModalOpen ? (
 															<div className="edit-comment-container">
 																<Dialog
 																	open={true}
-																	onClose={
-																		this.isEditCommentModalOpenConditional
-																	}
+																	onClose={() => {
+																		this.isEditCommentModalOpenConditional(
+																		comment.commentID,
+																			comment.commentText)
+																	}}
 																>
 																	<DialogContent>
 																		<DialogContentText>
@@ -656,21 +678,26 @@ export default class Video extends Component<
 																		<TextField
 																			autoFocus
 																			margin="dense"
-																			id="commentText"
-																			name="commentText"
+																			id="editCommentText"
+																			name="editCommentText"
 																			label="Edit Comment"
 																			type="text"
 																			fullWidth
-																			placeholder="HOOSIER"
+																			placeholder={this.state.VideoState.commentText}
 																			variant="standard"
 																			onChange={this.handleChangeMUI}
-																			value={this.state.VideoState.commentText}
+																			value={
+																				this.state.VideoState.editCommentText
+																			}
 																		/>
 																	</DialogContent>
 																	<DialogActions>
 																		<Button
-																			onClick={
-																				this.isEditCommentModalOpenConditional
+																			onClick={() =>
+																				this.isEditCommentModalOpenConditional(
+																					comment.commentID,
+																					comment.commentText
+																				)
 																			}
 																			color="primary"
 																		>
@@ -679,9 +706,6 @@ export default class Video extends Component<
 																		<Button
 																			onClick={() =>
 																				this.editCommentSubmit(
-
-																					comment.commentID,
-																					comment.commentText
 																				)
 																			}
 																			color="primary"
@@ -693,14 +717,7 @@ export default class Video extends Component<
 															</div>
 														) : null}
 
-														<button
-															className="text-xs font-medium text-gray-500 hover:text-gray-900 focus:outline-none focus:underline transition ease-in-out duration-150"
-															onClick={() => {
-																this.deleteComment(comment.commentID);
-															}}
-														>
-															Delete
-														</button>
+														
 													</div>
 												)}
 											</div>

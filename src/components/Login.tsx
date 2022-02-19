@@ -96,7 +96,7 @@ const Login = (props: AuthProps) => {
 					props.setIsAdmin(data.isAdmin);
 					props.setUsername(data.username);
 					props.setEmailAddress(data.emailAddress);
-					navigate("/register"); //TODO: change to admin page
+					navigate("/admindashboard"); //TODO: change to admin page
 				} else {
 					props.setErrorMessage(data.errorMessage);
 				}
