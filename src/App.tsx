@@ -14,6 +14,7 @@ import VideoPost from "../src/components/VideoPost";
 import Settings from "../src/components/Settings";
 import Logout from "../src/components/Logout";
 import Video from "../src/components/Video";
+import AdminDashboard from "../src/components/AdminDashboard";
 
 export interface ABCtoken {
   isUserLoggedIn: boolean;
@@ -293,6 +294,29 @@ const App = () => {
 						/>
 					}
 				/>
+
+				{/* If a user isAdmin, path to adminshboard, element AdminDashboard.tsx */}
+				{isAdmin && (
+					<Route
+						path="/admindashboard"
+						element={
+							<AdminDashboard
+								setVideoId={setVideoId}
+								setVideoTitle={setVideoTitle}
+								setVideoLink={setVideoLink}
+								setVideoOwner={setVideoOwner}
+								setVideoOwnerUsername={setVideoOwnerUsername}
+								errorMessage={errorMessage}
+								setErrorMessage={setErrorMessage}
+								responseStatus={responseStatus}
+								setResponseStatus={setResponseStatus}
+								isUserLoggedIn={isUserLoggedIn}
+								sessionToken={sessionToken}
+								isAdmin={isAdmin}
+							/>
+						}
+					/>
+				)}
 			</Routes>
 		</>
 	);

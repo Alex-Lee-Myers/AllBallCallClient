@@ -203,7 +203,7 @@ export default class Navbar extends React.Component<
 					{
 						id: 4,
 						name: "Admin Dashboard",
-						href: "/adminDashboard",
+						href: "/admindashboard",
 						current: false,
 						userVisible: false,
 					},
@@ -279,7 +279,7 @@ export default class Navbar extends React.Component<
 					{
 						id: 4,
 						name: "Admin Dashboard",
-						href: "/adminDashboard",
+						href: "/admindashboard",
 						current: false,
 						userVisible: false,
 					},
@@ -355,7 +355,7 @@ export default class Navbar extends React.Component<
 					{
 						id: 4,
 						name: "Admin Dashboard",
-						href: "/adminDashboard",
+						href: "/admindashboard",
 						current: false,
 						userVisible: true,
 					},
