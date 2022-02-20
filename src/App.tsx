@@ -276,10 +276,15 @@ const App = () => {
 					element={
 						<Video
 							videoId={videoId}
+							setVideoId={setVideoId}
 							videoTitle={videoTitle}
+							setVideoTitle={setVideoTitle}
 							videoLink={videoLink}
+							setVideoLink={setVideoLink}
 							videoOwner={videoOwner}
+							setVideoOwner={setVideoOwner}
 							videoOwnerUsername={videoOwnerUsername}
+							setVideoOwnerUsername={setVideoOwnerUsername}
 							username={username}
 							isAdmin={isAdmin}
 							id={id}
