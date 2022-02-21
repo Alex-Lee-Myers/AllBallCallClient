@@ -59,6 +59,7 @@ export default class AdminDashboard extends Component<AdminProps, AdminState> {
 		};
 		this.isVideoEditModalOpenConditional =
 			this.isVideoEditModalOpenConditional.bind(this);
+		this.handleChangeMUI = this.handleChangeMUI.bind(this);
 	}
 
 	fetchVideoArray = async () => {
@@ -98,6 +99,7 @@ export default class AdminDashboard extends Component<AdminProps, AdminState> {
 
 	//! VIDEO POSTS
 	isVideoEditModalOpenConditional = (
+		videoId: string,
 		videoOwnerId: string,
 		videoTitle: string,
 		videoLink: string
@@ -105,6 +107,7 @@ export default class AdminDashboard extends Component<AdminProps, AdminState> {
 		this.setState({
 			...this.state,
 			isVideoEditModalOpen: !this.state.isVideoEditModalOpen,
+			videoId: videoId,
 			videoOwnerId: videoOwnerId,
 			videoTitle: videoTitle,
 			videoLink: videoLink
@@ -117,6 +120,7 @@ export default class AdminDashboard extends Component<AdminProps, AdminState> {
 				open={this.state.isVideoEditModalOpen}
 				onClose={() => {
 					this.isVideoEditModalOpenConditional(
+						this.state.videoId,
 						this.state.videoOwnerId,
 						this.state.videoTitle,
 						this.state.videoLink
@@ -163,6 +167,7 @@ export default class AdminDashboard extends Component<AdminProps, AdminState> {
 					<Button
 						onClick={() => {
 							this.isVideoEditModalOpenConditional(
+								this.state.videoId,
 								this.state.videoOwnerId,
 								this.state.videoTitle,
 								this.state.videoLink
@@ -217,6 +222,7 @@ export default class AdminDashboard extends Component<AdminProps, AdminState> {
 				this.props.setVideoId(responseJson.videoId);
 				this.props.setVideoOwner(responseJson.userId);
 				this.props.setVideoOwnerUsername(responseJson.videoOwnerUsername);
+				this.fetchVideoArray();
 			})
 			.catch((error) => {
 				console.log(error);
@@ -342,6 +348,7 @@ export default class AdminDashboard extends Component<AdminProps, AdminState> {
 														onClick={() => {
 															this.isVideoEditModalOpenConditional(
 																videos.videoID,
+																videos.userId,
 																videos.videoTitle,
 																videos.videoLink
 															)
@@ -351,6 +358,10 @@ export default class AdminDashboard extends Component<AdminProps, AdminState> {
 														Edit
 													</a>
 												</td>
+												{/* Conditional for rendering edit modal */}
+												{this.state.isVideoEditModalOpen &&
+													this.renderVideoEditModal()}
+
 												<td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
 													<a
 														href="#"
