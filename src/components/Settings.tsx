@@ -123,7 +123,6 @@ export default class Settings extends React.Component<
 			this.renderDeleteUserVideosModalmui.bind(this);
 	}
 
-	
 	//! grabUsersAccountResetQuestions() grabs the users account reset questions from the database.
 	//? The database fetch GET request is made to the `${dbCall}/users/settings/:id` route.
 	//? It is asynchronously called.
@@ -560,7 +559,8 @@ export default class Settings extends React.Component<
 			this.state.deleteUserVideosPassword !== "HOOSIER"
 		) {
 			this.setState({
-				errorMessage: "Please type 'HOOSIER' if you wish to delete your videos.",
+				errorMessage:
+					"Please type 'HOOSIER' if you wish to delete your videos.",
 			});
 		} else {
 			if (this.state.deleteUserVideosPassword === "HOOSIER")
@@ -653,7 +653,7 @@ export default class Settings extends React.Component<
 		await this.didUserAnswerAccountResetAnswersCorrectlySubmit;
 		if (
 			this.state.accountResetAnswer1 === "" ||
-				this.state.accountResetAnswer2 === ""
+			this.state.accountResetAnswer2 === ""
 		) {
 			this.setState({
 				errorMessage: "Please answer the account reset questions.",
@@ -736,178 +736,296 @@ export default class Settings extends React.Component<
 
 	render() {
 		return (
-			<div className="account-reset-container">
-				<div className="account-reset-question-container">
-					<div className="account-reset-question-1">
-						<p>{this.state.accountResetQuestion1}</p>
-					</div>
-					<div className="account-reset-question-2">
-						<p>{this.state.accountResetQuestion2}</p>
+			<div className="space-y-6 overflow-auto min-h-full">
+				<div className="bg-white shadow px-4 py-5 sm:rounded-lg sm:p-6">
+					<div className="md:grid md:grid-cols-3 md:gap-6">
+						<div className="md:col-span-1">
+							<h3 className="text-lg font-medium leading-6 text-gray-900">
+								Update Your Profile
+							</h3>
+							<p className="mt-1 text-sm text-gray-500">
+								Answer your reset questions correctly to change your account
+								information.
+							</p>
+						</div>
+						<div className="mt-5 md:mt-0 md:col-span-2">
+							<form
+								onSubmit={this.didUserAnswerAccountResetAnswersCorrectlySubmit}
+								className="account-reset-answer-container"
+							>
+								<div className="grid grid-cols-6 gap-6">
+									<div className="col-span-6 sm:col-span-3">
+										<label
+											htmlFor="account-reset-question-1"
+											className="block text-sm font-medium text-gray-700"
+										>
+											{this.state.accountResetQuestion1}
+										</label>
+										<input
+											placeholder="Answer to Question 1"
+											type="text"
+											id="accountResetAnswer1"
+											name="accountResetAnswer1"
+											value={this.state.accountResetAnswer1}
+											onChange={this.handleChange}
+											className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+										/>
+									</div>
+
+									<div className="col-span-6 sm:col-span-3">
+										<label
+											htmlFor="account-reset-question-1"
+											className="block text-sm font-medium text-gray-700"
+										>
+											{this.state.accountResetQuestion2}
+										</label>
+										<input
+											placeholder="Answer to Question 2"
+											type="text"
+											name="accountResetAnswer2"
+											id="accountResetAnswer2"
+											value={this.state.accountResetAnswer2}
+											onChange={this.handleChange}
+											className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+										/>
+									</div>
+									<div className="account-reset-submit-container">
+										<button
+											type="submit"
+											className="text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+										>
+											Submit
+										</button>
+									</div>
+								</div>
+							</form>
+
+							{this.state.showResetOptions ? (
+								<div className="overflow-y-scroll">
+									<div className="relative">
+										<div
+											className="absolute inset-0 flex items-center"
+											aria-hidden="true"
+										>
+											<div className="w-full border-t border-gray-300" />
+										</div>
+										<div className="relative flex justify-center">
+											<span className="px-3 bg-white text-lg font-medium text-gray-900">
+												Password
+											</span>
+										</div>
+									</div>
+
+									<div className="mt-4">
+										<div className="mt-5 md:mt-0 md:col-span-2">
+											<form
+												onSubmit={this.handleSubmitUpdatePassword}
+												className="account-reset-update-password-form"
+											>
+												<div className="grid grid-cols-6 gap-6">
+													<div className="col-span-6 sm:col-span-3">
+														<label
+															htmlFor="new-password"
+															className="block text-sm font-medium text-gray-700"
+														>
+															New Password
+														</label>
+														<input
+															placeholder="New Password"
+															type="password"
+															name="accountResetUpdatePassword"
+															value={this.state.newPassword}
+															onChange={this.newPasswordInput}
+															className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+														/>
+													</div>
+
+													<div className="col-span-6 sm:col-span-3">
+														<label
+															htmlFor="last-name"
+															className="block text-sm font-medium text-gray-700"
+														>
+															Confirm New Password
+														</label>
+														<input
+															placeholder="Confirm New Password"
+															type="password"
+															name="accountResetUpdatePasswordConfirm"
+															value={this.state.confirmNewPassword}
+															onChange={this.confirmNewPasswordInput}
+															className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+														/>
+													</div>
+												</div>
+
+												<div className="account-reset-update-password-submit-container">
+													<button
+														type="submit"
+														className="text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900 mt-4"
+													>
+														Update
+													</button>
+												</div>
+											</form>
+										</div>
+
+										<div className="relative">
+											<div
+												className="absolute inset-0 flex items-center"
+												aria-hidden="true"
+											>
+												<div className="w-full border-t border-gray-300" />
+											</div>
+											<div className="relative flex justify-center">
+												<span className="px-3 bg-white text-lg font-medium text-gray-900">
+													Username
+												</span>
+											</div>
+										</div>
+
+										<div className="mt-4 col-span-6 sm:col-span-6 lg:col-span-2">
+											<form
+												onSubmit={this.handleSubmitUpdateUsername}
+												className="account-reset-update-username-form"
+											>
+												<div className="col-span-6 sm:col-span-3">
+													<label
+														htmlFor="last-name"
+														className="block text-sm font-medium text-gray-700"
+													>
+														Update Your Username
+													</label>
+													<input
+														placeholder={this.props.username}
+														type="text"
+														name="username"
+														value={this.state.username}
+														onChange={this.handleChange}
+														className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+													/>
+												</div>
+												<div className="place-content-end">
+													<button
+														type="submit"
+														className="text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900 mt-4"
+													>
+														Update
+													</button>
+												</div>
+											</form>
+										</div>
+
+										<div className="relative">
+											<div
+												className="absolute inset-0 flex items-center"
+												aria-hidden="true"
+											>
+												<div className="w-full border-t border-gray-300" />
+											</div>
+											<div className="relative flex justify-center">
+												<span className="px-3 bg-white text-lg font-medium text-gray-900">
+													Email Address Section
+												</span>
+											</div>
+										</div>
+
+										<div className="mt-4 col-span-6 sm:col-span-6 lg:col-span-2">
+											<form
+												onSubmit={this.handleSubmitUpdateEmailAddress}
+												className="account-reset-update-email-address-form"
+											>
+												<div className="col-span-6 sm:col-span-3">
+													<label
+														htmlFor="last-name"
+														className="block text-sm font-medium text-gray-700"
+													>
+														Update Your Email Address
+													</label>
+													<input
+														placeholder={this.props.emailAddress}
+														type="text"
+														name="emailAddress"
+														value={this.state.emailAddress}
+														onChange={this.handleChange}
+														className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+													/>
+												</div>
+												<div className="account-reset-update-email-address-submit-container">
+													<button
+														type="submit"
+														className="text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900 mt-4"
+													>
+														Update
+													</button>
+												</div>
+											</form>
+										</div>
+									</div>
+
+									<div className="relative">
+										<div
+											className="absolute inset-0 flex items-center"
+											aria-hidden="true"
+										>
+											<div className="w-full border-t border-gray-300" />
+										</div>
+										<div className="relative flex justify-center">
+											<span className="px-3 bg-white text-lg font-medium text-gray-900">
+												Account Content Control
+											</span>
+										</div>
+									</div>
+
+									<div className="flex justify-center">
+										<div className="col-span-6 sm:col-span-6 lg:col-span-2">
+											<button
+												type="button"
+												onClick={this.openModalUserAccountDelete}
+												className="text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900 mt-4"
+											>
+												Delete Account
+											</button>
+										</div>
+
+										<div className="col-span-6 sm:col-span-6 lg:col-span-2">
+											<button
+												type="button"
+												onClick={this.openModalUserVideosDelete}
+												className="text-white bg-gray-800 hover:bg-gray-900 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-800 dark:border-gray-700 mt-4"
+											>
+												Delete All Videos
+											</button>
+										</div>
+
+										<div className="col-span-6 sm:col-span-6 lg:col-span-2">
+											<button
+												type="button"
+												onClick={this.openModalUserCommentsDelete}
+												className="text-gray-900 bg-white border border-gray-300 hover:bg-gray-100 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:bg-gray-600 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-700 dark:focus:ring-gray-800 mt-4"
+											>
+												Delete All Comments
+											</button>
+										</div>
+
+										{this.state.openDeleteUserModal
+											? this.renderDeleteUserAccountModalmui()
+											: null}
+
+										{this.state.openDeleteUserVideosModal
+											? this.renderDeleteUserVideosModalmui()
+											: null}
+
+										{this.state.openDeleteUserCommentsModal
+											? this.renderDeleteUserCommentsModalmui()
+											: null}
+									</div>
+								</div>
+							) : //TODO conditionals for modals showing up
+
+							null}
+						</div>
 					</div>
 				</div>
-				<form
-					onSubmit={this.didUserAnswerAccountResetAnswersCorrectlySubmit}
-					className="account-reset-answer-container"
-				>
-					<div className="account-reset-answer-1">
-						<input
-							placeholder="Answer to Question 1"
-							type="text"
-							name="accountResetAnswer1"
-							value={this.state.accountResetAnswer1}
-							onChange={this.handleChange}
-						/>
-					</div>
-					<div className="account-reset-answer-2">
-						<input
-							placeholder="Answer to Question 2"
-							type="text"
-							name="accountResetAnswer2"
-							value={this.state.accountResetAnswer2}
-							onChange={this.handleChange}
-						/>
-					</div>
-					<div className="account-reset-submit-container">
-						<button type="submit" className="account-reset-submit-button">
-							Submit
-						</button>
-					</div>
-				</form>
-				{/* State showResetOptions is set to true when the user correctly answers the account reset questions. */}
-				{/* If it returns true, a drop down displays giving the user to update their username, password, and email address each in their own individual form field. */}
-				{/* If it returns false, nothing will show to the user. */}
-				{this.state.showResetOptions ? (
-					<div className="showResetOptions">
-						<div className="account-reset-update-container">
-							<div className="account-reset-update-password-container">
-								<form
-									onSubmit={this.handleSubmitUpdatePassword}
-									className="account-reset-update-password-form"
-								>
-									<div className="account-reset-update-newPassword-input-container">
-										<input
-											placeholder="New Password"
-											type="password"
-											name="accountResetUpdatePassword"
-											value={this.state.newPassword}
-											onChange={this.newPasswordInput}
-										/>
-									</div>
-
-									<div className="account-reset-update-newPasswordConfirm-input-container">
-										<input
-											placeholder="Confirm New Password"
-											type="password"
-											name="accountResetUpdatePasswordConfirm"
-											value={this.state.confirmNewPassword}
-											onChange={this.confirmNewPasswordInput}
-										/>
-									</div>
-
-									<div className="account-reset-update-password-submit-container">
-										<button
-											type="submit"
-											className="account-reset-update-password-submit-button"
-										>
-											Submit
-										</button>
-									</div>
-								</form>
-							</div>
-							<div className="account-reset-update-username-container">
-								<form
-									onSubmit={this.handleSubmitUpdateUsername}
-									className="account-reset-update-username-form"
-								>
-									<div className="account-reset-update-username-input-container">
-										<input
-											placeholder={this.props.username}
-											type="text"
-											name="username"
-											value={this.state.username}
-											onChange={this.handleChange}
-										/>
-									</div>
-									<div className="account-reset-update-username-submit-container">
-										<button
-											type="submit"
-											className="account-reset-update-username-submit-button"
-										>
-											Submit
-										</button>
-									</div>
-								</form>
-							</div>
-							<div className="account-reset-update-email-address-container">
-								<form
-									onSubmit={this.handleSubmitUpdateEmailAddress}
-									className="account-reset-update-email-address-form"
-								>
-									<div className="account-reset-update-email-address-input-container">
-										<input
-											placeholder={this.props.emailAddress}
-											type="text"
-											name="emailAddress"
-											value={this.state.emailAddress}
-											onChange={this.handleChange}
-										/>
-									</div>
-									<div className="account-reset-update-email-address-submit-container">
-										<button
-											type="submit"
-											className="account-reset-update-email-address-submit-button"
-										>
-											Submit
-										</button>
-									</div>
-								</form>
-							</div>
-						</div>
-						{/* DELETE SECTION */}
-						<div className="account-reset-delete-container">
-							<div className="account-reset-delete-button-container">
-								<button
-									onClick={this.openModalUserAccountDelete}
-									className="account-reset-delete-button"
-								>
-									Delete Account
-								</button>
-							</div>
-
-							<div className="account-reset-delete-button-container">
-								<button
-									onClick={this.openModalUserVideosDelete}
-									className="account-reset-delete-button"
-								>
-									Delete All Videos
-								</button>
-							</div>
-
-							<div className="account-reset-delete-button-container">
-								<button
-									onClick={this.openModalUserCommentsDelete}
-									className="account-reset-delete-button"
-								>
-									Delete All Comments
-								</button>
-							</div>
-
-							{this.state.openDeleteUserModal
-								? this.renderDeleteUserAccountModalmui()
-								: null}
-
-							{this.state.openDeleteUserVideosModal
-								? this.renderDeleteUserVideosModalmui()
-								: null}
-
-							{this.state.openDeleteUserCommentsModal
-								? this.renderDeleteUserCommentsModalmui()
-								: null}
-						</div>
-					</div>
-				) : //TODO conditionals for modals showing up
-
-				null}
 			</div>
 		);
 	}
@@ -917,9 +1035,6 @@ export default class Settings extends React.Component<
 			openDeleteUserModal: false,
 			openDeleteUserVideosModal: false,
 			openDeleteUserCommentsModal: false,
-		}
-		);
+		});
 	}
 }
-
-
