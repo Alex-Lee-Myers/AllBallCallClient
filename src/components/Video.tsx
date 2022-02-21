@@ -526,7 +526,7 @@ export default class Video extends Component<
 
 	render() {
 		return (
-			<div className="bg-white">
+			<div className="bg-white w-screen">
 				<div className="mx-auto py-16 px-4 sm:py-24 sm:px-6 lg:max-w-7xl lg:px-8">
 					{/* Video */}
 					<div className="lg:grid lg:grid-rows-1 lg:grid-cols-7 lg:gap-x-8 lg:gap-y-10 xl:gap-x-16">
@@ -713,48 +713,53 @@ export default class Video extends Component<
 
 						{/* If you are not logged in, tell the guest to be able to see comments, login or register and link them to those pages */}
 						{this.props.isUserLoggedIn === false ? (
-							<div className="mt-8">
-								<div className="text-center">
-									<p className="text-sm leading-5 text-gray-500">
-										To comment, login or register.
+							<div className="col-span-4 space-y-10 w-100 py-2 px-5 sm:mt-2">
+								<div className="text-center col-span-4">
+									<p className="text-xl leading-5 text-gray-500">
+										To use comments, login or register.
 									</p>
-									<div className="mt-4">
-										<Link
-											to="/login"
-											className="text-sm leading-5 font-medium text-indigo-600 hover:text-indigo-500 focus:outline-none focus:underline transition ease-in-out duration-150"
-										>
-											Login
-										</Link>
-									</div>
-									<div className="mt-4">
-										<Link
-											to="/register"
-											className="text-sm leading-5 font-medium text-indigo-600 hover:text-indigo-500 focus:outline-none focus:underline transition ease-in-out duration-150"
-										>
-											Register
-										</Link>
+									<div className="justify-center">
+										<div className="mt-4">
+											<Link
+												to="/login"
+												className="text-sm leading-5 font-medium text-indigo-600 hover:text-indigo-500 focus:outline-none focus:underline transition ease-in-out duration-150"
+											>
+												Login
+											</Link>
+										</div>
+										<div className="mt-4">
+											<Link
+												to="/register"
+												className="text-sm leading-5 font-medium text-indigo-600 hover:text-indigo-500 focus:outline-none focus:underline transition ease-in-out duration-150"
+											>
+												Register
+											</Link>
+											</div>
 									</div>
 								</div>
 							</div>
 						) : (
-							<ul className="space-y-10 w-96 py-2 px-5 sm:mt-2">
+							<ul className="col-span-4 space-y-10 w-100 py-2 px-5 sm:mt-2">
 								{this.state.VideoState.commentsArray?.map((comment: any) => {
 									return (
-										<li key={comment.commentID} className="flex flex-row mt-2">
-											<div className="justify-start">
+										<li
+											key={comment.commentID}
+											className="flex flex-row mt-0 border-t-2"
+										>
+											<div className="mt-5 flex-start justify-center content-center">
 												<img
 													className="w-10 h-10 bg-gray-100 rounded-full"
 													src={tempProfilePic}
 													alt={comment.user.username}
 												/>
 
-												<div className=" border-t border-gray-200">
+												<div className="text-center text-xs border-gray-200">
 													<h3 className="font-medium text-gray-900">
 														{comment.user.username}
 													</h3>
 												</div>
 											</div>
-											<div className="flex-grow">
+											<div className="flex-grow ml-10 mt-2 border-2">
 												<div
 													className="text-sm text-gray-600"
 													dangerouslySetInnerHTML={this.createMarkup(
@@ -766,9 +771,9 @@ export default class Video extends Component<
 											<div className=" mt-4"></div>
 											{/* If  comment.user.id === this.props.id of the commentID, then show a button that opens a MUI modal of a text box with a submit button that onSubmit={this.editVideo} */}
 											{comment.user.id === this.props.id && (
-												<div className="justify-end ml-5 text-sm leading-5 flex-column text-gray-600">
+												<div className="justify-evenly ml-5 text-sm leading-5  text-gray-600 flex flex-col">
 													<button
-														className="text-xs font-medium text-gray-500 hover:text-gray-900 focus:outline-none focus:underline transition ease-in-out duration-150"
+														className="w-full bg-indigo-50 border border-transparent rounded-md py-3 px-8 flex items-center justify-center text-base font-medium text-indigo-700 hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-50 focus:ring-indigo-500 my-3"
 														onClick={() => {
 															this.isEditCommentModalOpenConditional(
 																comment.commentID,
@@ -779,7 +784,7 @@ export default class Video extends Component<
 														Edit
 													</button>
 													<button
-														className="text-xs font-medium text-gray-500 hover:text-gray-900 focus:outline-none focus:underline transition ease-in-out duration-150"
+														className="w-full bg-red-100 border border-transparent rounded-md py-3 px-8 flex items-center justify-center text-base font-medium text-black hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-50 focus:ring-red-500"
 														onClick={() => {
 															this.deleteComment(comment.commentID);
 														}}

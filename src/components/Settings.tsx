@@ -924,7 +924,7 @@ export default class Settings extends React.Component<
 											</div>
 											<div className="relative flex justify-center">
 												<span className="px-3 bg-white text-lg font-medium text-gray-900">
-													Email Address Section
+													Email Address
 												</span>
 											</div>
 										</div>

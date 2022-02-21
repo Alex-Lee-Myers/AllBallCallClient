@@ -5,25 +5,24 @@ import React from "react";
 import registerSplash from "../images/registerSplash.jpg";
 import allballcall_500 from "../images/allballcall-logo-500-black-text.svg";
 
-
 export interface AuthProps {
-  id: ABCuserInfo["id"];
-  setId: ABCuserInfo["setId"];
-  isAdmin: ABCuserInfo["isAdmin"];
-  setIsAdmin: ABCuserInfo["setIsAdmin"];
-  emailAddress: ABCuserInfo["emailAddress"];
-  setEmailAddress: ABCuserInfo["setEmailAddress"];
-  errorMessage: ABCcalls["errorMessage"];
-  setErrorMessage: ABCcalls["setErrorMessage"];
-  responseStatus: ABCcalls["responseStatus"];
-  setResponseStatus: ABCcalls["setResponseStatus"];
-  sessionToken: ABCtoken["sessionToken"];
-  setSessionToken: ABCtoken["setSessionToken"];
-  updateToken: ABCtoken["updateToken"];
-  isUserLoggedIn: ABCtoken["isUserLoggedIn"];
-  setIsUserLoggedIn: ABCtoken["setIsUserLoggedIn"];
-  username: ABCuserInfo["username"];
-  setUsername: ABCuserInfo["setUsername"];
+	id: ABCuserInfo["id"];
+	setId: ABCuserInfo["setId"];
+	isAdmin: ABCuserInfo["isAdmin"];
+	setIsAdmin: ABCuserInfo["setIsAdmin"];
+	emailAddress: ABCuserInfo["emailAddress"];
+	setEmailAddress: ABCuserInfo["setEmailAddress"];
+	errorMessage: ABCcalls["errorMessage"];
+	setErrorMessage: ABCcalls["setErrorMessage"];
+	responseStatus: ABCcalls["responseStatus"];
+	setResponseStatus: ABCcalls["setResponseStatus"];
+	sessionToken: ABCtoken["sessionToken"];
+	setSessionToken: ABCtoken["setSessionToken"];
+	updateToken: ABCtoken["updateToken"];
+	isUserLoggedIn: ABCtoken["isUserLoggedIn"];
+	setIsUserLoggedIn: ABCtoken["setIsUserLoggedIn"];
+	username: ABCuserInfo["username"];
+	setUsername: ABCuserInfo["setUsername"];
 }
 
 //TODO 0) SessionToken / states not being assigned correctly. Fix.
@@ -47,6 +46,51 @@ const Register = (props: AuthProps) => {
 	const [adminPassword, setAdminPassword] = React.useState<string>("");
 	const [isAdminFieldVisible, setIsAdminFieldVisible] =
 		React.useState<boolean>(false);
+	const [isRegistrationValid, setIsRegistrationValid] =
+		React.useState<boolean>(true);
+	const [isEmailValid, setIsEmailValid] = React.useState<boolean>(true);
+	const [isPasswordValid, setIsPasswordValid] = React.useState<boolean>(true);
+	const [isUsernameValid, setIsUsernameValid] = React.useState<boolean>(true);
+	const [isConfirmPasswordValid, setIsConfirmPasswordValid] =
+		React.useState<boolean>(true);
+	const [isAccountResetQuestion1Valid, setIsAccountResetQuestion1Valid] =
+		React.useState<boolean>(true);
+	const [isAccountResetQuestion2Valid, setIsAccountResetQuestion2Valid] =
+		React.useState<boolean>(true);
+	const [isAccountResetAnswer1Valid, setIsAccountResetAnswer1Valid] =
+		React.useState<boolean>(true);
+	const [isAccountResetAnswer2Valid, setIsAccountResetAnswer2Valid] =
+		React.useState<boolean>(true);
+	const [isAdminPasswordValid, setIsAdminPasswordValid] =
+		React.useState<boolean>(true);
+	const [invalidRegistrationMessage, setInvalidRegistrationMessage] =
+		React.useState<string>("");
+	const [invalidEmailAddressMessage, setInvalidEmailAddressMessage] =
+		React.useState<string>("");
+	const [invalidPasswordMessage, setInvalidPasswordMessage] =
+		React.useState<string>("");
+	const [invalidConfirmPasswordMessage, setInvalidConfirmPasswordMessage] =
+		React.useState<string>("");
+	const [
+		invalidAccountResetQuestion1Message,
+		setInvalidAccountResetQuestion1Message,
+	] = React.useState<string>("");
+	const [
+		invalidAccountResetQuestion2Message,
+		setInvalidAccountResetQuestion2Message,
+	] = React.useState<string>("");
+	const [
+		invalidAccountResetAnswer1Message,
+		setInvalidAccountResetAnswer1Message,
+	] = React.useState<string>("");
+	const [
+		invalidAccountResetAnswer2Message,
+		setInvalidAccountResetAnswer2Message,
+	] = React.useState<string>("");
+	const [invalidUsernameMessage, setInvalidUsernameMessage] =
+		React.useState<string>("");
+	const [invalidAdminPasswordMessage, setInvalidAdminPasswordMessage] =
+		React.useState<string>("");
 
 	//! Validation Fields
 
@@ -56,7 +100,21 @@ const Register = (props: AuthProps) => {
 			props.emailAddress.match(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i) === null
 		) {
 			console.log("Email Address is invalid");
+			setIsEmailValid(false);
+			setInvalidEmailAddressMessage("Email Address is invalid");
 			return ["Invalid email address!", false];
+		}
+		return true;
+	};
+
+	//? Username
+	const usernameValidation = () => {
+		console.log("Username()");
+		if (props.username.length < 3) {
+			console.log("Username must be at least 3 characters!");
+			setIsUsernameValid(false);
+			setInvalidUsernameMessage("Username must be at least 3 characters!");
+			return ["Username must be at least 3 characters!", false];
 		}
 		return true;
 	};
@@ -65,7 +123,9 @@ const Register = (props: AuthProps) => {
 	const passwordValidation = () => {
 		if (passwordhash.length < 5) {
 			console.log("Password must be at least 5 characters!");
-			return "Password must be at least 5 characters!";
+			setIsPasswordValid(false);
+			setInvalidPasswordMessage("Password must be at least 5 characters!");
+			return ["Password must be at least 5 characters!", false];
 		}
 		return true;
 	};
@@ -74,16 +134,75 @@ const Register = (props: AuthProps) => {
 	const passwordConfirmationValidation = () => {
 		if (passwordhash !== confirmPassword) {
 			console.log("Passwords do not match!");
-			return "Passwords do not match!";
+			setIsConfirmPasswordValid(false);
+			setInvalidConfirmPasswordMessage("Passwords do not match!");
+			return ["Passwords do not match!", false];
 		}
 		return true;
 	};
 
-	//? Username
-	const usernameValidation = () => {
-		if (props.username.length < 3) {
-			console.log("Username must be at least 3 characters!");
-			return "Username must be at least 3 characters!";
+	//? Account Reset Question 1
+	const accountResetQuestion1Validation = () => {
+		// if the field contains at least 3 characters and a question mark to end it, it's valid. otherwise, tell the user it's invalid.
+		if (
+			accountResetQuestion1.length < 3 ||
+			accountResetQuestion1.charAt(accountResetQuestion1.length - 1) !== "?"
+		) {
+			console.log(
+				"Account Reset Question 1 must be at least 3 characters and end with a question mark!"
+			);
+			setIsAccountResetQuestion1Valid(false);
+			setInvalidAccountResetQuestion1Message(
+				"Account Reset Question 1 must be at least 3 characters and end with a question mark!"
+			);
+			return false;
+		}
+		return true;
+	};
+
+	//? Account Reset Question 2
+	const accountResetQuestion2Validation = () => {
+		// if the field contains at least 3 characters and a question mark to end it, it's valid. otherwise, tell the user it's invalid.
+		if (
+			accountResetQuestion2.length < 3 ||
+			accountResetQuestion2.charAt(accountResetQuestion2.length - 1) !== "?"
+		) {
+			console.log(
+				"Account Reset Question 2 must be at least 3 characters and end with a question mark!"
+			);
+			setIsAccountResetQuestion2Valid(false);
+			setInvalidAccountResetQuestion2Message(
+				"Account Reset Question 2 must be at least 3 characters and end with a question mark!"
+			);
+			return false;
+		}
+		return true;
+	};
+
+	//? Account Reset Answer 1
+	const accountResetAnswer1Validation = () => {
+		// as long as it isn't empty, it's valid. otherwise, tell the user it's invalid.
+		if (accountResetAnswer1.length === 0) {
+			console.log("Account Reset Answer 1 must not be empty!");
+			setIsAccountResetAnswer1Valid(false);
+			setInvalidAccountResetAnswer1Message(
+				"Account Reset Answer 1 must not be empty!"
+			);
+			return false;
+		}
+		return true;
+	};
+
+	//? Account Reset Answer 2
+	const accountResetAnswer2Validation = () => {
+		// as long as it isn't empty, it's valid. otherwise, tell the user it's invalid.
+		if (accountResetAnswer2.length === 0) {
+			console.log("Account Reset Answer 2 must not be empty!");
+			setIsAccountResetAnswer2Valid(false);
+			setInvalidAccountResetAnswer2Message(
+				"Account Reset Answer 2 must not be empty!"
+			);
+			return false;
 		}
 		return true;
 	};
@@ -102,9 +221,14 @@ const Register = (props: AuthProps) => {
 			return null;
 		} else if (adminPassword !== process.env.REACT_APP_ADMIN_PW_VALUE) {
 			console.log("Incorrect admin password! Try again/blank it out.");
+
 			props.setIsAdmin(null);
 			props.setErrorMessage(
 				"Incorrect admin password. Please try again or leave this field blank if you wish to register as a standard user."
+			);
+			setIsAdminPasswordValid(false);
+			setInvalidAdminPasswordMessage(
+				"Incorrect admin password. Try again or leave this field blank if you wish to register as a standard user."
 			);
 			return false;
 		} else if (adminPassword === process.env.REACT_APP_ADMIN_PW_VALUE) {
@@ -116,11 +240,23 @@ const Register = (props: AuthProps) => {
 
 	//? Validate all fields
 	const validateAllFields = () => {
+		usernameValidation();
+		passwordValidation();
+		passwordConfirmationValidation();
+		accountResetQuestion1Validation();
+		accountResetQuestion2Validation();
+		accountResetAnswer1Validation();
+		accountResetAnswer2Validation();
+		AdminPasswordValidation();
 		if (
+			usernameValidation() === true &&
 			emailAddressValidation() === true &&
 			passwordValidation() === true &&
 			passwordConfirmationValidation() === true &&
-			usernameValidation() === true &&
+			accountResetQuestion1Validation() === true &&
+			accountResetQuestion2Validation() === true &&
+			accountResetAnswer1Validation() === true &&
+			accountResetAnswer2Validation() === true &&
 			AdminPasswordValidation() === true
 		) {
 			return [
@@ -133,10 +269,18 @@ const Register = (props: AuthProps) => {
 			passwordValidation() === true &&
 			passwordConfirmationValidation() === true &&
 			usernameValidation() === true &&
+			accountResetQuestion1Validation() === true &&
+			accountResetQuestion2Validation() === true &&
+			accountResetAnswer1Validation() === true &&
+			accountResetAnswer2Validation() === true &&
 			AdminPasswordValidation() === null
 		) {
 			return [true, "Standard user succesfully registered!"];
 		} else {
+			setIsRegistrationValid(false);
+			setInvalidRegistrationMessage(
+				"Please fix the errors in the form and try again."
+			);
 			return [false, "Registration failed. Please validate all the fields."];
 		}
 	};
@@ -289,7 +433,7 @@ const Register = (props: AuthProps) => {
 							</Link>
 						</p>
 					</div>
-					{/* Username */}
+					{/* Email Address */}
 					<form className="space-y-6" onSubmit={registerSubmit}>
 						<div>
 							<label
@@ -299,16 +443,29 @@ const Register = (props: AuthProps) => {
 								Email Address
 							</label>
 							<div className="mt-1">
-								<input
-									id="emailAddress"
-									name="emailAddress"
-									type="text"
-									placeholder="charles@barkley.com"
-									value={props.emailAddress}
-									onChange={registerChange}
-									required
-									className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-								/>
+								{isEmailValid ? (
+									<input
+										id="emailAddress"
+										name="emailAddress"
+										type="text"
+										placeholder="charles@barkley.com"
+										value={props.emailAddress}
+										onChange={registerChange}
+										required
+										className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+									/>
+								) : (
+									<input
+										id="emailAddress"
+										name="emailAddress"
+										type="text"
+										placeholder={invalidEmailAddressMessage}
+										value={props.emailAddress}
+										onChange={registerChange}
+										required
+										className="appearance-none block w-full px-3 py-2 border border-red-500 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm"
+									/>
+								)}
 							</div>
 						</div>
 
@@ -325,24 +482,44 @@ const Register = (props: AuthProps) => {
 								data-tooltip-target="username-tooltip"
 								data-tooltip-placement="bottom"
 							>
-								<input
-									id="username"
-									name="username"
-									type="text"
-									autoComplete="username"
-									value={props.username}
-									onChange={registerChange}
-									required
-									className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-								/>
-								<div
-									id="username-tooltip"
-									role="tooltip"
-									className="inline-block absolute invisible z-10 py-2 px-3 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700"
-								>
-									Username must be at least 3 characters.
-									<div className="tooltip-arrow" data-popper-arrow></div>
-								</div>
+								{isUsernameValid ? (
+									<>
+										<input
+											id="username"
+											name="username"
+											type="text"
+											autoComplete="username"
+											value={props.username}
+											onChange={registerChange}
+											required
+											className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+										/>
+										<div
+											id="username-tooltip"
+											role="tooltip"
+											className="inline-block absolute invisible z-10 py-2 px-3 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700"
+										>
+											Username must be at least 3 characters.
+											<div className="tooltip-arrow" data-popper-arrow></div>
+										</div>
+									</>
+								) : (
+									<div>
+										<input
+											id="username"
+											name="username"
+											type="text"
+											autoComplete="username"
+											value={props.username}
+											onChange={registerChange}
+											required
+											className="appearance-none block w-full px-3 py-2 border border-red-500 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm"
+										/>
+										<p className="text-red-500 text-xs italic">
+											{invalidUsernameMessage}
+										</p>
+									</div>
+								)}
 							</div>
 						</div>
 
@@ -358,24 +535,44 @@ const Register = (props: AuthProps) => {
 								data-tooltip-target="password-tooltip"
 								data-tooltip-placement="bottom"
 							>
-								<input
-									id="passwordhash"
-									name="passwordhash"
-									type="password"
-									autoComplete="new-password"
-									value={passwordhash}
-									onChange={registerChange}
-									required
-									className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-								/>
-								<div
-									id="password-tooltip"
-									role="tooltip"
-									className="inline-block absolute invisible z-10 py-2 px-3 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700"
-								>
-									Password must contain at least 5 characters.
-									<div className="tooltip-arrow" data-popper-arrow></div>
-								</div>
+								{isPasswordValid ? (
+									<div>
+										<input
+											id="passwordhash"
+											name="passwordhash"
+											type="password"
+											autoComplete="new-password"
+											value={passwordhash}
+											onChange={registerChange}
+											required
+											className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+										/>
+										<div
+											id="password-tooltip"
+											role="tooltip"
+											className="inline-block absolute invisible z-10 py-2 px-3 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700"
+										>
+											Password must contain at least 5 characters.
+											<div className="tooltip-arrow" data-popper-arrow></div>
+										</div>
+									</div>
+								) : (
+									<div>
+										<input
+											id="passwordhash"
+											name="passwordhash"
+											type="password"
+											autoComplete="new-password"
+											value={passwordhash}
+											onChange={registerChange}
+											required
+											className="appearance-none block w-full px-3 py-2 border border-red-500 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm"
+										/>
+										<p className="text-red-500 text-xs italic">
+											{invalidPasswordMessage}
+										</p>
+									</div>
+								)}
 							</div>
 						</div>
 
@@ -388,16 +585,36 @@ const Register = (props: AuthProps) => {
 								Confirm Password
 							</label>
 							<div className="mt-1">
-								<input
-									id="confirmPassword"
-									name="confirmPassword"
-									type="password"
-									autoComplete="new-password"
-									value={confirmPassword}
-									onChange={registerChange}
-									required
-									className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-								/>
+								{isConfirmPasswordValid ? (
+									<div>
+										<input
+											id="confirmPassword"
+											name="confirmPassword"
+											type="password"
+											autoComplete="new-password"
+											value={confirmPassword}
+											onChange={registerChange}
+											required
+											className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+										/>
+									</div>
+								) : (
+									<div>
+										<input
+											id="confirmPassword"
+											name="confirmPassword"
+											type="password"
+											autoComplete="new-password"
+											value={confirmPassword}
+											onChange={registerChange}
+											required
+											className="appearance-none block w-full px-3 py-2 border border-red-500 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm"
+										/>
+										<p className="text-red-500 text-xs italic">
+											{invalidConfirmPasswordMessage}
+										</p>
+									</div>
+								)}
 							</div>
 						</div>
 
@@ -414,23 +631,42 @@ const Register = (props: AuthProps) => {
 								data-tooltip-target="ARq1-tooltip"
 								data-tooltip-placement="bottom"
 							>
-								<input
-									id="accountResetQuestion1"
-									name="accountResetQuestion1"
-									type="text"
-									value={accountResetQuestion1}
-									onChange={registerChange}
-									required
-									className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-								/>
-								<div
-									id="ARq1-tooltip"
-									role="tooltip"
-									className="inline-block absolute invisible z-10 py-2 px-3 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700"
-								>
-									ex: What's your favorite color?
-									<div className="tooltip-arrow" data-popper-arrow></div>
-								</div>
+								{isAccountResetQuestion1Valid ? (
+									<div>
+										<input
+											id="accountResetQuestion1"
+											name="accountResetQuestion1"
+											type="text"
+											value={accountResetQuestion1}
+											onChange={registerChange}
+											required
+											className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+										/>
+										<div
+											id="ARq1-tooltip"
+											role="tooltip"
+											className="inline-block absolute invisible z-10 py-2 px-3 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700"
+										>
+											ex: What's your favorite color?
+											<div className="tooltip-arrow" data-popper-arrow></div>
+										</div>
+									</div>
+								) : (
+									<div>
+										<input
+											id="accountResetQuestion1"
+											name="accountResetQuestion1"
+											type="text"
+											value={accountResetQuestion1}
+											onChange={registerChange}
+											required
+											className="appearance-none block w-full px-3 py-2 border border-red-500 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm"
+										/>
+										<p className="text-red-500 text-xs italic">
+											{invalidAccountResetQuestion1Message}
+										</p>
+									</div>
+								)}
 							</div>
 						</div>
 
@@ -447,57 +683,96 @@ const Register = (props: AuthProps) => {
 								Account Reset Answer 1
 							</label>
 							<div className="mt-1">
-								<input
-									id="accountResetAnswer1"
-									name="accountResetAnswer1"
-									type="text"
-									value={accountResetAnswer1}
-									onChange={registerChange}
-									required
-									className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-								/>
-								<div
-									id="ARa1-tooltip"
-									role="tooltip"
-									className="inline-block absolute invisible z-10 py-2 px-3 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700"
-								>
-									The answer to Account Reset Question 1.
-									<div className="tooltip-arrow" data-popper-arrow></div>
-								</div>
+								{isAccountResetAnswer1Valid ? (
+									<div>
+										<input
+											id="accountResetAnswer1"
+											name="accountResetAnswer1"
+											type="text"
+											value={accountResetAnswer1}
+											onChange={registerChange}
+											required
+											className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+										/>
+										<div
+											id="ARa1-tooltip"
+											role="tooltip"
+											className="inline-block absolute invisible z-10 py-2 px-3 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700"
+										>
+											The answer to Account Reset Question 1.
+											<div className="tooltip-arrow" data-popper-arrow></div>
+										</div>
+									</div>
+								) : (
+									<div>
+										<input
+											id="accountResetAnswer1"
+											name="accountResetAnswer1"
+											type="text"
+											value={accountResetAnswer1}
+											onChange={registerChange}
+											required
+											className="appearance-none block w-full px-3 py-2 border border-red-500 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm"
+										/>
+										<p className="text-red-500 text-xs italic">
+											{invalidAccountResetAnswer1Message}
+										</p>
+									</div>
+								)}
 							</div>
 						</div>
 
 						{/* Account Reset Question 1 */}
-						<div
-							className="space-y-1"
-							data-tooltip-target="ARq2-tooltip"
-							data-tooltip-placement="bottom"
+
+						<label
+							htmlFor="accountResetQuestion2"
+							className="block text-sm font-medium text-gray-700"
 						>
-							<label
-								htmlFor="accountResetQuestion2"
-								className="block text-sm font-medium text-gray-700"
-							>
-								Account Reset Question 2
-							</label>
-							<div className="mt-1">
-								<input
-									id="accountResetQuestion2"
-									name="accountResetQuestion2"
-									type="text"
-									value={accountResetQuestion2}
-									onChange={registerChange}
-									required
-									className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-								/>
+							Account Reset Question 2
+						</label>
+						<div className="mt-1">
+							{isAccountResetQuestion2Valid ? (
 								<div
-									id="ARq2-tooltip"
-									role="tooltip"
-									className="inline-block absolute invisible z-10 py-2 px-3 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700"
+									className="space-y-1"
+									data-tooltip-target="ARq2-tooltip"
+									data-tooltip-placement="bottom"
 								>
-									ex: What's your first car?
-									<div className="tooltip-arrow" data-popper-arrow></div>
+									<div>
+										<input
+											id="accountResetQuestion2"
+											name="accountResetQuestion2"
+											type="text"
+											value={accountResetQuestion2}
+											onChange={registerChange}
+											required
+											className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+										/>
+										<div
+											id="ARq2-tooltip"
+											role="tooltip"
+											className="inline-block absolute invisible z-10 py-2 px-3 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700"
+										>
+											ex: What's your first car?
+											<div className="tooltip-arrow" data-popper-arrow></div>
+										</div>
+									</div>
 								</div>
-							</div>
+							) : (
+								<div>
+									<input
+										id="accountResetQuestion2"
+										name="accountResetQuestion2"
+										type="text"
+										value={accountResetQuestion2}
+										onChange={registerChange}
+										required
+										className="appearance-none block w-full px-3 py-2 border border-red-500 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm"
+									/>
+									<p className="text-red-500 text-xs italic">
+										{invalidAccountResetQuestion2Message}
+									</p>
+								</div>
+							)}
 						</div>
 
 						{/* Account Reset Answer 2 */}
@@ -513,23 +788,40 @@ const Register = (props: AuthProps) => {
 								Account Reset Answer 2
 							</label>
 							<div className="mt-1">
-								<input
-									id="accountResetAnswer2"
-									name="accountResetAnswer2"
-									type="text"
-									value={accountResetAnswer2}
-									onChange={registerChange}
-									required
-									className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-								/>
-								<div
-									id="ARa2-tooltip"
-									role="tooltip"
-									className="inline-block absolute invisible z-10 py-2 px-3 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700"
-								>
-									The answer to Account Reset Question 2.
-									<div className="tooltip-arrow" data-popper-arrow></div>
-								</div>
+								{isAccountResetAnswer2Valid ? (
+									<div>
+										<input
+											id="accountResetAnswer2"
+											name="accountResetAnswer2"
+											type="text"
+											value={accountResetAnswer2}
+											onChange={registerChange}
+											required
+											className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+										/>
+										<div
+											id="ARa2-tooltip"
+											role="tooltip"
+											className="inline-block absolute invisible z-10 py-2 px-3 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700"
+										>
+											The answer to Account Reset Question 2.
+											<div className="tooltip-arrow" data-popper-arrow></div>
+										</div>
+									</div>
+								) : (
+									<div>
+										<input
+											id="accountResetAnswer2"
+											name="accountResetAnswer2"
+											type="text"
+											value={accountResetAnswer2}
+											onChange={registerChange}
+											required
+											className="appearance-none block w-full px-3 py-2 border border-red-500 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm"
+										/>
+										<p>{invalidAccountResetAnswer2Message}</p>
+									</div>
+								)}
 							</div>
 						</div>
 
@@ -571,26 +863,61 @@ const Register = (props: AuthProps) => {
 									>
 										Admin Authorization Code
 									</label>
+
 									<div className="mt-1">
-										<input
-											id="adminPassword"
-											name="adminPassword"
-											type="password"
-											onChange={registerChange}
-											value={adminPassword}
-											className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-										/>
+										{isAdminPasswordValid ? (
+											<div>
+												<input
+													id="adminPassword"
+													name="adminPassword"
+													type="password"
+													onChange={registerChange}
+													value={adminPassword}
+													className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+												/>
+											</div>
+										) : (
+											<div>
+												<input
+													id="adminPassword"
+													name="adminPassword"
+													type="password"
+													onChange={registerChange}
+													value={adminPassword}
+													className="appearance-none block w-full px-3 py-2 border border-red-500 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm"
+												/>
+												<p className="text-red-500 text-xs italic">
+													{invalidAdminPasswordMessage}
+												</p>
+											</div>
+										)}
 									</div>
 								</div>
 							)}
 						</div>
 						<div>
-							<button
-								type="submit"
-								className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-							>
-								Register
-							</button>
+							{isRegistrationValid ? (
+								<div>
+									<button
+										type="submit"
+										className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+									>
+										Register
+									</button>
+								</div>
+							) : (
+								<div>
+									<p className="text-center text-red-500 text-md italic border-y border-y-indigo-300 hover:border-indigo-900 mb-1">
+										{invalidRegistrationMessage}
+									</p>
+									<button
+										type="submit"
+										className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+									>
+										Register
+									</button>
+								</div>
+							)}
 						</div>
 					</form>
 				</div>

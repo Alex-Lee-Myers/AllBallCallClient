@@ -39,6 +39,7 @@ const Login = (props: AuthProps) => {
 	const [passwordhash, setPasswordhash] = React.useState<string>("");
 	const [loginUsernameOrEmail, setLoginUsernameOrEmail] =
 		React.useState<string>("");
+	const [isLoginError, setIsLoginError] = React.useState<boolean>(false);
 
 	const loginChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		if (event.target.id === "passwordhash") {
@@ -98,7 +99,9 @@ const Login = (props: AuthProps) => {
 					props.setEmailAddress(data.emailAddress);
 					navigate("/admindashboard"); //TODO: change to admin page
 				} else {
-					props.setErrorMessage(data.errorMessage);
+					props.setErrorMessage(data.message);
+					console.log("Login failed: ", data.message);
+					setIsLoginError(true);
 				}
 			});
 	};
@@ -176,6 +179,12 @@ const Login = (props: AuthProps) => {
 							>
 								Sign in
 							</button>
+							{/* If isLoginError is true, show the error message. */}
+							{isLoginError && (
+								<p className="text-red-600 text-sm mt-2 text-center">
+									{props.errorMessage}
+								</p>
+							)}
 						</div>
 					</form>
 				</div>
