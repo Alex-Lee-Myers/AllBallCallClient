@@ -128,6 +128,10 @@ export default class Video extends Component<
 		});
 	}
 
+	createMarkup(html: string) {
+		return { __html: html };
+	}
+
 	//! COMMMENTS
 	//TODO: rerender comments on comment edit/delete/post
 	fetchCommentsArray = async () => {
@@ -390,12 +394,11 @@ export default class Video extends Component<
 					/>
 				</DialogContent>
 				<DialogActions>
-					<Link to = "/">
-					<Button
-						onClick={this.deleteVideoSubmit}
-						color="secondary"
-					> Delete
-					</Button>
+					<Link to="/">
+						<Button onClick={this.deleteVideoSubmit} color="secondary">
+							{" "}
+							Delete
+						</Button>
 					</Link>
 					<Button
 						onClick={this.isVideoOwnerEditOrDeleteVideoModalOpenConditional}
@@ -404,8 +407,8 @@ export default class Video extends Component<
 						Cancel
 					</Button>
 					<Link to={`/videos/${this.props.videoId}`}>
-					<Button onClick={this.updateVideoTitleSubmit} color="primary">
-						Update
+						<Button onClick={this.updateVideoTitleSubmit} color="primary">
+							Update
 						</Button>
 					</Link>
 				</DialogActions>
@@ -414,7 +417,6 @@ export default class Video extends Component<
 	};
 
 	updateVideoTitleSubmit = async () => {
-
 		await fetch(
 			`${dbCall}/videos/content/${this.props.id}/${this.props.videoId}`,
 			{
@@ -460,42 +462,42 @@ export default class Video extends Component<
 
 	deleteVideoSubmit = async () => {
 		if (window.confirm("Are you sure you want to delete this comment?")) {
-		await fetch(
-			`${dbCall}/videos/content/${this.props.id}/${this.props.videoId}`,
-			{
-				method: "DELETE",
-				headers: {
-					"Content-Type": "application/json",
-					Authorization: `Bearer ${this.props.sessionToken}`,
-				},
-			}
-		)
-			.then((response) => {
-				if (response.status === 200) {
-					return response.json();
-				} else {
-					throw new Error("Error deleting video");
-				}
-			})
-			.then((responseJson) => {
-				console.log("Video Update :", responseJson);
-				this.setState({
-					VideoState: {
-						...this.state.VideoState,
-						videoTitle: responseJson.videoTitle,
-						videoLink: responseJson.videoLink,
+			await fetch(
+				`${dbCall}/videos/content/${this.props.id}/${this.props.videoId}`,
+				{
+					method: "DELETE",
+					headers: {
+						"Content-Type": "application/json",
+						Authorization: `Bearer ${this.props.sessionToken}`,
 					},
+				}
+			)
+				.then((response) => {
+					if (response.status === 200) {
+						return response.json();
+					} else {
+						throw new Error("Error deleting video");
+					}
+				})
+				.then((responseJson) => {
+					console.log("Video Update :", responseJson);
+					this.setState({
+						VideoState: {
+							...this.state.VideoState,
+							videoTitle: responseJson.videoTitle,
+							videoLink: responseJson.videoLink,
+						},
+					});
+					this.props.setVideoLink(responseJson.videoLink);
+					this.props.setVideoTitle(responseJson.videoTitle);
+					this.props.setVideoId(responseJson.videoId);
+					this.props.setVideoOwner(responseJson.userId);
+					this.props.setVideoOwnerUsername(responseJson.videoOwnerUsername);
+					console.log("Video State:", this.state.VideoState);
+				})
+				.catch((error) => {
+					console.log(error);
 				});
-				this.props.setVideoLink(responseJson.videoLink);
-				this.props.setVideoTitle(responseJson.videoTitle);
-				this.props.setVideoId(responseJson.videoId);
-				this.props.setVideoOwner(responseJson.userId);
-				this.props.setVideoOwnerUsername(responseJson.videoOwnerUsername);
-				console.log("Video State:", this.state.VideoState);
-			})
-			.catch((error) => {
-				console.log(error);
-			});
 		}
 	};
 
@@ -521,26 +523,6 @@ export default class Video extends Component<
 			});
 		}
 	};
-
-	// componentWillReceiveProps(nextProps) {
-
-	// }
-
-	// shouldComponentUpdate(nextProps, nextState) {
-
-	// }
-
-	// componentWillUpdate(nextProps, nextState) {
-
-	// }
-
-	// componentDidUpdate(prevProps, prevState) {
-
-	// }
-
-	// componentWillUnmount() {
-
-	// }
 
 	render() {
 		return (
@@ -755,108 +737,114 @@ export default class Video extends Component<
 								</div>
 							</div>
 						) : (
-							<ul className="mt-4">
+							<ul className="space-y-10 w-96 py-2 px-5 sm:mt-2">
 								{this.state.VideoState.commentsArray?.map((comment: any) => {
 									return (
-										<li key={comment.commentID}>
-											<div className="flex items-center">
-												<div className="flex-shrink-0">
-													<img
-														className="h-10 w-10 rounded-full"
-														src={tempProfilePic}
-														alt={comment.user.username}
-													/>
-												</div>
-												<div className="ml-4">
-													<div className="text-sm leading-5 font-medium text-gray-900">
-														{comment.user.username}
-													</div>
-													<div className="mt-2 text-sm leading-5 text-gray-600">
-														{comment.commentText}
-													</div>
-												</div>
-												{/* If  comment.user.id === this.props.id of the commentID, then show a button that opens a MUI modal of a text box with a submit button that onSubmit={this.editVideo} */}
-												{comment.user.id === this.props.id && (
-													<div className="ml-auto text-sm leading-5 text-gray-600">
-														<button
-															className="text-xs font-medium text-gray-500 hover:text-gray-900 focus:outline-none focus:underline transition ease-in-out duration-150"
-															onClick={() => {
-																this.isEditCommentModalOpenConditional(
-																	comment.commentID,
-																	comment.commentText
-																);
-															}}
-														>
-															Edit
-														</button>
-														<button
-															className="border-2 ml-2 text-xs font-medium text-gray-500 hover:text-gray-900 focus:outline-none focus:underline transition ease-in-out duration-150"
-															onClick={() => {
-																this.deleteComment(comment.commentID);
-															}}
-														>
-															Delete
-														</button>
+										<li key={comment.commentID} className="flex flex-row mt-2">
+											<div className="justify-start">
+												<img
+													className="w-10 h-10 bg-gray-100 rounded-full"
+													src={tempProfilePic}
+													alt={comment.user.username}
+												/>
 
-														{this.state.VideoState.isEditCommentModalOpen ? (
-															<div className="edit-comment-container">
-																<Dialog
-																	open={true}
-																	onClose={() => {
-																		this.isEditCommentModalOpenConditional(
-																			comment.commentID,
-																			comment.commentText
-																		);
-																	}}
-																>
-																	<DialogContent>
-																		<DialogContentText>
-																			Edit your comments.
-																		</DialogContentText>
-																		<TextField
-																			autoFocus
-																			margin="dense"
-																			id="editCommentText"
-																			name="editCommentText"
-																			label="Edit Comment"
-																			type="text"
-																			fullWidth
-																			multiline
-																			placeholder={
-																				this.state.VideoState.commentText
-																			}
-																			variant="standard"
-																			onChange={this.handleChangeMUI}
-																			value={
-																				this.state.VideoState.editCommentText
-																			}
-																		/>
-																	</DialogContent>
-																	<DialogActions>
-																		<Button
-																			onClick={() =>
-																				this.isEditCommentModalOpenConditional(
-																					comment.commentID,
-																					comment.commentText
-																				)
-																			}
-																			color="primary"
-																		>
-																			Cancel
-																		</Button>
-																		<Button
-																			onClick={() => this.editCommentSubmit()}
-																			color="primary"
-																		>
-																			Edit
-																		</Button>
-																	</DialogActions>
-																</Dialog>
-															</div>
-														) : null}
-													</div>
-												)}
+												<div className=" border-t border-gray-200">
+													<h3 className="font-medium text-gray-900">
+														{comment.user.username}
+													</h3>
+												</div>
 											</div>
+											<div className="flex-grow">
+												<div
+													className="text-sm text-gray-600"
+													dangerouslySetInnerHTML={this.createMarkup(
+														comment.commentText
+													)}
+												></div>
+											</div>
+
+											<div className=" mt-4"></div>
+											{/* If  comment.user.id === this.props.id of the commentID, then show a button that opens a MUI modal of a text box with a submit button that onSubmit={this.editVideo} */}
+											{comment.user.id === this.props.id && (
+												<div className="justify-end ml-5 text-sm leading-5 flex-column text-gray-600">
+													<button
+														className="text-xs font-medium text-gray-500 hover:text-gray-900 focus:outline-none focus:underline transition ease-in-out duration-150"
+														onClick={() => {
+															this.isEditCommentModalOpenConditional(
+																comment.commentID,
+																comment.commentText
+															);
+														}}
+													>
+														Edit
+													</button>
+													<button
+														className="text-xs font-medium text-gray-500 hover:text-gray-900 focus:outline-none focus:underline transition ease-in-out duration-150"
+														onClick={() => {
+															this.deleteComment(comment.commentID);
+														}}
+													>
+														Delete
+													</button>
+
+													{this.state.VideoState.isEditCommentModalOpen ? (
+														<div className="edit-comment-container">
+															<Dialog
+																open={true}
+																onClose={() => {
+																	this.isEditCommentModalOpenConditional(
+																		comment.commentID,
+																		comment.commentText
+																	);
+																}}
+															>
+																<DialogContent>
+																	<DialogContentText>
+																		Edit your comments.
+																	</DialogContentText>
+																	<TextField
+																		autoFocus
+																		margin="dense"
+																		id="editCommentText"
+																		name="editCommentText"
+																		label="Edit Comment"
+																		type="text"
+																		fullWidth
+																		multiline
+																		placeholder={
+																			this.state.VideoState.commentText
+																		}
+																		variant="standard"
+																		onChange={this.handleChangeMUI}
+																		value={
+																			this.state.VideoState.editCommentText
+																		}
+																	/>
+																</DialogContent>
+																<DialogActions>
+																	<Button
+																		onClick={() =>
+																			this.isEditCommentModalOpenConditional(
+																				comment.commentID,
+																				comment.commentText
+																			)
+																		}
+																		color="primary"
+																	>
+																		Cancel
+																	</Button>
+																	<Button
+																		onClick={() => this.editCommentSubmit()}
+																		color="primary"
+																	>
+																		Edit
+																	</Button>
+																</DialogActions>
+															</Dialog>
+														</div>
+													) : null}
+												</div>
+											)}
 										</li>
 									);
 								})}
@@ -866,5 +854,20 @@ export default class Video extends Component<
 				</div>
 			</div>
 		);
+	}
+	componentWillUnmount() {
+		this.setState({
+			VideoState: {
+				...this.state.VideoState,
+				isEditCommentModalOpen: false,
+				editCommentText: "",
+				commentText: "",
+				editVideoTitleText: "",
+				editVideoLinkText: "",
+				isVideoOwnerEditOrDeleteVideoModalOpen: false,
+				isPostCommentModalOpen: false,
+				isCommentDeleteModalOpen: false,
+			},
+		});
 	}
 }
