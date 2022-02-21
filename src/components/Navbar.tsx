@@ -81,14 +81,14 @@ export default class Navbar extends React.Component<
 					name: "Trending",
 					href: "#",
 					current: true,
-					userVisible: true,
+					userVisible: false,
 				},
 				{
 					id: 2,
 					name: "Video Grid",
 					href: "#",
 					current: false,
-					userVisible: true,
+					userVisible: false,
 				},
 				{
 					id: 3,
@@ -182,16 +182,16 @@ export default class Navbar extends React.Component<
 					{
 						id: 1,
 						name: "Trending",
-						href: "#",
+						href: "/",
 						current: true,
-						userVisible: true,
+						userVisible: false,
 					},
 					{
 						id: 2,
-						name: "Video Grid",
+						name: "Your Park",
 						href: "#",
 						current: false,
-						userVisible: true,
+						userVisible: false,
 					},
 					{
 						id: 3,
@@ -258,14 +258,14 @@ export default class Navbar extends React.Component<
 					{
 						id: 1,
 						name: "Trending",
-						href: "#",
+						href: "/",
 						current: true,
 						userVisible: true,
 					},
 					{
 						id: 2,
-						name: "Video Grid",
-						href: "#",
+						name: "My Park",
+						href: "/mypark",
 						current: false,
 						userVisible: true,
 					},
@@ -274,7 +274,7 @@ export default class Navbar extends React.Component<
 						name: "Streamable",
 						href: "#",
 						current: false,
-						userVisible: true,
+						userVisible: false,
 					},
 					{
 						id: 4,
@@ -287,8 +287,8 @@ export default class Navbar extends React.Component<
 				userNavigation: [
 					{
 						id: 1,
-						pageName: "Your Park",
-						href: "#",
+						pageName: "My Park",
+						href: "/mypark",
 						userVisible: true,
 					},
 					{
@@ -334,14 +334,14 @@ export default class Navbar extends React.Component<
 					{
 						id: 1,
 						name: "Trending",
-						href: "#",
+						href: "/",
 						current: true,
 						userVisible: true,
 					},
 					{
 						id: 2,
-						name: "Video Grid",
-						href: "#",
+						name: "My Park",
+						href: "/mypark",
 						current: false,
 						userVisible: true,
 					},
@@ -350,7 +350,7 @@ export default class Navbar extends React.Component<
 						name: "Streamable",
 						href: "#",
 						current: false,
-						userVisible: true,
+						userVisible: false,
 					},
 					{
 						id: 4,
@@ -363,8 +363,8 @@ export default class Navbar extends React.Component<
 				userNavigation: [
 					{
 						id: 1,
-						pageName: "Your Park",
-						href: "#",
+						pageName: "My Park",
+						href: "/mypark",
 						userVisible: true,
 					},
 					{
@@ -423,12 +423,12 @@ export default class Navbar extends React.Component<
 		} else if (prevProps.username !== this.state.user.username) {
 			console.log("User username changed");
 			this.handleUserVisibility();
-		} 
+		}
 	}
 
 	render() {
 		return (
-			<Disclosure as="nav" className="bg-gray-800 z-50">
+			<Disclosure as="nav" className="bg-gray-800 z-100">
 				{({ open }) => (
 					<div className="z-50">
 						<div className="max-w-7x1 mx-auto px-4 sm:px-6 lg:px-8">
@@ -488,30 +488,34 @@ export default class Navbar extends React.Component<
 									</div>
 								</div>
 								<div className="flex items-center">
-									<div className="flex-shrink-0">
-										<Link to="/videos/content">
-											{" "}
-											{/* Change to videoPost when added*/}
+									{this.state.user.isUserLoggedIn ? (
+										<div className="flex-shrink-0">
+											<Link to="/videos/content">
+												{" "}
+												{/* Change to videoPost when added*/}
+												<button
+													type="button"
+													className="relative inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-500 hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-indigo-500"
+												>
+													<PlusSmIcon
+														className="-ml-1 mr-2 h-5 w-5"
+														aria-hidden="true"
+													/>
+													<span>Post Highlight</span>
+												</button>
+											</Link>
+										</div>
+									) : null}
+									<div className="hidden md:ml-4 md:flex-shrink-0 md:flex md:items-center">
+										{this.state.user.isUserLoggedIn ? (
 											<button
 												type="button"
-												className="relative inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-500 hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-indigo-500"
+												className="bg-gray-800 p-1 rounded-full text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white"
 											>
-												<PlusSmIcon
-													className="-ml-1 mr-2 h-5 w-5"
-													aria-hidden="true"
-												/>
-												<span>Post Highlight</span>
+												<span className="sr-only">View notifications</span>
+												<BellIcon className="h-6 w-6" aria-hidden="true" />
 											</button>
-										</Link>
-									</div>
-									<div className="hidden md:ml-4 md:flex-shrink-0 md:flex md:items-center">
-										<button
-											type="button"
-											className="bg-gray-800 p-1 rounded-full text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white"
-										>
-											<span className="sr-only">View notifications</span>
-											<BellIcon className="h-6 w-6" aria-hidden="true" />
-										</button>
+										) : null}
 
 										{/*//! Profile dropdown */}
 										<Menu as="div" className="ml-3 relative">

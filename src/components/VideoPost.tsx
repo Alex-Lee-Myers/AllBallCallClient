@@ -1,7 +1,7 @@
-import React from 'react'
-import { useNavigate } from 'react-router-dom';
-import dbCall from '../helpers/Environments';
-import { ABCtoken, ABCvideo, ABCuserInfo, ABCcalls } from '../App';
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import dbCall from "../helpers/Environments";
+import { ABCtoken, ABCvideo, ABCuserInfo, ABCcalls } from "../App";
 
 // !VideoPost information:
 //     //? What does this file do?
@@ -38,16 +38,15 @@ import { ABCtoken, ABCvideo, ABCuserInfo, ABCcalls } from '../App';
 //             //* clutch will have a radio button that defaults to false.
 //             //* adminHighlighted and adminDelete will not be viewable or editable by a user without isAdmin=true state.
 
-
 interface ABCprops {
-    sessionToken: ABCtoken['sessionToken']
-    isAdmin: ABCuserInfo['isAdmin']
-    setVideoId: ABCvideo['setVideoId']
-    setVideoTitle: ABCvideo['setVideoTitle']
-    setVideoLink: ABCvideo['setVideoLink']
-    errorMessage: ABCcalls['errorMessage']
-    setErrorMessage: ABCcalls['setErrorMessage']
-
+	sessionToken: ABCtoken["sessionToken"];
+	isAdmin: ABCuserInfo["isAdmin"];
+	setVideoId: ABCvideo["setVideoId"];
+	setVideoTitle: ABCvideo["setVideoTitle"];
+	setVideoLink: ABCvideo["setVideoLink"];
+	errorMessage: ABCcalls["errorMessage"];
+	setErrorMessage: ABCcalls["setErrorMessage"];
+	navigate: ABCcalls["navigate"];
 }
 
 // interface playersHighlightedProps {
@@ -74,20 +73,19 @@ interface ABCprops {
 // }
 
 interface videoPostState {
-    videoTitle: string
-    videoLink: string
-    // thumbnailImage?: string
-    // playersHighlighted?: players[]
-    // teamsFeatured: teams[]
-    // tags: tags[]
-    // gameDate: string
-    // nbaSeason: string
-    // isPlayoffs: boolean
-    // clutch: boolean
-    // adminHighlighted: boolean
-    // adminDelete: boolean
+	videoTitle: string;
+	videoLink: string;
+	// thumbnailImage?: string
+	// playersHighlighted?: players[]
+	// teamsFeatured: teams[]
+	// tags: tags[]
+	// gameDate: string
+	// nbaSeason: string
+	// isPlayoffs: boolean
+	// clutch: boolean
+	// adminHighlighted: boolean
+	// adminDelete: boolean
 	//? useNavigate declaration
-	// navigate: ReturnType<typeof useNavigate>
 }
 
 class VideoPost extends React.Component<ABCprops, videoPostState> {
@@ -109,12 +107,10 @@ class VideoPost extends React.Component<ABCprops, videoPostState> {
 			//             isAdmin: false,
 			//             players: [],
 			//             teams: [],
-			//? useNavigate declaration
 		};
 
 		this.handleChange = this.handleChange.bind(this);
 		this.handleSubmit = this.handleSubmit.bind(this);
-
 
 		//         this.handlePlayersHighlighted = this.handlePlayersHighlighted.bind(this);
 		//         this.handleTeamsFeatured = this.handleTeamsFeatured.bind(this);
@@ -127,7 +123,6 @@ class VideoPost extends React.Component<ABCprops, videoPostState> {
 		//         this.handleAdminHighlighted = this.handleAdminHighlighted.bind(this);
 		//         this.handleAdminDelete = this.handleAdminDelete.bind(this);
 	}
-
 
 	//! handleChange:
 	handleChange(
@@ -146,7 +141,6 @@ class VideoPost extends React.Component<ABCprops, videoPostState> {
 		event: React.FormEvent<HTMLFormElement>
 	): Promise<void> => {
 		event.preventDefault();
-		console.log(this.state);
 		await fetch(`${dbCall}/videos/content/`, {
 			method: "POST",
 			headers: new Headers({
@@ -178,7 +172,7 @@ class VideoPost extends React.Component<ABCprops, videoPostState> {
 				this.props.setVideoId(data.id);
 				this.props.setVideoTitle(data.videoTitle);
 				this.props.setVideoLink(data.videoLink);
-				useNavigate();
+				this.props.navigate("/");
 			})
 			.catch((err) => {
 				console.log(err);
@@ -216,10 +210,13 @@ class VideoPost extends React.Component<ABCprops, videoPostState> {
 	render(): React.ReactNode {
 		return (
 			<>
-				<div>
+				<form
+					onSubmit={this.handleSubmit}
+					className="space-y-8 divide-y divide-gray-200 py-5 px-4 sm:px-6 lg:px-8"
+				>
 					<div className="space-y-8 divide-y divide-gray-200">
-						<div className="space-y-8 divide-y divide-gray-200">
-							<div className="px-4 sm:px-0">
+						<div>
+							<div>
 								<h3 className="text-lg leading-6 font-medium text-gray-900">
 									Post Your Highlight
 								</h3>
@@ -230,73 +227,68 @@ class VideoPost extends React.Component<ABCprops, videoPostState> {
 									accepted.
 								</p>
 							</div>
-						</div>
-						<div className="mt-5 md:mt-0 md:col-span-2">
-							<form onSubmit={this.handleSubmit}>
-								<div className="shadow sm:rounded-md sm:overflow-hidden">
-									<div className="px-4 py-5 bg-white space-y-6 sm:p-6">
-										<div className="grid grid-cols-3 gap-6">
-											<div className="col-span-3 sm:col-span-2">
-												<label
-													htmlFor="video-website"
-													className="block text-sm font-medium text-gray-700"
-												>
-													Website
-												</label>
-												<div className="mt-1 flex rounded-md shadow-sm">
-													<span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
-														Link
-													</span>
-													<input
-														type="text"
-														name="videoLink"
-														id="videoLink"
-														className="focus:ring-indigo-500 focus:border-indigo-500 flex-1 block w-full rounded-none rounded-r-md sm:text-sm border-gray-300"
-														placeholder="www.streamable.com"
-														onChange={this.handleChange}
-														value={this.state.videoLink}
-													/>
-												</div>
-											</div>
-										</div>
-
-										<div>
-											<label
-												htmlFor="about"
-												className="block text-sm font-medium text-gray-700"
-											>
-												Title of Highlight
-											</label>
-											<div className="mt-1">
-												<textarea
-													id="videoTitle"
-													name="videoTitle"
-													rows={3}
-													onChange={this.handleChange}
-													className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 mt-1 block w-full sm:text-sm border border-gray-300 rounded-md"
-													placeholder="you@example.com"
-													value={this.state.videoTitle}
-												/>
-											</div>
-											<p className="mt-2 text-sm text-gray-500">
-												Brief title for your highlight. URLs are hyperlinked.
-											</p>
-										</div>
-
-										<div className="px-4 py-3 bg-gray-50 text-right sm:px-6">
-											<button
-												type="submit"
-												className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-											>
-												Submit
-											</button>
-										</div>
+							<div className="mt-6 grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
+								<div className="sm:col-span-4">
+									<label
+										htmlFor="video-website"
+										className="block text-sm font-medium text-gray-700"
+									>
+										Website
+									</label>
+									<div className="mt-1 flex rounded-md shadow-sm">
+										<span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
+											Link
+										</span>
+										<input
+											type="text"
+											name="videoLink"
+											id="videoLink"
+											className="focus:ring-indigo-500 focus:border-indigo-500 flex-1 block w-full rounded-none rounded-r-md sm:text-sm border-gray-300"
+											placeholder="www.streamable.com"
+											onChange={this.handleChange}
+											value={this.state.videoLink}
+										/>
 									</div>
 								</div>
-							</form>
+
+								<div className="sm:col-span-6">
+									<label
+										htmlFor="title-of-highlight"
+										className="block text-sm font-medium text-gray-700"
+									>
+										Highlight Title
+									</label>
+									<div className="mt-1">
+										<textarea
+											id="videoTitle"
+											name="videoTitle"
+											rows={1}
+											onChange={this.handleChange}
+											className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 mt-1 block w-full sm:text-sm border border-gray-300 rounded-md"
+											placeholder="Shaq dunks on Barkley."
+											value={this.state.videoTitle}
+										/>
+									</div>
+									<p className="mt-2 text-sm text-gray-500">
+										Brief title for your highlight. URLs are hyperlinked.
+									</p>
+								</div>
+
+								<div className="">
+									{/* Put button on the far right of the screen always. */}
+									<div className="flex justify-start">
+										<button
+											type="submit"
+											className="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+										>
+											Submit
+										</button>
+									</div>
+								</div>
+							</div>
 						</div>
 					</div>
-				</div>
+				</form>
 			</>
 		);
 	}

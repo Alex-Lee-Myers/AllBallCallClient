@@ -4,7 +4,12 @@ import dbCall from "./helpers/Environments";
 
 // import packages
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import {
+	BrowserRouter as Router,
+	Route,
+	Routes,
+	useNavigate,
+} from "react-router-dom";
 // import the components
 import Home from "../src/components/Home";
 import Login from "../src/components/Login";
@@ -17,12 +22,12 @@ import Video from "../src/components/Video";
 import AdminDashboard from "../src/components/AdminDashboard";
 
 export interface ABCtoken {
-  isUserLoggedIn: boolean;
-  setIsUserLoggedIn: (value: boolean) => void;
-  clearToken: () => void;
-  sessionToken: string | null;
-  setSessionToken: (token: string | null) => void;
-  updateToken: (mintToken: string) => void;
+	isUserLoggedIn: boolean;
+	setIsUserLoggedIn: (value: boolean) => void;
+	clearToken: () => void;
+	sessionToken: string | null;
+	setSessionToken: (token: string | null) => void;
+	updateToken: (mintToken: string) => void;
 }
 
 export interface ABCuserInfo {
@@ -37,19 +42,20 @@ export interface ABCuserInfo {
 }
 
 export interface ABCcalls {
-  errorMessage: string;
-  setErrorMessage: (message: string) => void;
-  fetchDb: () => Promise<void>;
-  responseStatus: number;
-  setResponseStatus: (responseStatus: number) => void;
+	errorMessage: string;
+	setErrorMessage: (message: string) => void;
+	fetchDb: () => Promise<void>;
+	responseStatus: number;
+	setResponseStatus: (responseStatus: number) => void;
+	navigate: (path: string) => void;
 }
 
 export interface ABCvideo {
-  	videoId: string;
-  	setVideoId: (videoId: string) => void;
-  	videoTitle: string;
-  	setVideoTitle: (videoTitle: string) => void;
-  	videoLink: string;
+	videoId: string;
+	setVideoId: (videoId: string) => void;
+	videoTitle: string;
+	setVideoTitle: (videoTitle: string) => void;
+	videoLink: string;
 	setVideoLink: (videoLink: string) => void;
 	videoOwner: string;
 	setVideoOwner: (videoOwner: string) => void;
@@ -70,33 +76,40 @@ export interface ABCvideo {
 // Did not use React.FunctionComponent as per (https://github.com/typescript-cheatsheets/react/blob/main/README.md#basic-cheatsheet-table-of-contents) this methology is deprecated.
 
 const App = () => {
-  //! userInfo States
-  const [id, setId] = useState<ABCuserInfo["id"]>("");
-  const [isAdmin, setIsAdmin] = useState<ABCuserInfo["isAdmin"]>(false);
-  const [emailAddress, setEmailAddress] = useState<ABCuserInfo["emailAddress"]>("");
-  const [username, setUsername] = useState<ABCuserInfo["username"]>("");
-  //! calls States
-  const [errorMessage, setErrorMessage] = useState<ABCcalls["errorMessage"]>("");
-  const [responseStatus, setResponseStatus] = useState<ABCcalls["responseStatus"]>(500);
-  //! token States
-  const [sessionToken, setSessionToken] = useState<ABCtoken["sessionToken"]>(null);
-  const [isUserLoggedIn, setIsUserLoggedIn] = useState<ABCtoken["isUserLoggedIn"]>(false);
-  //! video States
-  const [videoId, setVideoId] = useState<ABCvideo["videoId"]>("");
-  const [videoTitle, setVideoTitle] = useState<ABCvideo["videoTitle"]>("");
+	//! userInfo States
+	const [id, setId] = useState<ABCuserInfo["id"]>("");
+	const [isAdmin, setIsAdmin] = useState<ABCuserInfo["isAdmin"]>(false);
+	const [emailAddress, setEmailAddress] =
+		useState<ABCuserInfo["emailAddress"]>("");
+	const [username, setUsername] = useState<ABCuserInfo["username"]>("");
+	//! calls States
+	const [errorMessage, setErrorMessage] =
+		useState<ABCcalls["errorMessage"]>("");
+	const [responseStatus, setResponseStatus] =
+		useState<ABCcalls["responseStatus"]>(500);
+	//! token States
+	const [sessionToken, setSessionToken] =
+		useState<ABCtoken["sessionToken"]>(null);
+	const [isUserLoggedIn, setIsUserLoggedIn] =
+		useState<ABCtoken["isUserLoggedIn"]>(false);
+	//! video States
+	const [videoId, setVideoId] = useState<ABCvideo["videoId"]>("");
+	const [videoTitle, setVideoTitle] = useState<ABCvideo["videoTitle"]>("");
 	const [videoLink, setVideoLink] = useState<ABCvideo["videoLink"]>("");
 	const [videoOwner, setVideoOwner] = useState<ABCvideo["videoOwner"]>("");
-	const [videoOwnerUsername, setVideoOwnerUsername] = useState<ABCvideo["videoOwnerUsername"]>("");
+	const [videoOwnerUsername, setVideoOwnerUsername] =
+		useState<ABCvideo["videoOwnerUsername"]>("");
+	//useNavigate initializes the navigate function
+	const navigate = useNavigate();
 
+	const fetchDb = async (): Promise<void> => {
+		if (localStorage.getItem("Authorization")) {
+			setSessionToken(localStorage.getItem("Authorization"));
+			setIsUserLoggedIn(true);
+		}
 
-  const fetchDb = async (): Promise<void> => {
-    if (localStorage.getItem('Authorization')) {
-      setSessionToken(localStorage.getItem('Authorization'));
-      setIsUserLoggedIn(true);
-    }
-
-    if (sessionToken !== null || undefined || "") {
-      await fetch(`${dbCall}/users/validate`, {
+		if (sessionToken !== null || undefined || "") {
+			await fetch(`${dbCall}/users/validate`, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
@@ -126,36 +139,36 @@ const App = () => {
 					setEmailAddress("");
 					setUsername("");
 				});
-    } else {
-      setIsUserLoggedIn(false);
-      setId("");
-      setIsAdmin(false);
-      setEmailAddress("");
-      setUsername("");
-    }
-  }
+		} else {
+			setIsUserLoggedIn(false);
+			setId("");
+			setIsAdmin(false);
+			setEmailAddress("");
+			setUsername("");
+		}
+	};
 
-  const updateToken = (mintToken: string): void => {
-    localStorage.setItem("Authorization", mintToken);
-    setSessionToken(mintToken);
-  };
+	const updateToken = (mintToken: string): void => {
+		localStorage.setItem("Authorization", mintToken);
+		setSessionToken(mintToken);
+	};
 
-  const clearToken = (): void => {
-    localStorage.removeItem("sessionToken");
-    setSessionToken(null);
-    updateToken("");
-    setIsUserLoggedIn(false);
-    setId("");
-    setIsAdmin(false);
-    setEmailAddress("");
-	setUsername("");
-  };
+	const clearToken = (): void => {
+		localStorage.removeItem("sessionToken");
+		setSessionToken(null);
+		updateToken("");
+		setIsUserLoggedIn(false);
+		setId("");
+		setIsAdmin(false);
+		setEmailAddress("");
+		setUsername("");
+	};
 
-  useEffect(() => {
-    fetchDb();
-  }, [sessionToken]);
+	useEffect(() => {
+		fetchDb();
+	}, [sessionToken]);
 
-  return (
+	return (
 		<>
 			<Navbar
 				isAdmin={isAdmin}
@@ -268,6 +281,7 @@ const App = () => {
 							setVideoLink={setVideoLink}
 							errorMessage={errorMessage}
 							setErrorMessage={setErrorMessage}
+							navigate={navigate}
 						/>
 					}
 				/>
