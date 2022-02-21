@@ -414,10 +414,6 @@ export default class Video extends Component<
 	};
 
 	updateVideoTitleSubmit = async () => {
-		console.log(
-			"updateVideoTitleSubmit: ",
-			this.state.VideoState.editVideoTitleText
-		);
 
 		await fetch(
 			`${dbCall}/videos/content/${this.props.id}/${this.props.videoId}`,
