@@ -461,7 +461,7 @@ export default class Video extends Component<
 	};
 
 	deleteVideoSubmit = async () => {
-		if (window.confirm("Are you sure you want to delete this comment?")) {
+		if (window.confirm("Are you sure you want to delete this video?")) {
 			await fetch(
 				`${dbCall}/videos/content/${this.props.id}/${this.props.videoId}`,
 				{
