@@ -1,6 +1,4 @@
-/* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { Component } from 'react';
-import { ABCcalls, ABCvideo, ABCtoken, ABCuserInfo } from '../App';
 import dbCall from "../helpers/Environments";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
@@ -10,26 +8,30 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import { BrowserRouter as Route, Link } from "react-router-dom";
+import { ABCtoken, ABCuserInfo, ABCcalls, ABCvideo } from '../App';
 
-interface AdminProps {
-    //? Video Props
-    setVideoId: ABCvideo['setVideoId'];
-    setVideoTitle: ABCvideo['setVideoTitle'];
-    setVideoLink: ABCvideo['setVideoLink'];
-    setVideoOwner: ABCvideo['setVideoOwner'];
-    setVideoOwnerUsername: ABCvideo['setVideoOwnerUsername'];
-    //? ABCcalls
-    errorMessage: ABCcalls["errorMessage"];
-    setErrorMessage: ABCcalls["setErrorMessage"];
-    responseStatus: ABCcalls["responseStatus"];
-    setResponseStatus: ABCcalls["setResponseStatus"];
-    //? userInfo
-    isUserLoggedIn: ABCtoken["isUserLoggedIn"];
-    sessionToken: ABCtoken["sessionToken"];
-    isAdmin: ABCuserInfo["isAdmin"];
+interface MyParkProps {
+	//? Video Props
+	setVideoId: ABCvideo["setVideoId"];
+	setVideoTitle: ABCvideo["setVideoTitle"];
+	setVideoLink: ABCvideo["setVideoLink"];
+	setVideoOwner: ABCvideo["setVideoOwner"];
+	setVideoOwnerUsername: ABCvideo["setVideoOwnerUsername"];
+	//? ABCcalls
+	errorMessage: ABCcalls["errorMessage"];
+	setErrorMessage: ABCcalls["setErrorMessage"];
+	responseStatus: ABCcalls["responseStatus"];
+	setResponseStatus: ABCcalls["setResponseStatus"];
+	//? userInfo
+    id: ABCuserInfo["id"];
+	isUserLoggedIn: ABCtoken["isUserLoggedIn"];
+	sessionToken: ABCtoken["sessionToken"];
+	isAdmin: ABCuserInfo["isAdmin"];
+    navigate: ABCcalls["navigate"];
+    username: ABCuserInfo["username"];
 }
 
-interface AdminState {
+interface MyParkVideosState {
 	videoId: string;
 	videoTitle: string;
 	videoLink: string;
@@ -42,8 +44,8 @@ interface AdminState {
 	editVideoLinkText: string;
 }
 
-export default class AdminDashboard extends Component<AdminProps, AdminState> {
-	constructor(props: AdminProps) {
+export default class MyParkVideos extends Component<MyParkProps, MyParkVideosState> {
+	constructor(props: MyParkProps) {
 		super(props);
 		this.state = {
 			videoId: "",
@@ -57,9 +59,19 @@ export default class AdminDashboard extends Component<AdminProps, AdminState> {
 			editVideoTitleText: "",
 			editVideoLinkText: "",
 		};
+		this.handleChangeMUI = this.handleChangeMUI.bind(this);
 		this.isVideoEditModalOpenConditional =
 			this.isVideoEditModalOpenConditional.bind(this);
-		this.handleChangeMUI = this.handleChangeMUI.bind(this);
+		this.renderVideoEditModal = this.renderVideoEditModal.bind(this);
+		this.updateVideoTitleSubmit = this.updateVideoTitleSubmit.bind(this);
+		this.deleteVideoSubmit = this.deleteVideoSubmit.bind(this);
+	}
+
+	handleChangeMUI(event: React.ChangeEvent<HTMLInputElement>) {
+		this.setState({
+			...this.state,
+			[event.target.name]: event.target.value,
+		});
 	}
 
 	fetchVideoArray = async () => {
@@ -90,13 +102,6 @@ export default class AdminDashboard extends Component<AdminProps, AdminState> {
 			});
 	};
 
-	handleChangeMUI(event: React.ChangeEvent<HTMLInputElement>) {
-		this.setState({
-			...this.state,
-			[event.target.name]: event.target.value,
-		});
-	}
-
 	//! VIDEO POSTS
 	isVideoEditModalOpenConditional = (
 		videoId: string,
@@ -110,7 +115,7 @@ export default class AdminDashboard extends Component<AdminProps, AdminState> {
 			videoId: videoId,
 			videoOwnerId: videoOwnerId,
 			videoTitle: videoTitle,
-			videoLink: videoLink
+			videoLink: videoLink,
 		});
 	};
 
@@ -171,7 +176,7 @@ export default class AdminDashboard extends Component<AdminProps, AdminState> {
 								this.state.videoOwnerId,
 								this.state.videoTitle,
 								this.state.videoLink
-							)
+							);
 						}}
 						color="primary"
 					>
@@ -188,7 +193,7 @@ export default class AdminDashboard extends Component<AdminProps, AdminState> {
 
 	updateVideoTitleSubmit = async () => {
 		await fetch(
-			`${dbCall}/videos/content/${this.state.videoOwnerId}/${this.state.videoId}`,
+			`${dbCall}/videos/content/${this.props.id}/${this.state.videoId}`,
 			{
 				method: "PUT",
 				headers: {
@@ -266,104 +271,11 @@ export default class AdminDashboard extends Component<AdminProps, AdminState> {
 		}
 	};
 
-	// componentWillMount() {
-
-	// }
-
-	componentDidMount() {
-		this.fetchVideoArray();
-	}
+	componentDidMount() {}
 
 	render() {
-		return (
-			<div className="flex flex-col">
-				<div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-					<div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
-						<div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
-							<table className="min-w-full divide-y divide-gray-200">
-								<thead className="bg-gray-50">
-									<tr>
-										<th
-											scope="col"
-											className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-										>
-											Title
-										</th>
-										<th
-											scope="col"
-											className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-										>
-											Link
-										</th>
-										<th
-											scope="col"
-											className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-										>
-											Username
-										</th>
-										<th scope="col" className="relative px-6 py-3">
-											<span className="sr-only">Edit</span>
-										</th>
-										<th scope="col" className="relative px-6 py-3">
-											<span className="sr-only">Delete</span>
-										</th>
-									</tr>
-								</thead>
-								<tbody>
-									{this.state.videoPostsArray?.map(
-										(videos: any, index: number) => (
-											<tr key={videos.videoID} className={"bg-white"}>
-												<td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-													{videos.videoTitle}
-												</td>
-												<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-													{videos.videoLink}
-												</td>
-												<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-													{videos.user.username}
-												</td>
-												<td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-													<a
-														href="#"
-														onClick={() => {
-															this.isVideoEditModalOpenConditional(
-																videos.videoID,
-																videos.userId,
-																videos.videoTitle,
-																videos.videoLink
-															)
-														}}
-														className="text-indigo-600 hover:text-indigo-900"
-													>
-														Edit
-													</a>
-												</td>
-												{/* Conditional for rendering edit modal */}
-												{this.state.isVideoEditModalOpen &&
-													this.renderVideoEditModal()}
-
-												<td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-													<a
-														href="#"
-														onClick={() => {
-															this.deleteVideoSubmit(
-																videos.userId,
-																videos.videoID)
-														}}
-														className="text-red-500 hover:text-red-800"
-													>
-														Delete
-													</a>
-												</td>
-											</tr>
-										)
-									)}
-								</tbody>
-							</table>
-						</div>
-					</div>
-				</div>
-			</div>
-		);
+        return <div>
+            
+        </div>;
 	}
 }

@@ -20,6 +20,7 @@ import Settings from "../src/components/Settings";
 import Logout from "../src/components/Logout";
 import Video from "../src/components/Video";
 import AdminDashboard from "../src/components/AdminDashboard";
+import MyParkVideos from "../src/components/MyParkVideos";
 
 export interface ABCtoken {
 	isUserLoggedIn: boolean;
@@ -305,6 +306,29 @@ const App = () => {
 							id={id}
 							isUserLoggedIn={isUserLoggedIn}
 							sessionToken={sessionToken}
+						/>
+					}
+				/>
+
+				<Route
+					path="/mypark"
+					element={
+						<MyParkVideos
+							id={id}
+							username={username}
+							isAdmin={isAdmin}
+							sessionToken={sessionToken}
+							setVideoId={setVideoId}
+							setVideoTitle={setVideoTitle}
+							setVideoLink={setVideoLink}
+							setVideoOwner={setVideoOwner}
+							setVideoOwnerUsername={setVideoOwnerUsername}
+							errorMessage={errorMessage}
+							setErrorMessage={setErrorMessage}
+							responseStatus={responseStatus}
+							setResponseStatus={setResponseStatus}
+							isUserLoggedIn={isUserLoggedIn}
+							navigate={navigate}
 						/>
 					}
 				/>
