@@ -541,13 +541,13 @@ export default class Navbar extends React.Component<
 												leaveTo="transform opacity-0 scale-95"
 											>
 												<Menu.Items className="z-50 origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
-													{this.state.user.isUserLoggedIn ? (
+													{this.props.isUserLoggedIn ? (
 														<div className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-															{this.state.user.username} |{" "}
-															{this.state.user.emailAddress}
+															{this.props.username} |{" "}
+															{this.props.emailAddress}
 														</div>
 													) : null}
-													{this.state.user.isUserLoggedIn ? (
+													{this.props.isUserLoggedIn ? (
 														<div className="block px-4 py-2 text-sm bg-indigo-200"></div>
 													) : null}
 													{this.state.userNavigation.map((item) => {
