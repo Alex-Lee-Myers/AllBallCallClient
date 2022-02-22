@@ -20,7 +20,7 @@ A full-stack web application that delivers the best basketball highlight experie
 
 
 ## Heroku Deploy
-[Click me]() to view the live deploy through Heroku.
+[Click me](https://allballcall.herokuapp.com/) to view the live deploy through Heroku.
 
 
 ## Server GitHub Repository
@@ -39,13 +39,10 @@ Due to the nature of this project being required to reach MVP within 25 days, fr
 
 - TypeScript
 - Tailwind CSS 3.0
-- Headless UI
-- React-Router-Dom
+- Material UI
+- React-Router-Dom V6
 - React-Player
-
-#### Who designed the logo? 
-
-Well, I did! I have ove
+- React Legacy (Class Components)
 
 #### Who designed the logo? 
 
@@ -86,15 +83,30 @@ Indeed I am. Feel free to reach out to me via my [LinkedIn](https://www.linkedin
     - Mapping home page from server. Pagination process beginning. 
 - **Week 4** (February 12th through February 19th, 2022)
     - Head to San Diego...🌞⛱
-    - ...
-    - ...
+    - Major milestones hit throughout this week between looking at individual videos, commenting, and more.
+    - All CRUD endpoints work, as well as an additional few for user account information.
+    - EFA MVP goal hit. 
 - **Week 5** (February 19th through February 22nd, 2022)
-    - ...
-    - ...
-    - __Tuesday, February 22:__ Presentation Day
+    - Stylized every aspect of the application. 
+    - Took off options on Navbar for features being implemented post-EFA.
+    - Integrated validation for all forms. 
+    - Prepped for presentation taking place on the 22nd.
+    - Finalized Trello and Readme for last sprint completion before EFA presentation.
+    - Tuesday, February 22: Presentation Day
 - **Continued Support** (March 2022 and beyond)
-    - ...
-
+    - Proper profile picture support.
+    - Search abilities.
+    - Options for sorting videos.
+    - Tags, players highlighted, and teams filter incorporated.
+    - Reworking all components to be functional components instead.
+    - Admin ability to highlight videos.
+    - Autocomplete options for tags/players/team filter.
+    - Widen scope of site to all basketball leagues.
+    - Pagination + Lazy Loading for videos. 
+    - Automatic deletion of bad videos.
+    - Safety filters for inappropriate text/videos.
+    - Upvote feature.
+ 
 ## Log
 
 | Date | Comments |
@@ -108,12 +120,10 @@ Indeed I am. Feel free to reach out to me via my [LinkedIn](https://www.linkedin
 | [*1/27/22* P.1](https://github.com/Alex-Lee-Myers/AllBallCallClient/commit/8c84411ec2918f78133e8edc4fdb866aafffdd1b)  | Tested ReactPlayer functionality. Minimal Tailwind UI integration with a card-style grid. Base structure working. Need to move to Home.tsx and then integrate fetching the server. |
 | [*1/27/22* P.2](https://github.com/Alex-Lee-Myers/AllBallCallClient/commit/142f52780f6baf70d168ccc10a470e8e4b03d40f)  | Started build up of Login UI. Needs a lot more work before functional. Additionally, did a copy-paste into Register file for a base start. Will touch that after Login finished. |
 | [*1/28/22*]() | Working on Login+Register further and testing. Navbar dropdown as well. |
-| [*1/29/22*]() | ... |
-| [*1/30/22*]() | ... |
-| [*1/31/22*]() | ... |
-| [*2/1/22*]() | ... |
-| [*2/2/22*]() | ... |
-| [*2/3/22*]() | ... |
+| [*1/31/22*](https://github.com/Alex-Lee-Myers/AllBallCallClient/commit/792d554ef0ffa7f60980cdd3bb35a95c44f392e1) | Navigation to login page working. Further reworking of props/states throughought whole App.tsx will be worked on in future updates. |
+| [*2/1/22*](https://github.com/Alex-Lee-Myers/AllBallCallClient/commit/bc6519f938fc6d6f25ca0e85487f08a4011c7a3e) | Register endpoint working perfectly after reworking to become a functional component. |
+| [*2/2/22*](https://github.com/Alex-Lee-Myers/AllBallCallClient/commit/81d538b667b5affacad24e1f347ded66332a3209) | Navbar is able to be used to access both login and register now. Registration worked for mobile design too. Images added to make material more presentable. |
+| [*2/3/22*](https://github.com/Alex-Lee-Myers/AllBallCallClient/commit/70397e427c1d43a99d6854201df5d58bbbfef0e4) | Heavy debug day. VideoPost.tsx was troubleshooted for 4 hours alone. To no avail but left detailed comments for future restructuring and goals of file.  |
 | [*2/4/22*]() | ... |
 | [*2/5/22*]() | ... |
 | [*2/6/22*]() | ... |
