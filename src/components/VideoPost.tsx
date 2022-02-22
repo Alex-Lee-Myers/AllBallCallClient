@@ -74,7 +74,11 @@ interface ABCprops {
 
 interface videoPostState {
 	videoTitle: string;
+	videoTitleError: string;
+	isVideoTitleValid: boolean;
 	videoLink: string;
+	videoLinkError: string;
+	isVideoLinkValid: boolean;
 	// thumbnailImage?: string
 	// playersHighlighted?: players[]
 	// teamsFeatured: teams[]
@@ -93,7 +97,11 @@ class VideoPost extends React.Component<ABCprops, videoPostState> {
 		super(props);
 		this.state = {
 			videoTitle: "",
+			videoTitleError: "",
+			isVideoTitleValid: true,
 			videoLink: "",
+			videoLinkError: "",
+			isVideoLinkValid: true,
 			//             thumbnailImage: '',
 			//             playersHighlighted: [''],
 			//             teamsFeatured: [''],
@@ -122,6 +130,8 @@ class VideoPost extends React.Component<ABCprops, videoPostState> {
 
 		//         this.handleAdminHighlighted = this.handleAdminHighlighted.bind(this);
 		//         this.handleAdminDelete = this.handleAdminDelete.bind(this);
+		this.verifyVideoLink = this.verifyVideoLink.bind(this);
+		this.verifyVideoTitle = this.verifyVideoTitle.bind(this);
 	}
 
 	//! handleChange:
@@ -136,48 +146,93 @@ class VideoPost extends React.Component<ABCprops, videoPostState> {
 		});
 	}
 
+	verifyVideoLink = (): boolean => {
+		if (
+			this.state.videoLink.includes("streamable") ||
+			this.state.videoLink.includes("youtube") ||
+			this.state.videoLink.includes("youtu.be") ||
+			this.state.videoLink.includes("Streamable") ||
+			this.state.videoLink.includes("YouTube") ||
+			this.state.videoLink.includes("Youtube") ||
+			this.state.videoLink.includes("Youtu.be")
+		) {
+			this.setState({
+				videoLinkError: "",
+				isVideoLinkValid: true,
+			});
+			return true;
+		} else {
+			this.setState({
+				videoLinkError: "Please enter a valid video link.",
+				isVideoLinkValid: false,
+			});
+			return false;
+		}
+	};
+
+	verifyVideoTitle = (): boolean => {
+		if (this.state.videoTitle.length > 0) {
+			this.setState({
+				videoTitleError: "",
+				isVideoTitleValid: true,
+			});
+			return true;
+		} else {
+			this.setState({
+				videoTitleError: "Please enter a valid video title.",
+				isVideoTitleValid: false,
+			});
+			return false;
+		}
+	};
+
 	//! handleSubmit:
 	handleSubmit = async (
 		event: React.FormEvent<HTMLFormElement>
 	): Promise<void> => {
 		event.preventDefault();
-		await fetch(`${dbCall}/videos/content/`, {
-			method: "POST",
-			headers: new Headers({
-				"Content-Type": "application/json",
-				Authorization: `Bearer ${this.props.sessionToken}`,
-			}),
-			body: JSON.stringify({
-				videopost: {
-					videoTitle: this.state.videoTitle,
-					videoLink: this.state.videoLink,
-					// thumbnailImage: this.state.thumbnailImage,
-					// playersHighlighted: this.state.playersHighlighted,
-					// teamsFeatured: this.state.teamsFeatured,
-					// tags: this.state.tags,
-					// gameDate: this.state.gameDate,
-					// nbaSeason: this.state.nbaSeason,
-					// isPlayoffs: this.state.isPlayoffs,
-					// clutch: this.state.clutch,
-					// adminHighlighted: this.state.adminHighlighted,
-					// adminDelete: this.state.adminDelete,
-				},
-			}),
-		})
-			.then((res) => {
-				return res.json();
+		//! Check if this.verifyVideoLink() returns true, run the fetch
+		this.verifyVideoLink();
+		this.verifyVideoTitle();
+		if (this.verifyVideoLink() === true && this.verifyVideoTitle() === true) {
+			await fetch(`${dbCall}/videos/content/`, {
+				method: "POST",
+				headers: new Headers({
+					"Content-Type": "application/json",
+					Authorization: `Bearer ${this.props.sessionToken}`,
+				}),
+				body: JSON.stringify({
+					videopost: {
+						videoTitle: this.state.videoTitle,
+						videoLink: this.state.videoLink,
+						// thumbnailImage: this.state.thumbnailImage,
+						// playersHighlighted: this.state.playersHighlighted,
+						// teamsFeatured: this.state.teamsFeatured,
+						// tags: this.state.tags,
+						// gameDate: this.state.gameDate,
+						// nbaSeason: this.state.nbaSeason,
+						// isPlayoffs: this.state.isPlayoffs,
+						// clutch: this.state.clutch,
+						// adminHighlighted: this.state.adminHighlighted,
+						// adminDelete: this.state.adminDelete,
+					},
+				}),
 			})
-			.then((data) => {
-				console.log(data);
-				this.props.setVideoId(data.id);
-				this.props.setVideoTitle(data.videoTitle);
-				this.props.setVideoLink(data.videoLink);
-				this.props.navigate("/");
-			})
-			.catch((err) => {
-				console.log(err);
-				this.props.setErrorMessage(err);
-			});
+				.then((res) => {
+					return res.json();
+				})
+				.then((data) => {
+					console.log(data);
+					this.props.setVideoId(data.id);
+					this.props.setVideoTitle(data.videoTitle);
+					this.props.setVideoLink(data.videoLink);
+					this.props.navigate("/");
+				})
+				.catch((err) => {
+					console.log(err);
+					this.props.setErrorMessage(err);
+				});
+		}
 	};
 
 	//! handlePlayersHighlighted:
@@ -207,6 +262,8 @@ class VideoPost extends React.Component<ABCprops, videoPostState> {
 	//     })
 	// }
 
+	//? The videoTitle must contain either "streamable" or "youtube" or "youtu.be" in it or it will not be accepted.
+
 	render(): React.ReactNode {
 		return (
 			<>
@@ -233,21 +290,39 @@ class VideoPost extends React.Component<ABCprops, videoPostState> {
 										htmlFor="video-website"
 										className="block text-sm font-medium text-gray-700"
 									>
-										Website
+										Video
 									</label>
 									<div className="mt-1 flex rounded-md shadow-sm">
 										<span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
 											Link
 										</span>
-										<input
-											type="text"
-											name="videoLink"
-											id="videoLink"
-											className="focus:ring-indigo-500 focus:border-indigo-500 flex-1 block w-full rounded-none rounded-r-md sm:text-sm border-gray-300"
-											placeholder="www.streamable.com"
-											onChange={this.handleChange}
-											value={this.state.videoLink}
-										/>
+										{/* if isVideoLinkValid is true */}
+										{this.state.isVideoLinkValid === true ? (
+											<input
+												type="text"
+												name="videoLink"
+												id="videoLink"
+												className="focus:ring-indigo-500 focus:border-indigo-500 flex-1 block w-full rounded-none rounded-r-md sm:text-sm border-gray-300"
+												placeholder="www.streamable.com"
+												onChange={this.handleChange}
+												value={this.state.videoLink}
+											/>
+										) : (
+											<>
+												<input
+													type="text"
+													name="videoLink"
+													id="videoLink"
+													className="focus:ring-indigo-500 focus:border-indigo-500 flex-1 block w-full rounded-none rounded-r-md sm:text-sm border-gray-300"
+													placeholder="www.streamable.com"
+													onChange={this.handleChange}
+													value={this.state.videoLink}
+												/>
+												<p className="mt-1 text-sm text-red-500">
+													{this.state.videoLinkError}
+												</p>
+											</>
+										)}
 									</div>
 								</div>
 
@@ -259,15 +334,33 @@ class VideoPost extends React.Component<ABCprops, videoPostState> {
 										Highlight Title
 									</label>
 									<div className="mt-1">
-										<textarea
-											id="videoTitle"
-											name="videoTitle"
-											rows={1}
-											onChange={this.handleChange}
-											className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 mt-1 block w-full sm:text-sm border border-gray-300 rounded-md"
-											placeholder="Shaq dunks on Barkley."
-											value={this.state.videoTitle}
-										/>
+										{/* if isTitleValid is true */}
+										{this.state.isVideoTitleValid === true ? (
+											<textarea
+												id="videoTitle"
+												name="videoTitle"
+												rows={1}
+												onChange={this.handleChange}
+												className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 mt-1 block w-full sm:text-sm border border-gray-300 rounded-md"
+												placeholder="Shaq dunks on Barkley."
+												value={this.state.videoTitle}
+											/>
+										) : (
+											<>
+												<textarea
+													id="videoTitle"
+													name="videoTitle"
+													rows={1}
+													onChange={this.handleChange}
+													className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 mt-1 block w-full sm:text-sm border border-gray-300 rounded-md"
+													placeholder="Please enter text here."
+													value={this.state.videoTitle}
+												/>
+												<p className="mt-1 text-sm text-red-500">
+													{this.state.videoTitleError}
+												</p>
+											</>
+										)}
 									</div>
 									<p className="mt-2 text-sm text-gray-500">
 										Brief title for your highlight. URLs are hyperlinked.
