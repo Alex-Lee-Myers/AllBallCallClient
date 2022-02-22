@@ -124,9 +124,10 @@ Indeed I am. Feel free to reach out to me via my [LinkedIn](https://www.linkedin
 | [*2/1/22*](https://github.com/Alex-Lee-Myers/AllBallCallClient/commit/bc6519f938fc6d6f25ca0e85487f08a4011c7a3e) | Register endpoint working perfectly after reworking to become a functional component. |
 | [*2/2/22*](https://github.com/Alex-Lee-Myers/AllBallCallClient/commit/81d538b667b5affacad24e1f347ded66332a3209) | Navbar is able to be used to access both login and register now. Registration worked for mobile design too. Images added to make material more presentable. |
 | [*2/3/22*](https://github.com/Alex-Lee-Myers/AllBallCallClient/commit/70397e427c1d43a99d6854201df5d58bbbfef0e4) | Heavy debug day. VideoPost.tsx was troubleshooted for 4 hours alone. To no avail but left detailed comments for future restructuring and goals of file.  |
-| [*2/4/22*]() | ... |
-| [*2/5/22*]() | ... |
-| [*2/6/22*]() | ... |
-| [*2/7/22*]() | ... |
-| [*2/8/22*]() | ... |
-| [*2/9/22*]() | ... |
+| [*2/4/22*](https://github.com/Alex-Lee-Myers/AllBallCallClient/commit/236061afc28b6aa8573b6a51d1d7ba4f9546da25) | Videpost now working. Basic styling. There is commented code for further stretch feature updates.  |
+| [*2/5/22*](https://github.com/Alex-Lee-Myers/AllBallCallClient/commit/3e00dd68826d1ee0cad0f2f36872caec228d0a00) | Admin registration working. Basic styling. Conditional navbar not functional but implemented initial code. |
+| [*2/6/22*](https://github.com/Alex-Lee-Myers/AllBallCallClient/commit/9368e1d702a5977249f0d013c8a4ce20d9979bc5) | Users able to update their username, password, and email. Settings conditional for when someone answers their reset questions correctly is working. Delete fetch functions made, but not implemented in the render just yet. |
+| [*2/7/22*](https://github.com/Alex-Lee-Myers/AllBallCallClient/commit/bee52d4bca60488da22c0972974477047f973048) | Implemented tooltip for registration/login suggestions for requirements before having to commit. Added password confirmation dialogue as well. Navbar works with mobile view as well. Added temporary profile picture as well.  |
+| [*2/8/22*](https://github.com/Alex-Lee-Myers/AllBallCallClient/commit/851d9efed85b5b5882e351bdef209319ebeeeb27) | Navbar fully responsive to the user state (guest/standard user/admin) and now has a logout function as well. Settings.tsx has modals setup to show on correct condition, yet fetch needs tested+debugged. |
+| [*2/9/22*](https://github.com/Alex-Lee-Myers/AllBallCallClient/commit/851d9efed85b5b5882e351bdef209319ebeeeb27) | Settings.tsx modals worked on further with styling. Fetch was not working. Continuing to debug. |
+| [*2/10/22*](https://github.com/Alex-Lee-Myers/AllBallCallClient/commit/851d9efed85b5b5882e351bdef209319ebeeeb27) | Settings.tsx: users are able to edit their username, password, email. they are also able to delete all their videos, all their comments, and/or their account (which deletes all their videos+comments as well). needs styling done. make sure navigating to home page after account delete as well. |
