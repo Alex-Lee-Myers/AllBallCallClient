@@ -106,6 +106,7 @@ Indeed I am. Feel free to reach out to me via my [LinkedIn](https://www.linkedin
     - Automatic deletion of bad videos.
     - Safety filters for inappropriate text/videos.
     - Upvote feature.
+    - Refresh on VideoPost saves state. 
  
 ## Log
 
@@ -131,3 +132,15 @@ Indeed I am. Feel free to reach out to me via my [LinkedIn](https://www.linkedin
 | [*2/8/22*](https://github.com/Alex-Lee-Myers/AllBallCallClient/commit/851d9efed85b5b5882e351bdef209319ebeeeb27) | Navbar fully responsive to the user state (guest/standard user/admin) and now has a logout function as well. Settings.tsx has modals setup to show on correct condition, yet fetch needs tested+debugged. |
 | [*2/9/22*](https://github.com/Alex-Lee-Myers/AllBallCallClient/commit/851d9efed85b5b5882e351bdef209319ebeeeb27) | Settings.tsx modals worked on further with styling. Fetch was not working. Continuing to debug. |
 | [*2/10/22*](https://github.com/Alex-Lee-Myers/AllBallCallClient/commit/851d9efed85b5b5882e351bdef209319ebeeeb27) | Settings.tsx: users are able to edit their username, password, email. they are also able to delete all their videos, all their comments, and/or their account (which deletes all their videos+comments as well). needs styling done. make sure navigating to home page after account delete as well. |
+| [*2/11/22*](https://github.com/Alex-Lee-Myers/AllBallCallClient/commit/825cccd447caf991acf9689f263dbc2e60feee94) | Home.tsx reworked to be able to pass which video is clicked correctly. Props and State reworked for those components as well for future updates. |
+| [*2/12/22*](https://github.com/Alex-Lee-Myers/AllBallCallClient/commit/c4cd51873772399567e9844e3ffc093fa319fdf8) | Heroku Deployed. Navbar was originally not working with Heroku deployment, but debugged and worked. |
+| [*2/13/22*](https://github.com/Alex-Lee-Myers/AllBallCallClient/commit/2c870d57b4d41895ed6ad9e02a98978b50701a61) | Home.tsx videos now have a link to their respesctive video when clicked. props being sent through of course. this is where users will eventually be able to comment on videos, owners of video edit or delete video, and admins can set the video to be marked as a highlight.|
+| [*2/14/22*](https://github.com/Alex-Lee-Myers/AllBallCallClient/commit/b461773e224cd35855bfa08edc889909d9f558be) | major progress! mapping comments. videos passing through correctly. essentially, Videos.tsx component is ripe for filling out the functionally. need to add ability to post a comment, conditionals for user state, and maybe integrate share buttons, but great progress was made tonight to hit MVP. |
+| [*2/15/22*](https://github.com/Alex-Lee-Myers/AllBallCallClient/commit/7dc1dd40dc9cda8ac00af87932155662c32337e1) | conditionals set for logged in users to see comments or not. may revert at a later date. edit/delete buttons currently show for users who own their comments but currently not functional. all fetches created for implementation of use cases in JSX for video editing/deleting for owners, that and for comments edit/delete. |
+| [*2/16/22*](https://github.com/Alex-Lee-Myers/AllBallCallClient/commit/ed657ba779cca4b591c07b38232a157b4e5fb65a) | able to delete after debug session. |
+| [*2/17/22*](https://github.com/Alex-Lee-Myers/AllBallCallClient/commit/86401a233945560264a179f12a885de17e257b8f) | able to post a comment. page needs refreshed before you see new comments. refreshing page also gets rid of all video props. needs debugged. |
+| [*2/18/22*](https://github.com/Alex-Lee-Myers/AllBallCallClient/commit/24283032005dcfac070697d299569f27965dcad1) | edit/delete comments work. delete has confirmation window as well. next up is being able to edit/delete video. |
+| [*2/19/22*](https://github.com/Alex-Lee-Myers/AllBallCallClient/commit/88949708a060fbc1c6cea105a5d48d0e09abbbaa) | Full CRUD for users on their videos and for comments. MVP hit for that aspect of the app. Started beginning of AdminDashboard and all the states/props it likely will need.  |
+| [*2/20/22*](https://github.com/Alex-Lee-Myers/AllBallCallClient/commit/ca328ed03c2bc8b6527504d0c5502c74c523a50c) | Admin dashboard now working fully. MVP hit for the project! Admin are able to edit/delete all videos. Comments can be done later. |
+| [*2/21/22*](https://github.com/Alex-Lee-Myers/AllBallCallClient/commit/73e7354509b2289cb851c540c98cf2beeba9b03d) | Form validation implemented for every post fetch in the application (register/login/videoPost) |
+| [*2/22/22*]() | Updated Trello board and ReadMe. Double-checking everything is working on client. Small text changes at minimum. May attempt to setup MyPark functionality as well if time alloted (in develop branch right now). Prepping for presentation. Posting videos and comments from multiple users. |
